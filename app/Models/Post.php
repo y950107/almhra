@@ -15,5 +15,9 @@ class Post extends Model
         'subtitle',
         'bio',
         'background',
+        'slug',
+        'body',
+        'photo_alt_text',
+        'is_visible',
     ];
 }

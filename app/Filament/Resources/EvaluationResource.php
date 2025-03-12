@@ -17,7 +17,7 @@ use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 class EvaluationResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Evaluation::class;
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'icon-evaluation';
 
     
     public static function getNavigationLabel(): string

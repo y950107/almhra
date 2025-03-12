@@ -20,7 +20,7 @@ use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 class TeacherResource extends Resource
 {
     protected static ?string $model = Teacher::class;
-    protected static ?string $navigationIcon = 'heroicon-o-user-group';
+    protected static ?string $navigationIcon = 'icon-teachers';
 
     public static function getPermissionPrefixes(): array
     {

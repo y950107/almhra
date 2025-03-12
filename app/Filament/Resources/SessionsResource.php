@@ -29,7 +29,7 @@ class SessionsResource extends Resource implements HasShieldPermissions
 {
 
     protected static ?string $model = Halaka::class;
-    protected static ?string $navigationIcon = 'icon-halaka';
+    protected static ?string $navigationIcon = 'icon-sessions';
     protected static ?string $navigationLabel = 'الحلقات';
 
     public static function getPermissionPrefixes(): array

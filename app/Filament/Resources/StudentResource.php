@@ -17,7 +17,7 @@ use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 class StudentResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Student::class;
-    protected static ?string $navigationIcon = 'heroicon-o-user-group';
+    protected static ?string $navigationIcon = 'icon-students';
 
     public static function getPermissionPrefixes(): array
     {
