@@ -20,7 +20,7 @@ class BannersResource extends Resource implements HasShieldPermissions
 
     protected static ?string $model = banner::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'icon-banners';
 
 
     public static function getPermissionPrefixes(): array

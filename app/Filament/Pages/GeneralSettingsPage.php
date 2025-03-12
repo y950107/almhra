@@ -43,163 +43,181 @@ class GeneralSettingsPage extends SettingsPage
 
     public function form(Form $form): Form
     {
-        return $form->schema([
-            Section::make()
-                ->columns(2)
-                ->schema([
-                    Tabs::make('إعدادات النظام')
-                        ->extraAttributes(['data-tabs-id' => 'settings-tabs'])
+        return $form
+            ->schema([
+                Tabs::make('Tabs')
                         ->tabs([
-
-
-                            Tabs\Tab::make('إعدادات الطلاب')->schema([
-                                Section::make('الفئة العمرية')->schema([
-                                    TextInput::make('min_age')->label('العمر الأدنى')->required()->numeric(),
-                                    TextInput::make('max_age')->label('العمر الأقصى')->required()->numeric(),
-
-                                ]),
-                                Section::make('معدل القبول')->schema([
-                                    TextInput::make('passing_percentage')->label('المعدل %')->required()->numeric(),
-                                ]),
-                                Section::make('العدد الاقصي للطلاب الملتحقين بالحلقة')->schema([
-                                    TextInput::make('students_per_group')->label('عدد الطلاب في الحلقة')->required()->numeric(),
-                                ]),
-
-                                Section::make('القبول التلقائي')->schema([
-                                    Toggle::make('auto_accept_students')->label('قبول ؟'),
-                                ])
-                            ]),
-
-                            Tabs\Tab::make('إعدادات حلقات التسميع ')->schema([
-                                Section::make()->schema([
-                                    Repeater::make('reading_types')
-                                        ->label(' القراءات')
+                                Tabs\Tab::make('اعدادات الحصص')
+                                ->icon('icon-settings')
+                                ->schema([
+                                    Forms\Components\Section::make('إعدادات الفئة العمرية')
+                                        ->description('تحديد الحد الأدنى والأقصى لعمر الطلاب')
                                         ->schema([
-                                            TextInput::make('reading')->label('اسم القراءة')->placeholder('مثال: حفص عن عاصم')->required(),
-                                        ])
-                                        ->minItems(1)
-                                        ->addable()
-                                        ->reorderable()
-                                        ->deletable(),
-                                ]),
+                                            Forms\Components\TextInput::make('min_age')
+                                                ->label('العمر الأدنى')
+                                                ->required()
+                                                ->numeric(),
 
-                                Section::make('الاوزان و معايير التقييم')->schema([
-                                    TextInput::make('tajweed_weight')->label('وزن التجويد')->required()->numeric(),
-                                    TextInput::make('memorization_weight')->label('وزن الحفظ')->required()->numeric(),
-                                    TextInput::make('voice_quality_weight')->label('وزن جودة الصوت')->required()->numeric(),
-                                ]),
-
-                                Section::make('خطة التسميع')->schema([
-                                    TextInput::make('session_duration')->label('مدة الجلسة بالدقائق')->required()->numeric(),
-                                    TextInput::make('max_pages_per_session')->label('أقصى عدد للصفحات في الجلسة')->required()->numeric(),
-                                ]),
-
-                                Section::make('تحكم في التقارير')->schema([
-                                    Toggle::make('enable_weekly_reports')->label('تفعيل التقارير الأسبوعية'),
-                                    Toggle::make('enable_monthly_reports')->label('تفعيل التقارير الشهرية'),
-                                    Toggle::make('enable_yearly_reports')->label('تفعيل التقارير السنوية'),
-                                ])
-                            ]),
-
-                            Tabs\Tab::make('إعدادات الأوسمة')->schema([
-                                Section::make()->schema([
-                                    Toggle::make('badges_enabled')->label('تفعيل الأوسمة'),
-                                    Repeater::make('badges_levels')
-                                        ->label('مستويات الأوسمة')
-                                        ->schema([
-                                            TextInput::make('level')->label('اسم المستوى')->required(),
-                                            TextInput::make('required_points')->label('النقاط المطلوبة')->required()->numeric(),
+                                            Forms\Components\TextInput::make('max_age')
+                                                ->label('العمر الأقصى')
+                                                ->required()
+                                                ->numeric(),
                                         ]),
-                                    Repeater::make('badge_criteria')
-                                        ->label('معايير الحصول على الأوسمة')
+
+                                    Forms\Components\Section::make('إعدادات النجاح')
+                                        ->description('تحديد النسبة المطلوبة للنجاح')
                                         ->schema([
-                                            TextInput::make('criteria')->label('المعيار')->required(),
-                                            TextInput::make('points')->label('النقاط')->required()->numeric(),
+                                            Forms\Components\TextInput::make('passing_percentage')
+                                                ->label('نسبة النجاح')
+                                                ->required()
+                                                ->numeric(),
                                         ]),
-                                ]),
-                            ]),
 
-                            Tabs\Tab::make('إعدادات عامة ')->schema([
-                                Section::make('اشعارات البريد الالكتروني')->schema([
-                                    Toggle::make('send_notifications')->label('تفعيل الإشعارات')->required(),
-                                    TextInput::make('admin_email')->label('البريد الإلكتروني للمشرف')->required()->email(),
-                                ]),
-                                Section::make('اللغة')->schema([
-                                    Select::make('default_language')->label('اللغة الافتراضية')
-                                        ->options([
-                                            'ar' => 'العربية',
-                                            'en' => 'الإنجليزية',
-                                        ])
-                                        ->required(),
-
-                                    Toggle::make('dark_mode')->label('تفعيل الوضع الليلي'),
-                                ])
-                            ]),
-                            Tabs\Tab::make('إعدادات المنشأة')->schema([
-                                Section::make('الشعار والأيقونة')->schema([
-                                    FileUpload::make('logo')->label('شعار المنشأة')->image(),
-                                    FileUpload::make('favicon')->label('الأيقونة المفضلة')->image(),
-                                ]),
-                                Section::make('معلومات المنشأة')->schema([
-                                    TextInput::make('company_name')->label('اسم المنشأة')->required(),
-                                    TextInput::make('branch_name')->label('اسم الفرع')->required(),
-                                    TextInput::make('company_manager')->label('مدير المنشأة')->required(),
-                                    TextInput::make('branch_manager')->label('مدير الفرع')->required(),
-                                ]),
-                                Section::make('معلومات الاتصال')->schema([
-                                    TextInput::make('phone_number')->label('رقم الهاتف')->required()->tel(),
-                                    TextInput::make('contact_email')->label('البريد الإلكتروني')->required()->email(),
-                                ]),
-
-                            ]),
-
-                            // 🔹 إعدادات الوقت وأيام الأسبوع
-                            Tabs\Tab::make('إعدادات الوقت')->schema([
-                                Section::make('التقويم')->schema([
-                                    Select::make('calendar_type')->label('نوع التقويم')
-                                        ->options([
-                                            'gregorian' => 'ميلادي',
-                                            'hijri' => 'هجري',
-                                        ])
-                                        ->required(),
-                                ]),
-                                Section::make('أيام العمل')->schema([
-                                    Repeater::make('working_days')
-                                        ->label('أيام الأسبوع')
+                                    Forms\Components\Section::make('إعدادات المجموعات')
+                                        ->description('تحديد عدد الطلاب في الحلقة')
                                         ->schema([
-                                            Select::make('day')->label('اليوم')
-                                                ->options([
-                                                    'saturday' => 'السبت',
-                                                    'sunday' => 'الأحد',
-                                                    'monday' => 'الإثنين',
-                                                    'tuesday' => 'الثلاثاء',
-                                                    'wednesday' => 'الأربعاء',
-                                                    'thursday' => 'الخميس',
-                                                    'friday' => 'الجمعة',
+                                            Forms\Components\TextInput::make('students_per_group')
+                                                ->label('عدد الطلاب في الحلقة')
+                                                ->required()
+                                                ->numeric(),
+                                        ]),
+                                        Forms\Components\Section::make('إعدادات نوع القراءة')
+                                        ->description('يمكنك إضافة عدة قراءات لاختيارها في الحصص')
+                                        ->schema([
+                                            Forms\Components\Repeater::make('reading_types')
+                                                ->label('أنواع القراءات')
+                                                ->schema([
+                                                    Forms\Components\TextInput::make('reading')
+                                                        ->label('اسم القراءة')
+                                                        ->placeholder('مثال: حفص عن عاصم')
+                                                        ->required(),
                                                 ])
-                                                ->required(),
-                                        ])
-                                        ->minItems(1)
-                                        ->addable()
-                                        ->reorderable()
-                                        ->deletable(),
+                                                ->minItems(1)
+                                                ->addable()
+                                                ->reorderable()
+                                                ->deletable(),
+                                        ]),
+                                        Forms\Components\Section::make('إعدادات التسجيل')
+                                            ->description('تحديد طريقة قبول الطلاب الجدد')
+                                            ->schema([
+                                                Forms\Components\Toggle::make('auto_accept_students')
+                                                    ->label('قبول الطلاب تلقائياً'),
+                                            ]),
+
+                                        Forms\Components\Section::make('إعدادات الجلسات')
+                                            ->description('إعدادات الجلسات وحجمها')
+                                            ->schema([
+                                                Forms\Components\TextInput::make('session_duration')
+                                                    ->label('مدة الجلسة بالدقائق')
+                                                    ->required()
+                                                    ->numeric(),
+
+                                                Forms\Components\TextInput::make('max_pages_per_session')
+                                                    ->label('أقصى عدد للصفحات في الجلسة')
+                                                    ->required()
+                                                    ->numeric(),
+                                            ]),
                                 ]),
-                                Section::make('أوقات الصلاة')->schema([
-                                    Repeater::make('prayer_times')
-        ->label('أوقات الصلاة')
-        ->schema([
-            TextInput::make('prayer_name')->label('اسم الصلاة')->required(),
-            TextInput::make('prayer_time')->label('الوقت (HH:MM)')->required(),
-        ])
-        ->default(PrayerTimeService::getPrayerTimes(24.7136, 46.6753)),
+                                Tabs\Tab::make('اعدادات الموقع')
+                                    ->icon('icon-landing_page')
+                                    ->schema([
+                                        Forms\Components\Section::make('إعدادات البريد الإلكتروني')
+                                            ->description('إعدادات إرسال الإشعارات')
+                                            ->schema([
+                                                Forms\Components\Toggle::make('send_notifications')
+                                                    ->label('تفعيل الإشعارات')
+                                                    ->required(),
+
+                                                Forms\Components\TextInput::make('admin_email')
+                                                    ->label('البريد الإلكتروني للمشرف')
+                                                    ->required()
+                                                    ->email(),
+                                            ]),
+                                            Forms\Components\Section::make('الإعدادات العامة')
+                                                ->description('إعدادات عامة مثل اللغة والوضع الداكن')
+                                                ->schema([
+                                                    Forms\Components\Select::make('default_language')
+                                                        ->label('اللغة الافتراضية')
+                                                        ->options([
+                                                            'ar' => 'العربية',
+                                                            'en' => 'الإنجليزية',
+                                                        ])
+                                                        ->required(),
+
+                                                    Forms\Components\Toggle::make('dark_mode')
+                                                        ->label('تفعيل الوضع الليلي'),
+                                                ]),
                                 ]),
-                            ]),
-
-
-
-                        ])->columnSpanFull()
-
-                ])
-        ]);
+                                Tabs\Tab::make('اعدادات التقييم والتقارير')
+                                    // ->icon('icon-landing_page')
+                                    ->schema([
+                                        Forms\Components\Section::make('إعدادات التقارير')
+                                        ->description('إعدادات التقارير الدورية')
+                                        ->schema([
+                                            Forms\Components\Toggle::make('enable_weekly_reports')
+                                                ->label('تفعيل التقارير الأسبوعية'),
+                    
+                                            Forms\Components\Toggle::make('enable_monthly_reports')
+                                                ->label('تفعيل التقارير الشهرية'),
+                    
+                                            Forms\Components\Toggle::make('enable_yearly_reports')
+                                                ->label('تفعيل التقارير السنوية'),
+                                        ]),
+                    
+                                    Forms\Components\Section::make('إعدادات التقييم')
+                                        ->description('إعداد أوزان التقييم')
+                                        ->schema([
+                                            Forms\Components\TextInput::make('tajweed_weight')
+                                                ->label('وزن التجويد')
+                                                ->required()
+                                                ->numeric(),
+                    
+                                            Forms\Components\TextInput::make('memorization_weight')
+                                                ->label('وزن الحفظ')
+                                                ->required()
+                                                ->numeric(),
+                    
+                                            Forms\Components\TextInput::make('voice_quality_weight')
+                                                ->label('وزن جودة الصوت')
+                                                ->required()
+                                                ->numeric(),
+                                        ]),
+                    
+                                    Forms\Components\Section::make('إعدادات الأوسمة')
+                                        ->description('تفعيل نظام الأوسمة والمكافآت')
+                                        ->schema([
+                                            Forms\Components\Toggle::make('badges_enabled')
+                                                ->label('تفعيل الأوسمة'),
+                    
+                                            Forms\Components\Repeater::make('badges_levels')
+                                                ->label('مستويات الأوسمة')
+                                                ->schema([
+                                                    Forms\Components\TextInput::make('level')
+                                                        ->label('اسم المستوى')
+                                                        ->required(),
+                    
+                                                    Forms\Components\TextInput::make('required_points')
+                                                        ->label('النقاط المطلوبة')
+                                                        ->required()
+                                                        ->numeric(),
+                                                ]),
+                    
+                                            Forms\Components\Repeater::make('badge_criteria')
+                                                ->label('معايير الحصول على الأوسمة')
+                                                ->schema([
+                                                    Forms\Components\TextInput::make('criteria')
+                                                        ->label('المعيار')
+                                                        ->required(),
+                    
+                                                    Forms\Components\TextInput::make('points')
+                                                        ->label('النقاط')
+                                                        ->required()
+                                                        ->numeric(),
+                                                ]),
+                                        ]),
+                                    ]),
+                        ])
+                
+            ]);
     }
 }

@@ -38,7 +38,7 @@ class RecitationSessionResource extends Resource implements HasShieldPermissions
     }
     protected static ?string $model = RecitationSession::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'icon-recitations';
 
 
     public static function form(Form $form): Form

@@ -111,7 +111,12 @@
 												<li><a href="news-detail.html">Blog Detail</a></li>
 											</ul>
 										</li>
-										<li><a href="contact.html">Contact</a></li>
+										{{-- language --}}
+										@if(app()->getLocale() =="ar")  
+										<li><a href="{{route('change_locale',"en")}}">الإنجليزية</a></li>
+										@else
+										<li><a href="{{route('change_locale',"ar")}}">العربية</a></li>
+										@endif
 									</ul>
 								</div>
 							</nav>
