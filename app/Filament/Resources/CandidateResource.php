@@ -20,7 +20,7 @@ use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 class CandidateResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Candidate::class;
-    protected static ?string $navigationIcon = 'icon-candidates';
+    protected static ?string $navigationIcon = 'icon-condidates';
     public static function getNavigationLabel(): string
     {
         return __('filament.candidate');
