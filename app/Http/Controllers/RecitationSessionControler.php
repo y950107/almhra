@@ -60,7 +60,7 @@ class RecitationSessionControler extends Controller
         ]);
 
         $mpdf->WriteHTML($html);
-
+ 
         return response()->streamDownload(
             fn() => print($mpdf->Output('', 'I')),
             'تقرير-حصص-التسميع.pdf'
