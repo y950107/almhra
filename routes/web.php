@@ -1,7 +1,11 @@
 <?php
 
 use App\Models\User;
+use App\Models\Surah;
+use App\Models\Verse;
 use Illuminate\Http\Request;
+use App\Services\QuranService;
+use App\Services\PrayerTimeService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -66,6 +70,17 @@ Route::post('/candidate', [CandidateController::class, 'store'])->name('candidat
 Route::get('/reports/download-pdf', [ReportsController::class, 'downloadPdf'])->name('reports.download-pdf');
 Route::get('/reports/download-excel', [ReportsController::class, 'downloadExcel'])->name('reports.download-excel'); */
  
+Route::get('/test-prayer-times', function () {
+    dd(PrayerTimeService::getPrayerTimes(24.7136, 46.6753)); // 🔥 اختبار جلب أوقات الصلاة
+});
+
+Route::get('/quran/surahs', function () {
+    return response()->json(Surah::all());
+});
+
+Route::get('/quran/verses/{surah_id}', function ($surah_id) {
+    return response()->json(Verse::where('surah_id', $surah_id)->get());
+});
 
 Route::get('/teachers/pdf-preview', [PDFController::class, 'preview'])->name('teachers.pdf-preview');
 Route::get('/teachers/pdf-download', [PDFController::class, 'download'])->name('teachers.pdf-download');

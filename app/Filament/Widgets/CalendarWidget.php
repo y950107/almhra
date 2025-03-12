@@ -19,9 +19,10 @@ class CalendarWidget extends FullCalendarWidget
             ->get()
             ->map(
                 fn (RecitationSession $event) => [
-                    'title' => $event->id,
+                    'title' => $event->halaka->name,
                     'start' => $event->created_at,
                     'end' => $event->session_date   ,
+                    'color'=> '',
                     'url' => RecitationSessionResource::getUrl(name: 'edit', parameters: ['record' => $event->id]),
                     'shouldOpenUrlInNewTab' => true
                 ]
