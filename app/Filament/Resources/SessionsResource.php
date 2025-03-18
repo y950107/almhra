@@ -76,7 +76,7 @@ class SessionsResource extends Resource implements HasShieldPermissions
 
             TextColumn::make('start_date')
                 ->label('تاريخ البداية')
-                ->date()
+                ->date('Y-M-D')
                 ->sortable(),
 
             TextColumn::make('max_students')->label('الحد الأقصى')->sortable(),

@@ -6,11 +6,21 @@ use Mpdf\Mpdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\RecitationSession;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 
 class RecitationSessionControler extends Controller
 {
-    
+
+    public function index()
+    {
+        $sessions = RecitationSession::with(['student'])->get();
+        $cumulativeData = RecitationSession::getTotalTargetPagesPerStudent();
+        
+        return view('pdf.recitation', compact('sessions', 'cumulativeData'));
+    }
+
+
     public function preview()
     {
         $recitation = RecitationSession::all();
@@ -24,12 +34,12 @@ class RecitationSessionControler extends Controller
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
-    
+
         if ($timeRange === 'custom' && (!$startDate || !$endDate)) {
             return back()->withErrors(['error' => 'يرجى تحديد تاريخ البداية والنهاية للتقرير المخصص']);
         }
 
-        
+
         $sessions = RecitationSession::query()
             ->when($timeRange === 'monthly', function ($query) {
                 $query->whereBetween('session_date', [
@@ -48,7 +58,7 @@ class RecitationSessionControler extends Controller
             })
             ->get();
 
-            $html = View::make('pdf.recitation', compact('sessions', 'timeRange', 'startDate', 'endDate'))->render();
+        $html = View::make('pdf.recitation', compact('sessions', 'timeRange', 'startDate', 'endDate'))->render();
 
         $mpdf = new Mpdf([
             'mode' => 'utf-8',
@@ -60,7 +70,7 @@ class RecitationSessionControler extends Controller
         ]);
 
         $mpdf->WriteHTML($html);
- 
+
         return response()->streamDownload(
             fn() => print($mpdf->Output('', 'I')),
             'تقرير-حصص-التسميع.pdf'

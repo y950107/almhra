@@ -11,8 +11,11 @@ class EditSessions extends EditRecord
 {
     protected static string $resource = SessionsResource::class;
 
+    
     protected function getHeaderActions(): array
     {
+
+        
         return [
             Actions\DeleteAction::make(),
         ];

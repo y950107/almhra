@@ -20,12 +20,30 @@ class BannersResource extends Resource implements HasShieldPermissions
 
     protected static ?string $model = banner::class;
 
+    public static function getNavigationGroup(): ?string
+    {
+        return __('filament.grouplabel');
+    }
     protected static ?string $navigationIcon = 'icon-banners';
 
 
     public static function getPermissionPrefixes(): array
     {
         return ['view', 'view_any', 'create', 'update', 'delete', 'delete_any'];
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.banner.navigation_label');
+    }
+    public static function getModelLabel(): string
+    {
+        return __('filament.banner.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.banner.plural_model_label');
     }
 
     public static function form(Form $form): Form

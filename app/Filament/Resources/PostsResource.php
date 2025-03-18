@@ -21,31 +21,54 @@ class PostsResource extends Resource
     protected static ?string $model = Post::class;
 
     protected static ?string $navigationIcon = 'icon-blogs';
+    public static function getNavigationGroup(): ?string
+    {
+        return __('filament.grouplabel');
+    }
+
+    public static function getPermissionPrefixes(): array
+    {
+        return ['view', 'view_any', 'create', 'update', 'delete', 'delete_any'];
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.posts.navigation_label');
+    }
+    public static function getModelLabel(): string
+    {
+        return __('filament.posts.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.posts.plural_model_label');
+    }
 
     public static function form(Form $form): Form
     {
-        
+
         return $form
             ->schema([
                 Section::make()
-                ->columns(2)
-                ->schema([
-                    TextInput::make('title')->required()
-                    ->label('العنوان')
-                    ->live()
-                    ->maxLength(255)
-                    ->afterStateUpdated(function (callable $set, $state) {
-                        $set('slug', str()->slug($state));
-                    }),
-                    TextInput::make('subtitle')->required()->maxLength(255)
-                    ->label('العنوان الفرعي'),
-                    TextInput::make('slug')->required()->disabled()->label('الرابط المخصص'),
-                    Textarea::make('bio')->required()->label('الوصف')->maxLength(255),
-                    RichEditor::make('body')->required()->maxLength(65535)->columnSpanFull()->label('النص'),
-                    FileUpload::make('background')->required()->image()->label('الخلفية'),
-                    TextInput::make('photo_alt_text')->required()->label('الوصف في حالة غياب الصورة')->maxLength(255),
-                    Toggle::make('is_visible')->default(false)->required()->label('الحالة'),
-                ]),
+                    ->columns(2)
+                    ->schema([
+                        TextInput::make('title')->required()
+                            ->label('العنوان')
+                            ->live()
+                            ->maxLength(255)
+                            ->afterStateUpdated(function (callable $set, $state) {
+                                $set('slug', str()->slug($state));
+                            }),
+                        TextInput::make('subtitle')->required()->maxLength(255)
+                            ->label('العنوان الفرعي'),
+                        TextInput::make('slug')->required()->disabled()->label('الرابط المخصص'),
+                        Textarea::make('bio')->required()->label('الوصف')->maxLength(255),
+                        RichEditor::make('body')->required()->maxLength(65535)->columnSpanFull()->label('النص'),
+                        FileUpload::make('background')->required()->image()->label('الخلفية'),
+                        TextInput::make('photo_alt_text')->required()->label('الوصف في حالة غياب الصورة')->maxLength(255),
+                        Toggle::make('is_visible')->default(false)->required()->label('الحالة'),
+                    ]),
             ]);
     }
 
@@ -62,11 +85,11 @@ class PostsResource extends Resource
                 Tables\Columns\TextColumn::make('slug')
                     ->label('الرابط')
                     ->searchable(),
-                
+
                 Tables\Columns\ImageColumn::make('background')
                     ->label('الخلفية')
                     ->searchable(),
-                
+
                 Tables\Columns\ToggleColumn::make('is_visible')
                     ->label('الحالة'),
                 Tables\Columns\TextColumn::make('updated_at')

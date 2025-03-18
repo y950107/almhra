@@ -14,27 +14,27 @@ class CandidatePolicy
      * السماح بعرض جميع المترشحين.
      */
 
-     public function before(User $user, $ability)
-    {
-        if ($user->hasRole('super_admin')) {
-            return true;
-        }
-    }
+    //  public function before(User $user, $ability)
+    // {
+    //     if ($user->hasRole('super_admin')) {
+    //         return true;
+    //     }
+    // }
     public function viewAny(User $user): bool
     {
         return $user->can('view_any_candidate');
     }
 
     /**
-     * السماح بعرض مترشح معين.
+     
      */
-    public function view(User $user, Candidate $candidate): bool
+    public function view(User $user): bool
     {
-        return $user->can('view_candidate');
+        return $user->can('view_candidate') ;
     }
 
     /**
-     * السماح بإنشاء مترشح جديد.
+
      */
     public function create(User $user): bool
     {
@@ -42,15 +42,15 @@ class CandidatePolicy
     }
 
     /**
-     * السماح بتحديث بيانات المترشح.
+    
      */
-    public function update(User $user, Candidate $candidate): bool
+    public function update(User $user): bool
     {
         return $user->can('update_candidate');
     }
 
     /**
-     * السماح بحذف مترشح معين.
+    
      */
     public function delete(User $user, Candidate $candidate): bool
     {
@@ -58,7 +58,7 @@ class CandidatePolicy
     }
 
     /**
-     * السماح بحذف عدة مترشحين دفعة واحدة.
+
      */
     public function deleteAny(User $user): bool
     {
@@ -66,17 +66,14 @@ class CandidatePolicy
     }
 
     /**
-     * السماح بإرسال المترشح إلى المقابلة.
+     
      */
     public function sendToInterview(User $user, Candidate $candidate): bool
     {
         return $user->can('send_to_interview_candidate');
     }
 
-    /**
-     * السماح بقبول المترشح وتحويله إلى طالب.
-     */
-    public function accept(User $user, Candidate $candidate): bool
+    public function accept(User $user): bool
     {
         return $user->can('accept_candidate');
     }

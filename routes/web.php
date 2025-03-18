@@ -1,5 +1,6 @@
 <?php
 
+
 use App\Models\User;
 use App\Models\Surah;
 use App\Models\Verse;
@@ -18,6 +19,7 @@ use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\RecitationSessionControler;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use Illuminate\Support\Facades\Config;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -90,18 +92,18 @@ Route::get('/teachers/pdf-download', [PDFController::class, 'download'])->name('
 Route::get('/recitations/pdf-preview', [RecitationSessionControler::class, 'preview'])->name('recitations.pdf-preview');
 Route::get('/recitations/pdf-download', [RecitationSessionControler::class, 'download'])->name('recitations.pdf-download');
 
-Route::get('language/{locale}', function (string $locale) {
-    if (! in_array($locale, ['en', 'ar'])) {
-        abort(400);
-    }
+// Route::get('language/{locale}', function (string $locale) {
+//     if (! in_array($locale, ['en', 'ar'])) {
+//         abort(400);
+//     }
  
-    app()->setLocale($locale);
-    session()->put('locale', $locale);
+//     app()->setLocale($locale);
+//     session()->put('locale', $locale);
 
     
-    \Artisan::call("config:clear");
-    Config::set('app.locale',session()->get("locale"));
-    \Artisan::call("config:cache");
-    return redirect()->back();
-})->name('change_locale');
+//     //\Artisan::call("config:clear");
+//     Config::set('app.locale',session()->get("locale"));
+//     //\Artisan::call("config:cache");
+//     return redirect()->back();
+// })->name('change_locale');
 require __DIR__.'/auth.php';

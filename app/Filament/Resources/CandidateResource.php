@@ -7,13 +7,9 @@ use App\Models\User;
 use Filament\Tables;
 use Filament\Forms\Form;
 use App\Models\Candidate;
-use App\Models\Evaluation;
 use Filament\Tables\Table;
-use App\Jobs\ConvertToInterviw;
 use Filament\Resources\Resource;
 use App\Jobs\ConvertCandidateToStudent;
-use Filament\Notifications\Notification;
-use App\Http\Controllers\CandidateController;
 use App\Filament\Resources\CandidateResource\Pages;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
@@ -21,14 +17,25 @@ class CandidateResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Candidate::class;
     protected static ?string $navigationIcon = 'icon-condidates';
-    public static function getNavigationLabel(): string
-    {
-        return __('filament.candidate');
-    }
+
     public static function getPermissionPrefixes(): array
     {
-        return ['view', 'view_any', 'create', 'update', 'delete', 'delete_any'];
+        return ['view', 'view_any', 'create', 'update', 'delete', 'delete_any', 'accept_candidate'];
     }
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.candidate.navigation_label');
+    }
+    public static function getModelLabel(): string
+    {
+        return __('filament.candidate.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.candidate.plural_model_label');
+    }
+   
 
     public static function form(Form $form): Form
     {
@@ -113,6 +120,7 @@ class CandidateResource extends Resource implements HasShieldPermissions
                     }),
 
             ])
+
             ->actions([
                 Tables\Actions\Action::make('accept')
                     ->label('قبول')
@@ -120,22 +128,49 @@ class CandidateResource extends Resource implements HasShieldPermissions
                     ->icon('heroicon-o-check-circle')
                     ->action(fn(Candidate $record) => ConvertCandidateToStudent::dispatch($record))
                     ->requiresConfirmation()
-                    ->visible(fn(User $user, Candidate $record) => $user->can('accept_candidate', $record)),
+                    ->visible(function (User $user, Candidate $record) {
+                        dump($user->can('accept_candidate')); 
+                       
+                    }),
+
+                // Tables\Actions\Action::make('عرض-التفاصيل')
+                //     ->modalHeading('تفاصيل الطالب')
+                //     ->modalCloseButton( true)
+                //     ->modalWidth('2xl') 
+                //     ->icon('heroicon-o-eye')
+                //     ->button() 
+                //     ->color('primary')
+                //     ->form([
+                //         Forms\Components\TextInput::make('name') 
+                //             ->label('الاسم')
+                //             ->disabled(),
+                //         Forms\Components\TextInput::make('email')
+                //             ->label('البريد الإلكتروني')
+                //             ->disabled(),
+                //         Forms\Components\TextInput::make('phone')
+                //             ->label('رقم الهاتف')
+                //             ->disabled(),
+                //     ])
+                //     ->fillForm(fn(Candidate $record) => [
+                //         'name' => $record->name,
+                //         'email' => $record->email,
+                //         'phone' => $record->phone,
+                //     ]),
 
                 Tables\Actions\Action::make('sendToInterview')
-                ->label('إرسال إلى المقابلة')
-                ->icon('heroicon-o-check-circle')
-                ->requiresConfirmation()
-                ->action(fn (Candidate $record) => sendToInterview($record))
-                ->color('primary'),
-                //->visible(fn($record) => !$record->status=='accepted') // إخفاء الزر إذا كان لديه تقييم
-                
+                    ->label('إرسال إلى المقابلة')
+                    ->icon('heroicon-o-check-circle')
+                    ->requiresConfirmation()
+                    ->action(fn(Candidate $record) => sendToInterview($record))
+                    ->color('primary')
+                    ->visible(fn($record) => $record->status==='accepted'),
+
 
                 Tables\Actions\EditAction::make(),
             ]);
     }
 
- 
+
 
     public static function getRelations(): array
     {

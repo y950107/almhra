@@ -2,52 +2,177 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Traits\HasRoles;
+use App\Services\Moshaf_madina_Service;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class RecitationSession extends Model 
+class RecitationSession extends Model
 {
     use HasFactory, Notifiable, HasRoles;
 
     protected $fillable = [
-        'halaka_id',         // معرف الحلقة التي ينتمي إليها هذا السجل
-        'student_id',        // معرف الطالب
-        'session_date',      // تاريخ ووقت الجلسة
-        // أهداف الجلسة
-        'start_surah',       // سورة البداية
-        'start_ayah',        // رقم الآية للبداية
-        'start_page',        // رقم صفحة البداية
-        'end_surah',         // سورة النهاية
-        'end_ayah',          // رقم الآية للنهاية
-        'end_page',          // رقم صفحة النهاية
-        // النتائج الفعلية (تدخلها المعلم بعد انتهاء الجلسة)
+        'halaka_id',         
+        'student_id',  
+        'session_date',      
+        'start_ayah_id',
+        'end_surah_id',
+        'end_ayah_id',
+        'start_surah_id',
+        'start_page',        
+        'end_page',
+        'target_lines',
+        'target_pages',
+        'actual_end_surah_id',
+        'actual_end_ayah_id',
         'actual_end_surah',
         'actual_end_ayah',
         'actual_end_page',
-        // تقييمات المعلم
-        'tajweed_score',     // درجة التجويد
-        'fluency_score',     // درجة الطلاقة
-        'memory_score',      // درجة الحفظ
-        'evaluation_notes',  // ملاحظات المعلم
-        'notes',   
+        'actuel_lines',
+        'actual_pages',
+        'tajweed_score',    
+        'fluency_score',     
+        'memory_score',      
+        'evaluation_notes',  
+        'notes',
         'target_percentage',
         'Progress_percentage',
-        'present_status',               
+        'present_status',
     ];
 
-    // علاقة الجلسة بالحلبة
+    
     public function halaka()
     {
         return $this->belongsTo(Halaka::class);
     }
 
-    // علاقة الجلسة بالطالب
+
     public function student()
     {
         return $this->belongsTo(Student::class);
     }
+    /********** */
+
+
+    public static function getTotalTargetPagesPerStudent()
+    {
+        return self::select(
+                'student_id',
+                DB::raw('SUM(target_pages) as total_target_pages')
+            )
+            ->groupBy('student_id')
+            ->get()
+            ->keyBy('student_id');
+    }
+
+
+    public function getStartSurahNameAttribute()
+    {
+        $quranService = app(Moshaf_madina_Service::class);
+        $surahs = $quranService->getSurahs();
+        return collect($surahs)->where('id', $this->start_surah_id)->first()['name'] ?? null;
+    }
+
+    public function getStartAyahTextAttribute()
+    {
+        $quranService = app(Moshaf_madina_Service::class);
+        $ayahs = $quranService->getAyahs($this->start_surah_id);
+        return collect($ayahs)->where('number', $this->start_ayah_id)->first()['text'] ?? null;
+    }
+
+    public function getEndSurahNameAttribute()
+    {
+        $quranService = app(Moshaf_madina_Service::class);
+        $surahs = $quranService->getSurahs();
+        return collect($surahs)->where('id', $this->end_surah_id)->first()['name'] ?? null;
+    }
+
+    public function getEndAyahTextAttribute()
+    {
+        $quranService = app(Moshaf_madina_Service::class);
+        $ayahs = $quranService->getAyahs($this->end_surah_id);
+        return collect($ayahs)->where('number', $this->end_ayah_id)->first()['text'] ?? null;
+    }
+
+    public function getActualEndAyahTextAttribute()
+    {
+        $quranService = app(Moshaf_madina_Service::class);
+        $ayahs = $quranService->getAyahs($this->actual_end_surah_id);
+        return collect($ayahs)->where('number', $this->actual_end_ayah_id)->first()['text'] ?? null;
+    }
+}
+
+
+
+
+
+
+    //************************************ */
+
+
+    // public function startSurah()
+    // {
+    //     return $this->belongsTo(Surah::class, 'start_surah_id');
+    // }
+
+    // public function startAyah()
+    // {
+    //     return $this->belongsTo(Verse::class, 'start_ayah_id');
+    // }
+
+    // public function endSurah()
+    // {
+    //     return $this->belongsTo(Surah::class, 'end_surah_id');
+    // }
+
+    // public function endAyah()
+    // {
+    //     return $this->belongsTo(Verse::class, 'end_ayah_id');
+    // }
+
+    // public function actualEndSurah()
+    // {
+    //     return $this->belongsTo(Surah::class, 'actual_end_surah_id');
+    // }
+
+    // public function actualEndAyah()
+    // {
+    //     return $this->belongsTo(Verse::class, 'actual_end_ayah_id');
+    // }
+
+    // public function getTargetPagesAttribute()
+    // {
+    //     return abs(($this->end_page ?? $this->start_page) - $this->start_page);
+    // }
+
+    // public function getActualPagesAttribute()
+    // {
+    
+    //     $lastSession = RecitationSession::where('student_id', $this->student_id)
+    //         ->where('session_date', '<', $this->session_date)
+    //         ->orderBy('session_date', 'desc')
+    //         ->first();
+
+       
+    //     $actualPages = abs($this->actual_end_page - $this->start_page) + 1;
+
+     
+    //     if ($lastSession && $this->start_page === $lastSession->actual_end_page) {
+    //         $actualPages = max(0, $actualPages - 1); 
+    //     }
+
+    //     return $actualPages;
+    // }
+
+
+
+
+    // public function getAchievementPercentageAttribute()
+    // {
+    //     return $this->target_pages > 0 ? round(($this->actual_pages / $this->target_pages) * 100, 2) : 0;
+    // }
 
     // حساب عدد الصفحات المستهدفة (target_pages) كفارق مطلق بين صفحة النهاية وصفحة البداية
     // public function getTargetPagesAttribute()
@@ -64,7 +189,7 @@ class RecitationSession extends Model
     //     return 0;
     // }
 
-/*     public function getAchievementPercentageAttribute()
+    /*     public function getAchievementPercentageAttribute()
 {
     if ($this->end_page && $this->start_page) {
         $plannedPages = $this->end_page - $this->start_page + 1;
@@ -80,17 +205,17 @@ public function getWeightedAchievementAttribute()
     return round($score, 2);
 } */
 
-    
-    public function getAchievementPercentageAttribute()
-    {
-        $target = $this->target_pages;
-        if ($target > 0) {
-            return round(($this->actual_pages / $target) * 100, 2);
-        }
-        return 0;
-    }
 
-    
+    // public function getAchievementPercentageAttribute()
+    // {
+    //     $target = $this->target_pages;
+    //     if ($target > 0) {
+    //         return round(($this->actual_pages / $target) * 100, 2);
+    //     }
+    //     return 0;
+    // }
+
+
     /* public function getWeightedAchievementAttribute()
 {
     $memoryWeight  = (float) Settings::getValue('evaluation.memory_weight', 0.5);
@@ -103,4 +228,4 @@ public function getWeightedAchievementAttribute()
 
     return round(($memoryScore * $memoryWeight) + ($tajweedScore * $tajweedWeight) + ($fluencyScore * $fluencyWeight), 2);
 } */
-}
+

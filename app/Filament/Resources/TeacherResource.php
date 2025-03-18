@@ -22,6 +22,19 @@ class TeacherResource extends Resource
     protected static ?string $model = Teacher::class;
     protected static ?string $navigationIcon = 'icon-teachers';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.teacher.navigation_label');
+    }
+    public static function getModelLabel(): string
+    {
+        return __('filament.teacher.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.teacher.plural_model_label');
+    }
     public static function getPermissionPrefixes(): array
     {
         return ['view', 'view_any', 'create', 'update', 'delete', 'delete_any'];

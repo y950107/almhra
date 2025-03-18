@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('recitation_sessions', function (Blueprint $table) {
             $table->decimal('target_percentage', 5, 2);
-            $table->decimal('Progress_percentage', 5, 2)->virtualAs('(target_percentage / achievement_percentage) * 100');
+            $table->decimal('Progress_percentage', 5, 2)->virtualAs('(achievement_percentage /  target_percentage) * 100');
             $table->boolean('present_status')->default(false);
         });
     }

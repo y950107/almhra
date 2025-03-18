@@ -21,6 +21,20 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'icon-users';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.user.navigation_label');
+    }
+    public static function getModelLabel(): string
+    {
+        return __('filament.user.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.user.plural_model_label');
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([

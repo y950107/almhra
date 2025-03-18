@@ -14,35 +14,29 @@ return new class extends Migration
         Schema::create('recitation_sessions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('halaka_id')->constrained('halakas')->onDelete('cascade');
-            // الطالب الذي تُجرى له الجلسة
-            $table->foreignId('student_id')->constrained()->onDelete('cascade');
-            // تاريخ ووقت الجلسة
-            $table->dateTime('session_date');
-
-            // أهداف الجلسة
-            $table->string('start_surah');
-            $table->integer('start_ayah');
-            $table->integer('start_page');
-            $table->string('end_surah');
-            $table->integer('end_ayah');
-            $table->integer('end_page');
-            $table->integer('target_pages')->virtualAs('ABS(IFNULL(end_page, start_page) - start_page)');
-
-            //  hadi njibhem me json fichier 
-            $table->string('actual_end_surah')->nullable();
-            $table->integer('actual_end_ayah')->nullable();
+            $table->foreignId('student_id')->constrained()->onDelete('cascade'); 
+            $table->date('session_date'); 
+    
+            $table->integer('start_surah_id');
+            $table->integer('start_ayah_id');
+            $table->integer('end_surah_id');
+            $table->integer('end_ayah_id');
+            $table->integer('start_page')->nullable();
+            $table->integer('end_page')->nullable();
+            $table->integer('target_lines')->nullable();
+            $table->integer('target_pages')->nullable();
+            $table->integer('actual_end_surah_id')->nullable();
+            $table->integer('actual_end_ayah_id')->nullable();
             $table->integer('actual_end_page')->nullable();
-            // virtualAs  قادر تكون  null
-            $table->integer('actual_pages')->virtualAs('ABS(IFNULL(actual_end_page, start_page) - start_page)');
-            $table->decimal('achievement_percentage', 5, 2)->virtualAs('(actual_pages / IFNULL(target_pages, 0)) * 100');
-
-            // 
+            $table->integer('actuel_lines')->nullable();
+            $table->integer('actual_pages')->nullable(); 
+            $table->decimal('achievement_percentage', 5, 2)->virtualAs('(actual_pages / IFNULL(target_pages, 1)) * 100');
             $table->integer('tajweed_score')->nullable();
             $table->integer('fluency_score')->nullable();
             $table->integer('memory_score')->nullable();
             $table->text('evaluation_notes')->nullable();
-
             $table->text('notes')->nullable();
+    
             $table->timestamps();
         });
     }
@@ -55,3 +49,54 @@ return new class extends Migration
         Schema::dropIfExists('recitation_sessions');
     }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// old  one 
+
+// public function up(): void
+// {
+//     Schema::create('recitation_sessions', function (Blueprint $table) {
+//         $table->id();
+//         $table->foreignId('halaka_id')->constrained('halakas')->onDelete('cascade');
+//         $table->foreignId('student_id')->constrained()->onDelete('cascade'); 
+//         $table->date('session_date'); 
+
+        
+//         $table->foreignId('start_surah_id')->constrained('surahs')->onDelete('cascade');
+//         $table->foreignId('start_ayah_id')->constrained('verses')->onDelete('cascade');
+//         $table->foreignId('end_surah_id')->constrained('surahs')->onDelete('cascade');
+//         $table->foreignId('end_ayah_id')->constrained('verses')->onDelete('cascade');
+//         $table->integer('start_page')->nullable();
+//         $table->integer('end_page')->nullable();
+//         $table->integer('target_pages')->nullable();
+
+        
+//         $table->foreignId('actual_end_surah_id')->nullable()->constrained('surahs')->onDelete('cascade');
+//         $table->foreignId('actual_end_ayah_id')->nullable()->constrained('verses')->onDelete('cascade');
+//         $table->integer('actual_end_page')->nullable();
+//         $table->integer('actual_pages')->nullable();
+//         $table->decimal('achievement_percentage', 5, 2)->virtualAs('(actual_pages / IFNULL(target_pages, 1)) * 100');
+
+        
+//         $table->integer('tajweed_score')->nullable();
+//         $table->integer('fluency_score')->nullable();
+//         $table->integer('memory_score')->nullable();
+//         $table->text('evaluation_notes')->nullable();
+//         $table->text('notes')->nullable();
+
+//         $table->timestamps();
+//     });
+// }

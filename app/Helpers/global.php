@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\RecitationSession;
 use App\Models\User;
 use App\Models\Student;
 use App\Models\Teacher;
@@ -44,6 +45,7 @@ if (!function_exists('TeacherToUser')) {
         $teacher->update(['user_id' => $user->id]);
         $user->notify(new TeacherAccountCreated($password));
     }
+}
 
 //***************end manage teacher */
 
@@ -54,8 +56,8 @@ if (!function_exists('TeacherToUser')) {
 if (!function_exists('sendToInterview')) {
     function sendToInterview($candidate)
     {
-        
-        // التحقق مما إذا كان لديه تقييم مسبق
+
+    
         if (Evaluation::where('candidate_id', $candidate->id)->exists()) {
             Notification::make()
                 ->title('المترشح لديه تقييم بالفعل!')
@@ -64,7 +66,7 @@ if (!function_exists('sendToInterview')) {
             return;
         }
 
-             // إنشاء تقييم جديد بقيم افتراضية
+    
         Evaluation::create([
             'candidate_id' => $candidate->id,
             'evaluator_id' => $candidate->teacher_id,
@@ -84,20 +86,40 @@ if (!function_exists('sendToInterview')) {
             ->title('تم إرسال المترشح إلى المقابلة بنجاح!')
             ->success()
             ->send();
+    }
+}
 
+
+
+//***************  end manage candidate ************/
+// if (!function_exists('PageCount')) {
+//     function PageCount(RecitationSession $recitation, $startPage, $endPage)
+//     {
 
         
-    }
+//         $Lastrecitation = RecitationSession::where('student_id', $recitation->student_id)
+//             ->where('session_date', '<', $recitation->session_date)
+//             ->orderBy('session_date', 'desc')
+//             ->first();
+
+//         if (!$startPage || !$endPage) {
+//             return 0;
+//         }
+
+        
+//         if ($Lastrecitation === null) {
+//             return ($endPage - $startPage);
+//         }
+
+    
+//         if ($Lastrecitation->actual_end_page === $startPage) {
+//             return  abs(($end_page ?? $startPage) - $startPage);
+//         }
 
 
-    //***************  end manage candidate ************/
-
-   
-}
-
-
-}
-
+//     }
+// }
+////*****************page count verses data page */
 
 
 

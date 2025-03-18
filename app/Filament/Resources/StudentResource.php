@@ -23,6 +23,19 @@ class StudentResource extends Resource implements HasShieldPermissions
     {
         return ['view', 'view_any', 'create', 'update', 'delete', 'delete_any'];
     }
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.student.navigation_label');
+    }
+    public static function getModelLabel(): string
+    {
+        return __('filament.student.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.student.plural_model_label');
+    }
 
     public static function form(Form $form): Form
     {

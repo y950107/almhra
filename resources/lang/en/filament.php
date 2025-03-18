@@ -22,4 +22,5 @@ return [
     'post' => 'Posts',
     'banner' => 'Bannrs',
     'blog' => 'Blogs',
+    'grouplabel'=>'Web site Settings',
 ];

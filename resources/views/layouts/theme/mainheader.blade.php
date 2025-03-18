@@ -112,11 +112,11 @@
 											</ul>
 										</li>
 										{{-- language --}}
-										@if(app()->getLocale() =="ar")  
+										{{-- @if(app()->getLocale() =="ar")  
 										<li><a href="{{route('change_locale',"en")}}">الإنجليزية</a></li>
 										@else
 										<li><a href="{{route('change_locale',"ar")}}">العربية</a></li>
-										@endif
+										@endif --}}
 									</ul>
 								</div>
 							</nav>

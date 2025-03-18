@@ -45,6 +45,10 @@ class GeneralSettingsPage extends SettingsPage
     {
         return $form
             ->schema([
+                Section::make()
+             
+                ->schema([
+
                 Tabs::make('Tabs')
                         ->tabs([
                                 Tabs\Tab::make('اعدادات الحصص')
@@ -217,6 +221,7 @@ class GeneralSettingsPage extends SettingsPage
                                         ]),
                                     ]),
                         ])
+                        ])->columnSpanFull()
                 
             ]);
     }
