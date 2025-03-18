@@ -79,12 +79,12 @@
             background-color: #53957b;
             color: white;
             font-weight: bold;
-            font-size: 32px;
+            font-size:medium;
         }
 
         td {
-            font-size: 32px;
-            font-weight: 900;
+            
+            font-weight: bold;
         }
 
         .absent {
@@ -111,7 +111,7 @@
     </section>
 
 
-    <div class="row">
+    <div class="row" style="background-color: #53957b;">
         <table >
             <thead>
                 <tr>
@@ -121,7 +121,7 @@
                             src="{{ public_path('assets/images/logorapport/mahara.png') }}" alt="شعار المنشأة">
 
                     </th>
-                    <th style="padding-top:12%">
+                    <th style="">
                         <div>
                             <h1>تقرير حصص التسميع</h1>
                         </div>
