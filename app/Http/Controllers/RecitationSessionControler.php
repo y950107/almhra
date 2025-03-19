@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\View;
 class RecitationSessionControler extends Controller
 {
 
+
     public function index()
     {
         $sessions = RecitationSession::with(['student'])->get();
@@ -30,10 +31,17 @@ class RecitationSessionControler extends Controller
     }
     public function download(Request $request)
     {
+
+        $sumTargetPages = RecitationSession::getTotalTargetPages();
+        $sumActualPages = RecitationSession::getTotalActualPages();
+        $cumulativeData = RecitationSession::getTotalTargetPagesPerStudent();
+        $cumulativeData1 = RecitationSession::getTotalActualPagesPerStudent();
+        $sumTotalTargetPages = $cumulativeData->sum('total_target_pages');
+        $sumToactualPages = $cumulativeData1->sum('total_actual_pages');
         $timeRange = $request->input('time_range');
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
-
+        $currentMonth = Carbon::now()->locale('ar')->translatedFormat('F Y');
 
         if ($timeRange === 'custom' && (!$startDate || !$endDate)) {
             return back()->withErrors(['error' => 'يرجى تحديد تاريخ البداية والنهاية للتقرير المخصص']);
@@ -58,7 +66,7 @@ class RecitationSessionControler extends Controller
             })
             ->get();
 
-        $html = View::make('pdf.recitation', compact('sessions', 'timeRange', 'startDate', 'endDate'))->render();
+        $html = View::make('pdf.recitation', compact('sessions', 'timeRange', 'startDate', 'endDate', 'currentMonth','sumTargetPages','sumActualPages','sumTotalTargetPages','sumToactualPages'))->render();
 
         $mpdf = new Mpdf([
             'mode' => 'utf-8',
@@ -67,6 +75,11 @@ class RecitationSessionControler extends Controller
             'dpi' => 300,
             'autoScriptToLang' => true,
             'autoLangToFont' => true,
+            'margin_top' => 10,    
+            'margin_bottom' => 10,    
+            'margin_left' => 5,      
+            'margin_right' => 5, 
+            'shrink_tables_to_fit' => 1,    
         ]);
 
         $mpdf->WriteHTML($html);

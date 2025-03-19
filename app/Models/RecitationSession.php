@@ -67,6 +67,30 @@ class RecitationSession extends Model
             ->keyBy('student_id');
     }
 
+    public static function getTotalActualPagesPerStudent()
+    {
+        return self::select(
+                'student_id',
+                DB::raw('SUM(actual_pages) as total_actual_pages')
+            )
+            ->groupBy('student_id')
+            ->get()
+            ->keyBy('student_id');
+    }
+
+    public static function getTotalTargetPages(){
+        return self::select(DB::raw('SUM(target_pages) as total_target'))->first()->total_target ?? 0;
+    }
+
+    // هذي نعدلها  باه تجيب  مجموع التراكمي مستهدف و محقق
+    public static function getTotalTarget(){
+        return self::select(DB::raw('SUM(target_pages) as total_target'))->first()->total_target ?? 0;
+    }
+
+
+    public static function getTotalActualPages(){
+        return self::select(DB::raw('SUM(actual_pages) as total_actual'))->first()->total_actual ?? 0;
+    }
 
     public function getStartSurahNameAttribute()
     {

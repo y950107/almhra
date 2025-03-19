@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
@@ -20,18 +20,18 @@
             display: flex;
             justify-content: center;
             margin-bottom: 5%;
-            /* توسيط الجدول داخل الـ div */
+
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            /* إزالة المسافات بين الحدود */
+
         }
 
-    
 
-        /* إزالة الحدود الجانبية اليمنى واليسرى */
+
+
         .row th {
             border-style: none;
 
@@ -67,28 +67,34 @@
         }
 
 
-        th,
+        .data th,
         td {
             border: 1px solid #000;
+            padding: 5px 10px;
+            white-space: nowrap;
             text-align: center;
-            padding: 0;
-           
+
         }
 
         .data th {
             background-color: #53957b;
             color: white;
-            font-weight: bold;
-            font-size:medium;
+            font-size: large;
+
+
         }
 
         td {
-            
-            font-weight: bold;
+
+            font-size: large;
         }
 
         .absent {
             background-color: #f8d7da;
+        }
+
+        .tfoot th {
+            background-color: chocolate;
         }
 
         .footer {
@@ -101,7 +107,7 @@
 
 
 
-     
+
 </head>
 
 <body>
@@ -111,11 +117,11 @@
     </section>
 
 
-    <div class="row" style="background-color: #53957b;">
-        <table >
+    <div class="row">
+        <table>
             <thead>
                 <tr>
-                    <th>
+                    <th style="text-align: right;">
 
                         <img style="align-content: space-around; width: 15%;"
                             src="{{ public_path('assets/images/logorapport/mahara.png') }}" alt="شعار المنشأة">
@@ -123,23 +129,24 @@
                     </th>
                     <th style="">
                         <div>
-                            <h1>تقرير حصص التسميع</h1>
+                            <h1>جامع والدة الأمير بندر بن عبدالعزيز-بحي الندى</h1>
                         </div>
-                        <div style="margin-top: 10%;">
-                            <h2>
+                        <br>
+                        <div>
+                            <h2 style="margin-top: 12%;">
                                 {{ $timeRange === 'monthly' ? 'التقرير الشهري' : ($timeRange === 'yearly' ? 'التقرير السنوي' : 'تقرير مخصص من ' . $startDate . ' إلى ' . $endDate) }}
                             </h2>
                         </div>
                         <br>
                         <div style="margin-top:30px;">
-                            <p>{{ now()->format('Y-m-d') }}</p>
+                            
                         </div>
 
 
 
 
                     </th>
-                    <th>
+                    <th style="text-align: left;">
                         <img style="align-content: space-around; width: 15%;"
                             src="{{ public_path('assets/images/logorapport/mahara.png') }}" alt="شعار المنشأة">
                     </th>
@@ -150,7 +157,7 @@
 
 
     @php
-        // تحميل ملف JSON وتحويله إلى مصفوفة
+        
         use App\Services\Moshaf_madina_Service;
         $quranService = new Moshaf_madina_Service();
 
@@ -161,6 +168,8 @@
             return $group->sum('actual_pages');
         });
 
+
+
         // إنشاء قائمة السور بحيث يمكن الوصول إليها بسهولة
         // $suras = collect($quranData)->keyBy('sura_no');
 
@@ -170,18 +179,18 @@
             <tr>
                 <th>#</th>
                 <th> الطالب</th>
-                <th>معلم الحلقة</th>
+                <th> المشرف</th>
                 <th>الجلسة</th>
                 <th>القراءة</th>
-                <th>حالة الحضور</th>
                 <th>السورة (من - إلى)</th>
                 <th>الآيات (من - إلى)</th>
+                <th>الحضور</th>
                 <th>المحقق</th>
                 <th>المستهدف</th>
                 <th>نسبة الإنجاز</th>
                 <th>المحقق التراكمي</th>
                 <th>المستهدف التراكمي</th>
-                <th>نسبة الانجاز</th>
+                <th>نسبةالانجاز</th>
             </tr>
         </thead>
         <tbody>
@@ -197,12 +206,12 @@
                     <td>{{ $session->student->teacher->name }}</td>
                     <td>{{ $session->student->creates_at }}</td>
                     <td>{{ $session->student->candidate->desired_recitations[1] }}</td>
-                    <td>{{ $session->present_status ? 'حاضر' : 'غائب' }}</td>
                     <td>
                         {{ $quranService->getSurahName($session->start_surah_id) }} -
                         {{ $quranService->getSurahName($session->end_surah_id) }}
                     </td>
                     <td>{{ $session->start_ayah_id }} - {{ $session->end_ayah_id }}</td>
+                    <td>{{ $session->present_status ? 'حاضر' : 'غائب' }}</td>
                     <td>{{ $session->actual_pages }}</td>
                     <td>{{ $session->target_pages }}</td>
                     <td>{{ $session->achievement_percentage }}%</td>
@@ -219,24 +228,36 @@
                 </tr>
             @endforeach
 
+
+        </tbody>
+        <tfoot class="tfoot" style="background-color: rgb(28, 22, 35)">
+
             <tr>
-                <th>#</th>
-                <th> الطالب</th>
-                <th>معلم الحلقة</th>
-                <th>الجلسة</th>
-                <th>القراءة</th>
-                <th>حالة الحضور</th>
-                <th>السورة (من - إلى)</th>
-                <th>الآيات (من - إلى)</th>
-                <th>المحقق</th>
-                <th>المستهدف</th>
-                <th>نسبة الإنجاز</th>
-                <th>المحقق التراكمي</th>
-                <th>المستهدف التراكمي</th>
-                <th>نسبة الانجاز</th>
+                <th colspan="7" rowspan="2">مؤشر الأداء لجميع الحلقات لشهر: {{ $currentMonth }}</th>
+
+                <th></th>
+                <th>{{$sumActualPages }}</th>
+                <th>{{$sumTargetPages}}</th>
+                <th> {{ sprintf('%.2f%%', ($sumActualPages/$sumTargetPages)*100)}}</th>
+                <th>
+               {{$sumToactualPages}}
+                </th>
+                <th>{{$sumTotalTargetPages}}</th>
+                <th>{{ sprintf('%.2f%%', ($sumToactualPages/$sumTotalTargetPages)*100)}}</th>
 
             </tr>
-        </tbody>
+            <tr>
+
+                <th>الغياب</th>
+                <th colspan="2">عدد الاوجه</th>
+
+                <th>نسبة الانجاز</th>
+                <th colspan="2">عدد الاوجه المنجزة </th>
+
+                <th>المؤشر العام</th>
+
+            </tr>
+        </tfoot>
     </table>
 
     <div class="footer">
