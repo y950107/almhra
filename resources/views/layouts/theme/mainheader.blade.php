@@ -1,4 +1,3 @@
-<!-- Main Header -->
 <header class="main-header">
 		
 	<!-- Header Top -->
@@ -12,7 +11,7 @@
 							<li><span class="icon fa-solid fa-envelope fa-fw"></span>Support24@gmail.com</li>
 							<li><span class="icon fa-solid fa-location-dot fa-fw"></span>Suite 80 Golden Street Germeney</li>
 						</ul>
-						<div class="bismillah"><img src="assets/images/icons/bismillah.png" alt="" /> </div>
+						<div class="bismillah"><img src="{{asset('assets/images/icons/bismillah.png')}}" alt="" /> </div>
 					</div>
 					<ul class="header-top_list-two">
 						<li><span class="icon fa-regular fa-sun fa-fw"></span>Sunrise At: 5:15 AM</li>
@@ -31,7 +30,7 @@
 				<div class="d-flex justify-content-between align-items-center flex-wrap">
 					
 					<div class="logo-box">
-						<div class="logo"><a href="index.html"><img src="assets/images/logo.svg" alt="" title=""></a></div>
+						<div class="logo"><a href="index.html"><img src="{{asset('assets/images/logo.svg')}}" alt="" title=""></a></div>
 					</div>
 					
 					<div class="nav-outer">
@@ -74,7 +73,7 @@
 
 						<!-- Button Box -->
 						<div class="header_button-box">
-							<a href="#" class="theme-btn btn-style-one">
+							<a href="register.html" class="theme-btn btn-style-one">
 								<span class="btn-wrap">
 									<span class="text-one">التسجيل</span>
 								</span>
@@ -97,11 +96,10 @@
 		<div class="close-btn"><span class="icon flaticon-close-1"></span></div>
 		
 		<nav class="menu-box">
-			<div class="nav-logo"><a href="index.html"><img src="assets/images/logo.svg" alt="" title=""></a></div>
+			<div class="nav-logo"><a href="index.html"><img src="{{asset('assets/images/logo.svg')}}" alt="" title=""></a></div>
 			<div class="menu-outer"><!--Here Menu Will Come Automatically Via Javascript / Same Menu as in Header--></div>
 		</nav>
 	</div>
 	<!-- End Mobile Menu -->
 
 </header>
-<!-- End Main Header -->

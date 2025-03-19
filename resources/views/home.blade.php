@@ -1,14 +1,14 @@
 @extends('layouts.theme')
 @section('content')
 <div>
-    		<!-- Slider One -->
+		<!-- Slider One -->
 	<section class="slider-one">
 		<div class="main-slider swiper-container">
 			<div class="swiper-wrapper">
 
 				<!-- Slide -->
 				<div class="swiper-slide">
-					<div class="slider-one_image-layer" style="background-image:url(assets/images/slider1.jpg)"></div>
+					<div class="slider-one_image-layer" style="background-image:url({{asset('(assets/images/slider1.jpg')}})"></div>
 					<div class="auto-container">
 						
 						<!-- Content Column -->
@@ -33,7 +33,7 @@
 
 				<!-- Slide -->
 				<div class="swiper-slide">
-					<div class="slider-one_image-layer" style="background-image:url(assets/images/slider2.jpg)"></div>
+					<div class="slider-one_image-layer" style="background-image:url({{asset('(assets/images/slider2.jpg')}})"></div>
 					<div class="auto-container">
 						
 						<!-- Content Column -->
@@ -69,7 +69,7 @@
 	<!-- Featured One -->
 	<section class="featured-one">
 		<div class="auto-container">
-			<div class="inner-container" style="background-image:url(assets/images/icons/featured.png)">
+			<div class="inner-container" style="background-image:url({{asset('(assets/images/icons/featured.png')}})">
 				<div class="row clearfix">
 
 					<!-- Feature Block One -->
@@ -104,8 +104,8 @@
 
 	<!-- Welcome One -->
 	<section class="welcome-one">
-		<div class="welcome-one_pattern" style="background-image:url(assets/images/background/pattern-1.png)"></div>
-		<div class="welcome-one_pattern-two" style="background-image:url(assets/images/background/pattern-2.png)"></div>
+		<div class="welcome-one_pattern" style="background-image:url({{asset('(assets/images/background/pattern-1.png')}})"></div>
+		<div class="welcome-one_pattern-two" style="background-image:url({{asset('(assets/images/background/pattern-2.png')}})"></div>
 		<div class="auto-container">
 			<div class="row clearfix">
 
@@ -114,13 +114,13 @@
 					<div class="welcome-one_content-outer">
 						<!-- Sec Title -->
 						<div class="sec-title">
-							<div class="sec-title_title d-flex align-items-center">المهرة للقرءان <span><img src="assets/images/icons/bismillah-2.png" alt="" /></span></div>
+							<div class="sec-title_title d-flex align-items-center">المهرة للقرءان <span><img src="{{asset('assets/images/icons/bismillah-2.png')}}"alt="" /></span></div>
 							<h2 class="sec-title_heading">مرحبا بك مع المهرة بالقرءان</h2>
 							<div class="sec-title_text">من خلال المهرة للقرءان،  نغدوا بك لتكون من أحد الطلاب والقراء المهرة بأدن الله مع جلسات التحفيظ والتسميع والمتابعة التحسينية المستمرة</div>
 						</div>
 						<div class="welcome-one_content">
 							<div class="welcome-one_content-image">
-								<img src="assets/images/resource/welcome.jpg" height="167" width="180" alt="" />
+								<img src="{{asset('assets/images/resource/welcome.jpg')}}" height="167" width="180" alt="" />
 							</div>
 							<p>من كان مع القرءان كان القرءان معه وماخلا قلب منه الا كان كالبيت الخرب </p>
 							<div class="welcome-one_learn">
@@ -136,10 +136,10 @@
 				<div class="welcome-one_image-column col-lg-6 col-md-12 col-sm-12">
 					<div class="welcome-one_image-outer">
 						<div class="welcome-one_ameen">
-							<img src="assets/images/icons/ameen-1.png" alt="" />
+							<img src="{{asset('assets/images/icons/ameen-1.png')}}"alt="" />
 						</div>
 						<div class="welcome-one_image">
-							<img src="assets/images/slider1.jpg" alt="" />
+							<img src="{{asset('assets/images/slider1.jpg')}}" alt="" />
 						</div>
 						<div class="welcome-one_years d-flex align-items-center flex-wrap">
 							<span class="fa-solid fa-globe fa-fw"></span>
@@ -154,7 +154,7 @@
 	<!-- End Welcome One -->
 
 	<!-- Service One -->
-	<section class="service-one" style="background-image:url(assets/images/background/service-bg.png)">
+	<section class="service-one" style="background-image:url({{asset('(assets/images/background/service-bg.png')}})">
 		<div class="auto-container">
 			<!-- Sec Title -->
 			<div class="sec-title centered light">
@@ -169,7 +169,7 @@
 						<div class="service-block_one-upper">
 							<div class="service-block_one-icon flaticon-quran-1"></div>
 							<div class="service-block_one-big_icon">
-								<img src="assets/images/icons/service-1.png" alt="" />
+								<img src="{{asset('assets/images/icons/service-1.png')}}"alt="" />
 							</div>
 							<h4 class="service-block_one-heading"><a href="service-detail.html">حلقات تحفيظ  <br> القرءان</a></h4>
 							<div class="service-block_one-text">حلقات تحفيظ القرءان قد تصل الى 20 طالبا في كل حلقة حسب القراءة وتوفر العدد</div>
@@ -186,7 +186,7 @@
 						<div class="service-block_one-upper">
 							<div class="service-block_one-icon flaticon-pray"></div>
 							<div class="service-block_one-big_icon">
-								<img src="assets/images/icons/service-1.png" alt="" />
+								<img src="{{asset('assets/images/icons/service-1.png')}}"alt="" />
 							</div>
 							<h4 class="service-block_one-heading"><a href="service-detail.html">حلقات التسميع <br> خاصة</a></h4>
 							<div class="service-block_one-text">حلقات تسميع بين الشيخ والطالب مع المراقبة المستمرة والتقييم مع الاحصائيات ودراسة البيانات لكل طالب على حدة </div>
@@ -203,7 +203,7 @@
 						<div class="service-block_one-upper">
 							<div class="service-block_one-icon flaticon-quran-2"></div>
 							<div class="service-block_one-big_icon">
-								<img src="assets/images/icons/service-1.png" alt="" />
+								<img src="{{asset('assets/images/icons/service-1.png')}}"alt="" />
 							</div>
 							<h4 class="service-block_one-heading"><a href="service-detail.html">نقيم طلابنا <br> من كل النواحي</a></h4>
 							<div class="service-block_one-text">نقيم طلابنا من جميع النواحي ومراقبة الأداء والتجربة  مما يضمن تقييم الأداء الفعلي واقتراح تحسينات على الطالب نفسه</div>
@@ -223,7 +223,7 @@
 	<section class="students-one">
 		<div class="auto-container">
 			<div class="inner-container">
-				<div class="students-one_pattern" style="background-image:url(assets/images/background/student-bg.png)"></div>
+				<div class="students-one_pattern" style="background-image:url({{asset('(assets/images/background/student-bg.png')}})"></div>
 				<div class="row clearfix">
 
 					<!-- Content Column -->
@@ -293,7 +293,7 @@
 	<section class="cta-one">
 		<div class="auto-container">
 			<div class="inner-container d-flex justify-content-between align-items-center flex-wrap">
-				<div class="cta-one_bg" style="background-image:url(assets/images/background/cta-one_bg.png)"></div>
+				<div class="cta-one_bg" style="background-image:url({{asset('(assets/images/background/cta-one_bg.png')}})"></div>
 				<h3 class="cta-one_heading">القرآن مكتوب في المصاحف، محفوظ في الصدور، مقروء بالألسنة، مسموع بالآذان،.<br>  فالاشتغال بالقرآن من أفضل العبادات</h3>
 				<!-- Button Box -->
 				<div class="cta-one_button">
@@ -325,7 +325,7 @@
 				<div class="news-block_one col-lg-4 col-md-6 col-sm-12">
 					<div class="news-block_one-inner wow fadeInLeft" data-wow-delay="150ms" data-wow-duration="1500ms">
 						<div class="news-block_one-image">
-							<a href="news-detail.html"><img src="assets/images/resource/news-1.jpg" alt="" /></a>
+							<a href="news-detail.html"><img src="{{asset('assets/images/resource/news-1.jpg')}}" alt="" /></a>
 						</div>
 						<div class="news-block_one-content">
 							<ul class="news-block_one-meta">
@@ -337,7 +337,7 @@
 							<div class="news-block_one-info d-flex justify-content-between align-items-center flex-wrap">
 								<div class="news-block_one-author">
 									<div class="news-block_one-author_image">
-										<img src="assets/images/resource/author-2.png" alt="" />
+										<img src="{{asset('assets/images/resource/author-2.png')}}"alt="" />
 									</div>
 									amir khan
 								</div>
@@ -351,7 +351,7 @@
 				<div class="news-block_one col-lg-4 col-md-6 col-sm-12">
 					<div class="news-block_one-inner wow fadeInUp" data-wow-delay="150ms" data-wow-duration="1500ms">
 						<div class="news-block_one-image">
-							<a href="news-detail.html"><img src="assets/images/resource/news-2.jpg" alt="" /></a>
+							<a href="news-detail.html"><img src="{{asset('assets/images/resource/news-2.jpg')}}" alt="" /></a>
 						</div>
 						<div class="news-block_one-content">
 							<ul class="news-block_one-meta">
@@ -363,7 +363,7 @@
 							<div class="news-block_one-info d-flex justify-content-between align-items-center flex-wrap">
 								<div class="news-block_one-author">
 									<div class="news-block_one-author_image">
-										<img src="assets/images/resource/author-3.png" alt="" />
+										<img src="{{asset('assets/images/resource/author-3.png')}}"alt="" />
 									</div>
 									amir khan
 								</div>
@@ -377,7 +377,7 @@
 				<div class="news-block_one col-lg-4 col-md-6 col-sm-12">
 					<div class="news-block_one-inner wow fadeInRight" data-wow-delay="150ms" data-wow-duration="1500ms">
 						<div class="news-block_one-image">
-							<a href="news-detail.html"><img src="assets/images/resource/news-3.jpg" alt="" /></a>
+							<a href="news-detail.html"><img src="{{asset('assets/images/resource/news-3.jpg')}}" alt="" /></a>
 						</div>
 						<div class="news-block_one-content">
 							<ul class="news-block_one-meta">
@@ -389,7 +389,7 @@
 							<div class="news-block_one-info d-flex justify-content-between align-items-center flex-wrap">
 								<div class="news-block_one-author">
 									<div class="news-block_one-author_image">
-										<img src="assets/images/resource/author-4.png" alt="" />
+										<img src="{{asset('assets/images/resource/author-4.png')}}"alt="" />
 									</div>
 									amir khan
 								</div>
@@ -408,7 +408,7 @@
 	<section class="cta-two">
 		<div class="auto-container">
 			<div class="inner-container d-flex justify-content-between align-items-center flex-wrap">
-				<div class="cta-two_bg" style="background-image:url(assets/images/background/cta-one_bg.png)"></div>
+				<div class="cta-two_bg" style="background-image:url({{asset('(assets/images/background/cta-one_bg.png')}})"></div>
 				<div class="cta-two_icon flaticon-nabawi-mosque"></div>
 				<h3 class="cta-two_heading">فخورين بخدمة القرءان وأهل القرءان <br> ليصبحوا من المهرة بالقرءان</h3>
 				<!-- Button Box -->
@@ -423,5 +423,28 @@
 		</div>
 	</section>
 	<!-- End CTA One -->
+
+	<!-- Footer Style -->
+	<footer class="main-footer">
+		<div class="footer_bg-image" style="background-image: url({{asset('(assets/images/background/footer-bg.jpg')}})"></div>
+		<div class="auto-container">
+			<div class="inner-container">
+				<!-- Widgets Section -->
+			
+			</div>
+		</div>
+		<div class="footer-bottom">
+			<div class="footer_bottom-bg" style="background-image: url({{asset('(assets/images/background/footer-bg_2.jpg')}})"></div>
+			<div class="auto-container">
+				<div class="d-flex justify-content-between align-items-center flex-wrap">
+					<div class="copyright">جميع الحقوق محفوظة 2025  &copy; المهرة</div>
+					<ul class="footer-nav">
+						<li><a href="#">سياسة الخصوصية</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</footer>
+	<!-- End Footer Style -->
 </div>
 @endsection
