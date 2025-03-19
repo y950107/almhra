@@ -104,7 +104,8 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
                 
-            ]);
+            ])
+            ->viteTheme('resources/css/filament/admin/theme.css');
 
             /* ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
                 return $builder->items([
