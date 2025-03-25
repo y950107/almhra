@@ -116,7 +116,11 @@
 
     </section>
 
-
+    @php
+    use App\Settings\GeneralSettings;
+    $logo= app(GeneralSettings::class)->logo;
+    dd($logo);
+    @endphp
     <div class="row">
         <table>
             <thead>

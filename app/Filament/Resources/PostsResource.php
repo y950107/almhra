@@ -15,6 +15,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\RichEditor;
 use App\Filament\Resources\PostsResource\Pages;
+use App\Models\RecitationSession;
 
 class PostsResource extends Resource
 {
@@ -75,6 +76,7 @@ class PostsResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+        // ->query(RecitationSession::where('student_id',auth()->id())->query())
             ->columns([
                 Tables\Columns\TextColumn::make('title')
                     ->label('العنوان')

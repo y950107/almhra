@@ -251,8 +251,7 @@ class RecitationSessionResource extends Resource implements HasShieldPermissions
                                 ->label('صفحة النهاية الفعلية')
                                 ->numeric()
                                 ->disabled()
-                                ->dehydrated()
-                                ->required(),
+                                ->dehydrated(),
 
                             TextInput::make('actuel_lines')
                                 ->label(' عدد الاسطر الفعلية')

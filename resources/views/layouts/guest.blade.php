@@ -25,7 +25,7 @@
                 </a>
             </div>
 
-            <main>
+            <main class="w-full">
                 @yield('content')
             </main>
         

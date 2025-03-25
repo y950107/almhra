@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\RecitationSession;
 use App\Models\User;
 use App\Models\Student;
 use App\Models\Teacher;
@@ -8,13 +7,26 @@ use App\Models\Candidate;
 use App\Models\Evaluation;
 use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
+use App\Models\RecitationSession;
+use App\Settings\GeneralSettings;
 use Symfony\Component\Finder\Glob;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Queue\SerializesModels;
 use Filament\Notifications\Notification;
 use Illuminate\Queue\InteractsWithQueue;
+use App\Notifications\StudentAccountCreated;
 use App\Notifications\TeacherAccountCreated;
 
+
+
+/**  define settings  */
+if (! function_exists('settings')) {
+    function settings(string $key, mixed $default = null)
+    {
+        return app(GeneralSettings::class)->{$key} ?? $default;
+    }
+}
+/**end settings */
 
 
 //// manage teacher 
@@ -89,6 +101,34 @@ if (!function_exists('sendToInterview')) {
     }
 }
 
+/*** accept candidate and create a new user**/ 
+
+if (!function_exists('acceptedStudent')) {
+    function acceptedStudent($candidate)
+    {
+        $password = Str::random(8);
+
+        $user = User::create([
+            'name' => $candidate->full_name,
+            'email' => $candidate->name.'@gmail.com',
+            'password' => Hash::make($password),
+            'type' => 'student',
+            'phone' => $candidate->phone
+        ]);
+
+        // إنشاء سجل طالب
+        Student::create([
+            'user_id' => $user->id,
+            'teacher_id' => $candidate->teacher_id,
+            'candidate_id'=>$candidate->id,
+            'start_date' => now(),
+        ]);
+        $user->assignRole('Student');
+        $candidate->update(['status' => 'accepted'], ['evaluated'=>true]);
+        $user->notify(new StudentAccountCreated(  $user->email,  $password));
+    }
+};
+
 
 
 //***************  end manage candidate ************/
@@ -146,30 +186,7 @@ if (!function_exists('sendToInterview')) {
 // };
 
 
-/* if (!function_exists('acceptedStudent')) {
-    function acceptedStudent($candidate)
-    {
-        $password = Str::random(8);
 
-        $user = User::create([
-            'name' => $candidate->full_name,
-            'email' => $candidate->name . '@gmail.com',
-            'password' => Hash::make($password),
-            'type' => 'student',
-            'phone' => $candidate->phone
-        ]);
-
-        // إنشاء سجل طالب
-        Student::create([
-            'user_id' => $user->id,
-            'teacher_id' => $candidate->teacher_id,
-            'start_date' => now(),
-        ]);
-        $user->assignRole('Student');
-        $candidate->update(['status' => 'accepted']);
-        $user->notify(new StudentAccountCreated('password'));
-    }
-}; */
 
 // انشاء معلم كمستخدم 
 

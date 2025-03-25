@@ -17,6 +17,10 @@ class StatDashboardNew extends BaseWidget
     protected static ?int $sort =1;
     protected static bool $isLazy = false;
 
+    public static function canView():bool    {
+        return auth()->user()?->hasPermissionTo('widget_StatDashboardNew');
+    }
+
     protected function getCards(): array
     {
         return [

@@ -24,7 +24,7 @@ class RecitationSessionPolicy
     }
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any recitation_session');
+        return  $user->hasRole('super_admin') || $user->hasPermissionTo('view_any_recitation::session') ;
     }
 
     /**

@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Settings\GeneralSettings;
+use Spatie\LaravelSettings\Settings;
 use Illuminate\Support\ServiceProvider;
-use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
 use Filament\Support\Facades\FilamentIcon;
+use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,7 +15,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-       
+
+      
     }
 
     /**

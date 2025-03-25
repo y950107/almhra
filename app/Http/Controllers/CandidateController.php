@@ -8,14 +8,18 @@ use App\Models\Candidate;
 use Illuminate\Http\Request;
 use App\Jobs\ConvertToInterviw;
 use Illuminate\Support\Facades\Bus;
+use App\Settings\GeneralSettings;
 
 class CandidateController extends Controller
 {
+    
 
     public function create()
     {
         $teachers = Teacher::select('id', 'name')->get(); 
-        $recitations = ['حفص عن عاصم', 'ورش عن نافع', 'قالون عن نافع', 'الدوري عن أبي عمرو']; 
+        $recitations = app(GeneralSettings::class)->reading_types ?? [];
+
+        //dd($recitations);
         $qualifications = ['بكالوريوس', 'ماجستير', 'دكتوراه', 'ثانوية عامة']; 
         $quranLevels = Candidate::getQuranLevels();
 

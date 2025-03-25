@@ -16,6 +16,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\CheckboxList;
 use App\Filament\Resources\TeacherResource\Pages;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
+use App\Filament\Resources\TeacherResource\RelationManagers\StudentRelationManager;
 
 class TeacherResource extends Resource
 {
@@ -189,7 +190,7 @@ class TeacherResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            StudentRelationManager::class,
         ];
     }
 

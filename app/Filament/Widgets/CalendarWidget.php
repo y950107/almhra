@@ -11,6 +11,11 @@ class CalendarWidget extends FullCalendarWidget
 {
     protected static ?int $sort =2;
    // protected static string $view = 'filament.widgets.calendar-widget';
+
+   public static function canView(): bool
+   {
+       return auth()->user()?->hasPermissionTo('widget_CalendarWidget');
+   }
    public function fetchEvents(array $fetchInfo): array
     {
         return RecitationSession::query()

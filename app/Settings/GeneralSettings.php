@@ -36,6 +36,20 @@ class GeneralSettings extends Settings
     public bool $dark_mode;
     public array $reading_types;
 
+    public string $company_name;
+    public string $branch_name;
+    public string $company_manager;
+    public string $branch_manager;
+    public string $phone_number;
+    public string $contact_email;
+
+    public string $logo;  
+    public string $favicon; 
+
+    public string $calendar_type;
+    public array $working_days;
+    public array $prayer_times;
+
     public static function group(): string
     {
         return 'general';

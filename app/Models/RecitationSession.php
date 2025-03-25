@@ -14,14 +14,14 @@ class RecitationSession extends Model
     use HasFactory, Notifiable, HasRoles;
 
     protected $fillable = [
-        'halaka_id',         
-        'student_id',  
-        'session_date',      
+        'halaka_id',
+        'student_id',
+        'session_date',
         'start_ayah_id',
         'end_surah_id',
         'end_ayah_id',
         'start_surah_id',
-        'start_page',        
+        'start_page',
         'end_page',
         'target_lines',
         'target_pages',
@@ -32,20 +32,25 @@ class RecitationSession extends Model
         'actual_end_page',
         'actuel_lines',
         'actual_pages',
-        'tajweed_score',    
-        'fluency_score',     
-        'memory_score',      
-        'evaluation_notes',  
+        'tajweed_score',
+        'fluency_score',
+        'memory_score',
+        'evaluation_notes',
         'notes',
         'target_percentage',
         'Progress_percentage',
         'present_status',
     ];
 
-    
+
     public function halaka()
     {
         return $this->belongsTo(Halaka::class);
+    }
+
+    public function teacher()
+    {
+        return $this->belongsTo(Teacher::class);
     }
 
 
@@ -59,9 +64,9 @@ class RecitationSession extends Model
     public static function getTotalTargetPagesPerStudent()
     {
         return self::select(
-                'student_id',
-                DB::raw('SUM(target_pages) as total_target_pages')
-            )
+            'student_id',
+            DB::raw('SUM(target_pages) as total_target_pages')
+        )
             ->groupBy('student_id')
             ->get()
             ->keyBy('student_id');
@@ -70,25 +75,28 @@ class RecitationSession extends Model
     public static function getTotalActualPagesPerStudent()
     {
         return self::select(
-                'student_id',
-                DB::raw('SUM(actual_pages) as total_actual_pages')
-            )
+            'student_id',
+            DB::raw('SUM(actual_pages) as total_actual_pages')
+        )
             ->groupBy('student_id')
             ->get()
             ->keyBy('student_id');
     }
 
-    public static function getTotalTargetPages(){
+    public static function getTotalTargetPages()
+    {
         return self::select(DB::raw('SUM(target_pages) as total_target'))->first()->total_target ?? 0;
     }
 
     // هذي نعدلها  باه تجيب  مجموع التراكمي مستهدف و محقق
-    public static function getTotalTarget(){
+    public static function getTotalTarget()
+    {
         return self::select(DB::raw('SUM(target_pages) as total_target'))->first()->total_target ?? 0;
     }
 
 
-    public static function getTotalActualPages(){
+    public static function getTotalActualPages()
+    {
         return self::select(DB::raw('SUM(actual_pages) as total_actual'))->first()->total_actual ?? 0;
     }
 
@@ -252,4 +260,3 @@ public function getWeightedAchievementAttribute()
 
     return round(($memoryScore * $memoryWeight) + ($tajweedScore * $tajweedWeight) + ($fluencyScore * $fluencyWeight), 2);
 } */
-

@@ -8,8 +8,11 @@ use Filament\Tables;
 use Filament\Forms\Form;
 use App\Models\Candidate;
 use Filament\Tables\Table;
+use App\Enums\CandidateStatus;
 use Filament\Resources\Resource;
 use App\Jobs\ConvertCandidateToStudent;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use App\Filament\Resources\CandidateResource\Pages;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
@@ -20,7 +23,7 @@ class CandidateResource extends Resource implements HasShieldPermissions
 
     public static function getPermissionPrefixes(): array
     {
-        return ['view', 'view_any', 'create', 'update', 'delete', 'delete_any', 'accept_candidate'];
+        return ['view', 'view_any', 'create', 'update', 'delete', 'delete_any', 'accept', 'tointerview'];
     }
     public static function getNavigationLabel(): string
     {
@@ -35,7 +38,7 @@ class CandidateResource extends Resource implements HasShieldPermissions
     {
         return __('filament.candidate.plural_model_label');
     }
-   
+
 
     public static function form(Form $form): Form
     {
@@ -105,57 +108,77 @@ class CandidateResource extends Resource implements HasShieldPermissions
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('full_name')
+                Tables\Columns\TextColumn::make('full_name')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('email')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('phone')->searchable()->sortable(),
+
+                Tables\Columns\TextColumn::make('quran_level')
+                    ->label('مستوى الحفظ')
+                    ->formatStateUsing(fn($state) => match ($state) {
+                        'beginner' => 'مبتدئ',
+                        'intermediate' => 'متوسط',
+                        'advanced' => 'متقدم',
+                        default => $state,
+                    })->sortable()->toggleable(),
+
+                Tables\Columns\IconColumn::make('has_ijaza')
+                    ->label('لديه إجازة')
+                    ->boolean()->sortable()->toggleable(),
+
+                Tables\Columns\TextColumn::make('status')
+                    ->sortable()->toggleable()
+                    ->formatStateUsing(fn($state) => $state instanceof CandidateStatus ? $state->value : 'غير معروف')
+                    ->badge(),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('تاريخ التسجيل')
+                    ->date()->toggleable(),
+
+                Tables\Columns\ViewColumn::make('qualification_file')
+                    ->label('ملف المؤهل')
+                    ->view('tables.columns.file-embed'),
+
+                Tables\Columns\ViewColumn::make('audio')
+                    ->label('التسجيل الصوتي')
+                    ->view('tables.columns.audio-player')
+                    ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('phone')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('status') // هنا جبتها شغل  enum
-                    ->formatStateUsing(function ($state) {
-                        // نجيبها و نحولها لstring
-                        if ($state instanceof \App\Enums\CandidateStatus) {
-                            return $state->value;
-                        }
-                        // وإلا رجع القيمة كما هي
-                        return $state;
-                    }),
 
             ])
 
+            ->filters([
+                SelectFilter::make('status')
+                    ->label('حالة الطلب')
+                    ->options([
+                        'pending' => 'قيد الانتظار',
+                        'accepted' => 'مقبول',
+                        'rejected' => 'مرفوض',
+                        'interview' => 'في المقابلة',
+                    ]),
+
+                SelectFilter::make('quran_level')
+                    ->label('مستوى الحفظ')
+                    ->options([
+                        'beginner' => 'مبتدئ',
+                        'intermediate' => 'متوسط',
+                        'advanced' => 'متقدم',
+                    ]),
+
+                TernaryFilter::make('has_ijaza')
+                    ->label('لديه إجازة')
+                    ->trueLabel('نعم')
+                    ->falseLabel('لا'),
+            ])
+
             ->actions([
+
                 Tables\Actions\Action::make('accept')
                     ->label('قبول')
                     ->color('success')
                     ->icon('heroicon-o-check-circle')
-                    ->action(fn(Candidate $record) => ConvertCandidateToStudent::dispatch($record))
+                    ->action(fn(Candidate $record) => acceptedStudent($record))
                     ->requiresConfirmation()
-                    ->visible(function (User $user, Candidate $record) {
-                        dump($user->can('accept_candidate')); 
-                       
-                    }),
-
-                // Tables\Actions\Action::make('عرض-التفاصيل')
-                //     ->modalHeading('تفاصيل الطالب')
-                //     ->modalCloseButton( true)
-                //     ->modalWidth('2xl') 
-                //     ->icon('heroicon-o-eye')
-                //     ->button() 
-                //     ->color('primary')
-                //     ->form([
-                //         Forms\Components\TextInput::make('name') 
-                //             ->label('الاسم')
-                //             ->disabled(),
-                //         Forms\Components\TextInput::make('email')
-                //             ->label('البريد الإلكتروني')
-                //             ->disabled(),
-                //         Forms\Components\TextInput::make('phone')
-                //             ->label('رقم الهاتف')
-                //             ->disabled(),
-                //     ])
-                //     ->fillForm(fn(Candidate $record) => [
-                //         'name' => $record->name,
-                //         'email' => $record->email,
-                //         'phone' => $record->phone,
-                //     ]),
+                    ->visible(fn(Candidate $record) => auth()?->user()?->hasPermissionTo('accept_candidate') && $record?->status?->value === 'pending'),
 
                 Tables\Actions\Action::make('sendToInterview')
                     ->label('إرسال إلى المقابلة')
@@ -163,8 +186,44 @@ class CandidateResource extends Resource implements HasShieldPermissions
                     ->requiresConfirmation()
                     ->action(fn(Candidate $record) => sendToInterview($record))
                     ->color('primary')
-                    ->visible(fn($record) => $record->status==='accepted'),
+                    ->visible(fn(Candidate $record) => auth()?->user()?->hasPermissionTo('tointerview_candidate') && $record?->status?->value !== 'accepted'),
 
+
+
+                Tables\Actions\Action::make('viewDetails')
+                    ->label('عرض التفاصيل')
+                    ->icon('heroicon-o-eye')
+                    ->modalHeading('تفاصيل المترشح')
+                    ->modalWidth('1xxl')
+                    ->form([
+                        Forms\Components\TextInput::make('full_name')->label('الاسم الكامل')->disabled(),
+                        Forms\Components\TextInput::make('email')->label('البريد الإلكتروني')->disabled(),
+                        Forms\Components\TextInput::make('phone')->label('رقم الهاتف')->disabled(),
+                        Forms\Components\TextInput::make('birthdate')->label('تاريخ الميلاد')->disabled(),
+                        Forms\Components\TextInput::make('qualification')->label('المؤهل الدراسي')->disabled(),
+                        Forms\Components\Select::make('quran_level')
+                            ->label('مستوى الحفظ')
+                            ->options([
+                                'beginner' => 'مبتدئ',
+                                'intermediate' => 'متوسط',
+                                'advanced' => 'متقدم',
+                            ])
+                            ->disabled(),
+                        Forms\Components\Toggle::make('has_ijaza')->label('لديه إجازة')->disabled(),
+                        Forms\Components\TextInput::make('qualification_file')->label('ملف المؤهل')->disabled(),
+
+                    ])
+                    ->fillForm(fn(Candidate $record) => [
+                        'full_name' => $record->full_name,
+                        'email' => $record->email,
+                        'phone' => $record->phone,
+                        'birthdate' => $record->birthdate,
+                        'qualification' => $record->qualification,
+                        'quran_level' => $record->quran_level,
+                        'has_ijaza' => $record->has_ijaza,
+                        'qualification_file' => $record->qualification_file,
+                        'audio_recitation' => $record->audio_recitation,
+                    ]),
 
                 Tables\Actions\EditAction::make(),
             ]);

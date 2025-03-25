@@ -55,6 +55,6 @@ class CandidateEvaluationNotification extends Notification
                 ->line('نتمنى لك التوفيق، ويمكنك المحاولة مرة أخرى في المستقبل.');
         }
 
-        return $mailMessage->salutation('مع تحيات فريق إدارة المدرسة');
+        return $mailMessage->salutation('مع تحيات فريق إدارة المهرة');
     }
 }

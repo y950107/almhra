@@ -26,7 +26,8 @@ class Candidate extends Model
         'audio_recitation',
         'status', 
         'interview_date',
-        'interview_type'// 
+        'interview_type',
+        'evaluated'// 
     ];
 
     protected $casts = [
@@ -42,6 +43,11 @@ class Candidate extends Model
     public function teacher()
 {
     return $this->belongsTo(Teacher::class, 'teacher_id');
+}
+
+public function evaluation()
+{
+    return $this->belongsTo(Evaluation::class, 'teacher_id');
 }
 
 public static function getQuranLevels(): array

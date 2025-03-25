@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Filament\Widgets\CalendarWidget;
 use App\Models\Post;
 use App\Models\User;
 use App\Models\banner;
@@ -18,6 +19,7 @@ use App\Policies\SessionPolicy;
 use App\Policies\StudentPolicy;
 use App\Policies\TeacherPolicy;
 use App\Models\RecitationSession;
+use App\Policies\CalenderPolicy;
 use App\Policies\CandidatePolicy;
 use App\Policies\EvaluationPolicy;
 use Illuminate\Support\Facades\Gate;
@@ -46,9 +48,11 @@ class AuthServiceProvider extends ServiceProvider
         banner::class => BannerPolicy::class,
         Candidate::class => CandidatePolicy::class,
         'App\Models\GeneralSettings' => GeneralSettingsPolicy::class,
+
+
         
         //Banner::class => BannerPolicy::class,
-        
+       
         
     ];
 

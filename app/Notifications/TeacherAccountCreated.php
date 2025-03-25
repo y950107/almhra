@@ -25,12 +25,12 @@ class TeacherAccountCreated extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('حساب جديد في نظام المدرسة')
+            ->subject('حساب جديد في نظام مدرسة المهرة')
             ->greeting('مرحباً ' . $notifiable->name)
             ->line('تم إنشاء حسابك بنجاح:')
             ->line('اسم المستخدم: ' . $notifiable->email)
             ->line('كلمة المرور: ' . $this->password)
-            ->action('تسجيل الدخول', url('/login'))
+            ->action('تسجيل الدخول', url('/teacher/login'))
             ->line('يمكنك تغيير كلمة المرور بعد الدخول.');
     }
 }

@@ -87,7 +87,7 @@ Route::get('/quran/verses/{surah_id}', function ($surah_id) {
 Route::get('/teachers/pdf-preview', [PDFController::class, 'preview'])->name('teachers.pdf-preview');
 Route::get('/teachers/pdf-download', [PDFController::class, 'download'])->name('teachers.pdf-download');
 Route::get('/teachers/pdf-download', [PDFController::class, 'download'])->name('teachers.pdf-download');
-//***** هذه خاصة ب تقرير الطلاب */
+//***** هذي خاصة ب تقرير الطلاب */
 
 Route::get('/recitations/pdf-preview', [RecitationSessionControler::class, 'preview'])->name('recitations.pdf-preview');
 Route::get('/recitations/pdf-download', [RecitationSessionControler::class, 'download'])->name('recitations.pdf-download');

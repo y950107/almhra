@@ -1,4 +1,3 @@
-
 @extends('layouts.guest')
 
 @section('title', 'تقديم الطلب للمترشحين')
@@ -18,7 +17,7 @@
                 </div>
             @endif
             <form action="{{ route('candidate.store') }}" method="POST" enctype="multipart/form-data"
-                class=" bg-white p-8 rounded-lg shadow-md w-full max-w-lg space-y-4">
+                class=" bg-white p-8 rounded-lg shadow-md w-full max-w-2xl space-y-4 m-auto">
                 @csrf
 
                 <fieldset class="border border-gray-300 p-4 rounded-md">
@@ -110,16 +109,15 @@
                         </select>
                     </div>
 
+                   
+
                     <!-- القراءات المراد قراءتها -->
                     <div class="mb-4">
-                        <label for="desired_recitations" class="block text-sm font-medium text-gray-700">القراءات المراد
-                            قراءتها</label>
-                        <select name="desired_recitations[]" id="desired_recitations" multiple
-                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" class="select2 w-full">
+                        <label for="desired_recitations" class="block text-sm font-medium text-gray-700">القراءات المراد قراءتها</label>
+                        <select name="desired_recitations[]" id="desired_recitations" multiple class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                             @foreach ($recitations as $recitation)
-                                <option value="{{ $recitation }}"
-                                    {{ in_array($recitation, old('desired_recitations', [])) ? 'selected' : '' }}>
-                                    {{ $recitation }}
+                                <option value="{{ $recitation['reading'] }}" {{ in_array($recitation['reading'], old('desired_recitations', [])) ? 'selected' : '' }}>
+                                    {{ $recitation['reading'] }}
                                 </option>
                             @endforeach
                         </select>
