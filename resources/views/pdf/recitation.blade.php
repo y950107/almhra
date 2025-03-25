@@ -119,7 +119,7 @@
     @php
     use App\Settings\GeneralSettings;
     $logo= app(GeneralSettings::class)->logo;
-    dd($logo);
+    //dd($logo);
     @endphp
     <div class="row">
         <table>
@@ -128,7 +128,7 @@
                     <th style="text-align: right;">
 
                         <img style="align-content: space-around; width: 15%;"
-                            src="{{ public_path('assets/images/logorapport/mahara.png') }}" alt="شعار المنشأة">
+                        src="data:image/png;base64,{{ base64_encode(file_get_contents( url($logo)) ) }}" alt="شعار المنشأة">
 
                     </th>
                     <th style="">
