@@ -43,8 +43,8 @@ class GeneralSettings extends Settings
     public string $phone_number;
     public string $contact_email;
 
-    public string $logo;  
-    public string $favicon; 
+    public string $logo = "logo.png";  
+    public string $favicon="favicon.png"; 
 
     public string $calendar_type;
     public array $working_days;

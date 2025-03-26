@@ -1,5 +1,5 @@
 <footer class="main-footer">
-	<div class="footer_bg-image" style="background-image: url({{asset('assets/images/background/footer-bg.jpg')}})"></div>
+	{{-- <div class="footer_bg-image" style="background-image: url({{asset('assets/images/background/footer-bg.jpg')}})"></div> --}}
 	<div class="auto-container">
 		<div class="inner-container">
 			<!-- Widgets Section -->

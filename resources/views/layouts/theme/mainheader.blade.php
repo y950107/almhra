@@ -8,15 +8,15 @@
 					<div class="left-box d-flex align-items-center flex-wrap">
 						<!-- Info List -->
 						<ul class="header-top_list">
-							<li><span class="icon fa-solid fa-envelope fa-fw"></span>Support24@gmail.com</li>
-							<li><span class="icon fa-solid fa-location-dot fa-fw"></span>Suite 80 Golden Street Germeney</li>
+							<li>{{ app(\App\Settings\GeneralSettings::class)->contact_email ?? 'غير محدد'}}<span class="icon fa-solid fa-envelope fa-fw"></span></li>
+							<li>الرياض المملكة العربية السعودية<span class="icon fa-solid fa-location-dot fa-fw"></span></li>
 						</ul>
 						<div class="bismillah"><img src="{{asset('assets/images/icons/bismillah.png')}}" alt="" /> </div>
 					</div>
 					<ul class="header-top_list-two">
-						<li><span class="icon fa-regular fa-sun fa-fw"></span>Sunrise At: 5:15 AM</li>
-						<li><span class="icon fa-solid fa-moon fa-fw"></span>Sunset At: 4:50 PM</li>
-						<li><span class="icon fa-solid fa-phone fa-fw"></span>Let’s Talk +88 01 27 14 101</li>
+						<li><span class="icon fa-regular fa-brands fa-fw"></span>{{ app(\App\Settings\GeneralSettings::class)->company_name ?? 'غير محدد'}}</li>
+						<li><span class="icon fa-solid fa-moon fa-fw"></span>{{ app(\App\Settings\GeneralSettings::class)->company_name ?? 'غير محدد'}}</li>
+						<li><span class="icon fa-solid fa-phone fa-fw"></span>اتصل بنا : {{ app(\App\Settings\GeneralSettings::class)->phone_number ?? 'غير محدد'}}</li>
 					</ul>
 				</div>
 			</div>
@@ -30,7 +30,7 @@
 				<div class="d-flex justify-content-between align-items-center flex-wrap">
 					
 					<div class="logo-box">
-						<div class="logo"><a href="index.html"><img src="{{asset('assets/images/logo.svg')}}" alt="" title=""></a></div>
+						<div class="logo"><a href=""><img src="{{asset('assets/logo.png')}}" alt="" title=""></a></div>
 					</div>
 					
 					<div class="nav-outer">
@@ -73,7 +73,7 @@
 
 						<!-- Button Box -->
 						<div class="header_button-box">
-							<a href="register.html" class="theme-btn btn-style-one">
+							<a href="{{ route('candidate.create') }}" class="theme-btn btn-style-one">
 								<span class="btn-wrap">
 									<span class="text-one">التسجيل</span>
 								</span>
@@ -96,7 +96,7 @@
 		<div class="close-btn"><span class="icon flaticon-close-1"></span></div>
 		
 		<nav class="menu-box">
-			<div class="nav-logo"><a href="index.html"><img src="{{asset('assets/images/logo.svg')}}" alt="" title=""></a></div>
+			<div class="nav-logo"><a href=""><img src="{{asset('assets/logo.png')}}" alt="" title=""></a></div>
 			<div class="menu-outer"><!--Here Menu Will Come Automatically Via Javascript / Same Menu as in Header--></div>
 		</nav>
 	</div>

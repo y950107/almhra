@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
+use App\Models\Candidate;
 use App\Models\Evaluation;
 use Filament\Tables\Table;
 use App\Enums\EvaluationStatus;
@@ -143,12 +144,13 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                 Tables\Actions\Action::make('convert_to_student')
                     ->label('تحويل إلى طالب')
                     ->icon('heroicon-o-users')
-                    ->action(fn($record) => $record->convertToStudent())
-                    ->visible(fn($record) => $record->status !== 'passed')
-                    ->requiresConfirmation(),
+                    ->action(fn(Candidate $candidate) => acceptedStudent($candidate))
+                    ->requiresConfirmation()
+                    ->visible(fn($record) => $record->status !== 'passed'),
 
-                Tables\Actions\EditAction::make()
-                    ->label('تقييم المترشح'),
+                    Tables\Actions\EditAction::make()
+                    ->label('تقييم المترشح')
+                    
             ]);
     }
 

@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Filament\Facades\Filament;
 use Symfony\Component\HttpFoundation\Response;
 
 class IsAdmin
@@ -17,11 +18,12 @@ class IsAdmin
     {
         if(auth()->check() && !auth()->user()?->hasRole('super_admin'))
         {
+          Filament::auth()->logout();
           if(auth()->user()?->hasRole('Teacher'))
           {
-            return redirect()->route('filament.teacher.pages.dashboard');
+            return redirect()->route('filament.teacher.auth.login');
           }  
-          return redirect()->route('filament.student.pages.dashboard');
+          return redirect()->route('filament.student.auth.login');
         }
         return $next($request);
     }

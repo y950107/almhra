@@ -255,21 +255,21 @@ class GeneralSettingsPage extends SettingsPage
                                             ]),
                                     ]),
 
-                                Tabs\Tab::make('إعدادات التصميم')
-                                    ->icon('icon-image')
-                                    ->schema([
-                                        Forms\Components\Section::make('الشعار والهوية البصرية')
-                                            ->description('تحميل شعار وأيقونة الموقع')
-                                            ->schema([
-                                                Forms\Components\FileUpload::make('logo')
-                                                    ->label('الشعار')
-                                                    ->image(),
+                                // Tabs\Tab::make('إعدادات التصميم')
+                                //     ->icon('icon-image')
+                                //     ->schema([
+                                //         Forms\Components\Section::make('الشعار والهوية البصرية')
+                                //             ->description('تحميل شعار وأيقونة الموقع')
+                                //             ->schema([
+                                //                 Forms\Components\FileUpload::make('logo')
+                                //                     ->label('الشعار')
+                                //                     ->image(),
 
-                                                Forms\Components\FileUpload::make('favicon')
-                                                    ->label('الأيقونة')
-                                                    ->image(),
-                                            ]),
-                                    ]),
+                                //                 Forms\Components\FileUpload::make('favicon')
+                                //                     ->label('الأيقونة')
+                                //                     ->image(),
+                                //             ]),
+                                //     ]),
 
                                 Tabs\Tab::make('إعدادات التقويم وأيام العمل')
                                     ->icon('icon-calendar')

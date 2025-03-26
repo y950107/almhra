@@ -6,9 +6,11 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
-use App\Filament\Auth\Login;
+use App\Filament\Pages\Login;
+use App\Settings\GeneralSettings;
 use Filament\Support\Colors\Color;
 use Filament\Http\Middleware\Authenticate;
+use Filament\FontProviders\GoogleFontProvider;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -38,7 +40,9 @@ class TeacherPanelProvider extends PanelProvider
                 FilamentFullCalendarPlugin::make()
                 
             ])
-
+            ->font('Noto Kufi Arabic' , provider: GoogleFontProvider::class)
+            ->brandLogo(asset("assets/".app(GeneralSettings::class)->logo))
+            ->favicon(asset("assets/".app(GeneralSettings::class)->favicon))
             ->discoverResources(in: app_path('Filament/Teacher/Resources'), for: 'App\\Filament\\Teacher\\Resources')
             ->discoverPages(in: app_path('Filament/Teacher/Pages'), for: 'App\\Filament\\Teacher\\Pages')
             ->pages([

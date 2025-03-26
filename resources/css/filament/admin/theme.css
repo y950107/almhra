@@ -1,12 +1,23 @@
-@import '/vendor/filament/filament/resources/css/theme.css';
+@import "/vendor/filament/filament/resources/css/theme.css";
 
 @config 'tailwind.config.js';
 
-    #print-btn{display: none !important}
-.fi-sidebar-nav{
+#print-btn {
+    display: none !important;
+}
+.fi-sidebar-nav {
     background: white;
     box-shadow: 5px 5px 3px 5px #999;
 }
-.dark .fi-sidebar-nav{
+.dark .fi-sidebar-nav {
     background-color: #09090b;
+}
+.fi-logo {
+    height: 80px !important;
+    width: 122px !important;
+}
+
+.fi-simple-header :first-child {
+    width: 180px !important;
+    height: 110px !important;
 }

@@ -14,9 +14,9 @@ use Filament\Forms\Components\TextInput;
 use App\Filament\Resources\UserResource\Pages;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class UserResource extends Resource 
+class UserResource extends Resource
 {
-   
+
     protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'icon-users';
@@ -51,7 +51,7 @@ class UserResource extends Resource
             TextInput::make('password')
                 ->label('كلمة المرور')
                 ->password()
-                ->dehydrateStateUsing(fn ($state, $record) => filled($state) ? bcrypt($state) : $record->password)
+                ->dehydrateStateUsing(fn($state, $record) => filled($state) ? bcrypt($state) : $record->password)
                 ->required(fn($context) => $context === 'create'),
             Select::make('type')
                 ->label('نوع المستخدم')
@@ -61,7 +61,7 @@ class UserResource extends Resource
                     'student' => 'طالب',
                 ])
                 ->required(),
-                Toggle::make('account_status')
+            Toggle::make('account_status')
                 ->label('حالة الحساب')
                 ->default(true)
                 ->reactive(),
@@ -91,7 +91,8 @@ class UserResource extends Resource
                 ->formatStateUsing(fn($state) => $state ? 'مفعل' : 'غير مفعل')
                 ->badge()
                 ->colors([
-                    'success' => fn($state) => $state ? 'green' : 'red', ]),
+                    'success' => fn($state) => $state ? 'green' : 'red',
+                ]),
             TextColumn::make('created_at')->label('تاريخ الإنشاء')->dateTime(),
         ]);
     }

@@ -1,70 +1,96 @@
 @extends('layouts.theme')
 @section('content')
 <div>
-		<!-- Slider One -->
-	<section class="slider-one">
-		<div class="main-slider swiper-container">
+	<section class="slider-four">
+		<div class="slider-four_bg" style="background-image:url(assets/images/main-slider/7.png)"></div>
+		<div class="slider-four_mosque" style="background-image:url(assets/images/main-slider/mosque.png)"></div>
+		<div class="slider-four_border" style="background-image:url(assets/images/main-slider/vector.png)"></div>
+		<div class="slider-four_quran"><img src="assets/images/main-slider/quran.png" alt="" /></div>
+		<div class="main-slider_two swiper-container">
 			<div class="swiper-wrapper">
 
 				<!-- Slide -->
+				
+
+				<!-- Slide -->
 				<div class="swiper-slide">
-					<div class="slider-one_image-layer" style="background-image:url({{asset('(assets/images/slider1.jpg')}})"></div>
 					<div class="auto-container">
-						
-						<!-- Content Column -->
-						<div class="slider-one_content">
-							<div class="slider-one_content-inner">
-								<div class="slider-one_title"></div>
-								<h1 class="slider-one_heading">حلقات تحفيظ <br> منظمة</h1>
-								<div class="slider-one_text">Islamic online madrasah is an ISO certified educational institution of international standards</div>
-								<div class="slider-one_button">
-									<a href="course-detail.html" class="theme-btn btn-style-two">
-										<span class="btn-wrap">
-											<span class="text-one">Find the course</span>
-											<span class="text-two">Find the course</span>
-										</span>
-									</a>
+						<div class="row clearfix">
+
+							<!-- Content Column -->
+							<div class="slider-four_content col-xl-8 col-lg-12 col-md-12 col-sm-12">
+								<div class="slider-four_content-inner">
+									<div class="slider-four_title"><img src="assets/images/main-slider/title-light.png" alt="" /></div>
+									<div class="slider-four_arrow" style="background-image:url(assets/images/main-slider/arrow.png)"></div>
+									<div class="slider-four_shape" style="background-image:url(assets/images/main-slider/vector-2.png)"></div>
+									<h1 class="slider-four_heading">تجربة  <br> انتقائية في تعلم القرءان وتحفيظه
+									<div class="slider-four_text">من خلال جلسات تسميع مصغرة ومفتوحة</div>
+									<div class="slider-four_button">
+										{{-- --}}
+									</div>
 								</div>
 							</div>
+
+							<!-- Images Column -->
+							<div class="slider-four_images-column col-xl-4 col-lg-12 col-md-12 col-sm-12">
+								<div class="slider-four_images-outer">
+									<div class="slider-four_vector style-two"><img src="assets/images/main-slider/vector-1.png" alt="" /></div>
+									<div class="slider-four_circle style-two">
+										<img src="assets/images/main-slider/slider-three_rotate.png" alt="" />
+									</div>
+									<div class="image">
+										<img src="assets/images/main-slider/image-5.png" alt=""/>
+									</div>
+									<div class="slider-four_vector-two"><img src="assets/images/main-slider/vector-1.png" alt="" /></div>
+								</div>
+							</div>
+
 						</div>
-						
 					</div>
 				</div>
 
 				<!-- Slide -->
 				<div class="swiper-slide">
-					<div class="slider-one_image-layer" style="background-image:url({{asset('(assets/images/slider2.jpg')}})"></div>
 					<div class="auto-container">
-						
-						<!-- Content Column -->
-						<div class="slider-one_content">
-							<div class="slider-one_content-inner">
-								<div class="slider-one_title">Largest Online Madrasah</div>
-								<h1 class="slider-one_heading">Islamic Online <br> Madrasah</h1>
-								<div class="slider-one_text">Islamic online madrasah is an ISO certified educational institution of international standards</div>
-								<div class="slider-one_button">
-									<a href="course-detail.html" class="theme-btn btn-style-two">
-										<span class="btn-wrap">
-											<span class="text-one">Find the course</span>
-											<span class="text-two">Find the course</span>
-										</span>
-									</a>
+						<div class="row clearfix">
+
+							<!-- Content Column -->
+							<div class="slider-four_content col-xl-8 col-lg-12 col-md-12 col-sm-12">
+								<div class="slider-four_content-inner">
+									<div class="slider-four_title"><img src="assets/images/main-slider/title-light.png" alt="" /></div>
+									<div class="slider-four_arrow" style="background-image:url(assets/images/main-slider/arrow.png)"></div>
+									<div class="slider-four_shape" style="background-image:url(assets/images/main-slider/vector-2.png)"></div>
+									<h1 class="slider-four_heading" >منصة رقمية  <br> لمتابعة ومراجعة تحفيظ القرآن</h1>
+									<div class="slider-four_text" >برامج مراجعة تلقائية.</div>
+									<div class="slider-four_button">
+										{{--   --}}
+									</div>
 								</div>
 							</div>
+
+							<!-- Images Column -->
+							<div class="slider-four_images-column col-xl-4 col-lg-12 col-md-12 col-sm-12">
+								<div class="slider-four_images-outer">
+									<div class="slider-four_vector"><img src="assets/images/main-slider/vector-1.png" alt="" /></div>
+									<div class="slider-four_circle">
+										<img src="assets/images/main-slider/slider-three_rotate.png" alt="" />
+									</div>
+									<div class="image">
+										<img src="assets/images/main-slider/image-4.png" alt=""/>
+									</div>
+									<div class="slider-four_vector-two"><img src="assets/images/main-slider/vector-1.png" alt="" /></div>
+								</div>
+							</div>
+
 						</div>
-						
 					</div>
 				</div>
 
 			</div>
-			<div class="slider-one-arrow">
-				<!-- If we need navigation buttons -->
-				<div class="main-slider-prev fas fa-arrow-left fa-fw"></div>
-				<div class="main-slider-next fas fa-arrow-right fa-fw"></div>
-			</div>
+
 		</div>
 	</section>
-	<!-- End Main Slider Section -->
+	<!-- End Slider Four -->
 
 	<!-- Featured One -->
 	<section class="featured-one">
@@ -120,7 +146,7 @@
 						</div>
 						<div class="welcome-one_content">
 							<div class="welcome-one_content-image">
-								<img src="{{asset('assets/images/resource/welcome.jpg')}}" height="167" width="180" alt="" />
+								<img src="{{asset('assets/quran.jpg')}}" height="167" width="180" alt="" />
 							</div>
 							<p>من كان مع القرءان كان القرءان معه وماخلا قلب منه الا كان كالبيت الخرب </p>
 							<div class="welcome-one_learn">
@@ -408,7 +434,7 @@
 	<section class="cta-two">
 		<div class="auto-container">
 			<div class="inner-container d-flex justify-content-between align-items-center flex-wrap">
-				<div class="cta-two_bg" style="background-image:url({{asset('(assets/images/background/cta-one_bg.png')}})"></div>
+				{{-- <div class="cta-two_bg" style="background-image:url({{asset('(assets/images/background/cta-one_bg.png')}})"></div> --}}
 				<div class="cta-two_icon flaticon-nabawi-mosque"></div>
 				<h3 class="cta-two_heading">فخورين بخدمة القرءان وأهل القرءان <br> ليصبحوا من المهرة بالقرءان</h3>
 				<!-- Button Box -->
@@ -424,27 +450,6 @@
 	</section>
 	<!-- End CTA One -->
 
-	<!-- Footer Style -->
-	<footer class="main-footer">
-		<div class="footer_bg-image" style="background-image: url({{asset('(assets/images/background/footer-bg.jpg')}})"></div>
-		<div class="auto-container">
-			<div class="inner-container">
-				<!-- Widgets Section -->
-			
-			</div>
-		</div>
-		<div class="footer-bottom">
-			<div class="footer_bottom-bg" style="background-image: url({{asset('(assets/images/background/footer-bg_2.jpg')}})"></div>
-			<div class="auto-container">
-				<div class="d-flex justify-content-between align-items-center flex-wrap">
-					<div class="copyright">جميع الحقوق محفوظة 2025  &copy; المهرة</div>
-					<ul class="footer-nav">
-						<li><a href="#">سياسة الخصوصية</a></li>
-					</ul>
-				</div>
-			</div>
-		</div>
-	</footer>
-	<!-- End Footer Style -->
+	
 </div>
 @endsection

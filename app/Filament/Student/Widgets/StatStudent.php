@@ -28,7 +28,7 @@ class StatStudent extends BaseWidget
         $totalActualPages = $recitationStats->sum('actual_end_page');
         $totalTargetPages = $recitationStats->sum('target_pages');
         $totalActuel_lines = $recitationStats->sum('actuel_lines');
-        $averageTargetPercentage = ($totalActualPages / $totalTargetPages) * 100 ?? 0;
+        $averageTargetPercentage = $totalTargetPages != 0 ? ($totalActualPages / $totalTargetPages) * 100 : 0;
         $totalRecitation = $recitationStats->count('id');
 
 

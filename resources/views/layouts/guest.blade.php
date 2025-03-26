@@ -21,7 +21,7 @@
        
             <div class="text-center mb-8">
                 <a href="/">
-                    <img class="w-40 h-40 mx-auto" src="{{ asset('assets/images/logorapport/mahara.png') }}" alt="شعار المنشأة">
+                    <img class="w-40 h-40 mx-auto" src="{{ asset('assets/logo.png') }}" alt="شعار المنشأة">
                 </a>
             </div>
 

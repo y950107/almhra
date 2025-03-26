@@ -7145,7 +7145,8 @@ body {
 }
 
 .slider-four_heading {
-    line-height: 90px;
+	font-family: cairo !important;
+    line-height: px;
     color: var(--white-color);
     text-transform: capitalize;
     margin-top: var(--margin-top-35);
@@ -7171,6 +7172,7 @@ body {
 }
 
 .slider-four_text {
+	font-family: Cairo;
     position: relative;
     max-width: 750px;
     line-height: 30px;

@@ -6,9 +6,11 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
-use App\Filament\Auth\Login;
+use App\Filament\Pages\Login;
+use App\Settings\GeneralSettings;
 use Filament\Support\Colors\Color;
 use Filament\Http\Middleware\Authenticate;
+use Filament\FontProviders\GoogleFontProvider;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -31,10 +33,15 @@ class StudentPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Red,
             ])
+            ->font('Noto Kufi Arabic' , provider: GoogleFontProvider::class)
+            ->brandLogo(asset("assets/".app(GeneralSettings::class)->logo))
+            ->favicon(asset("assets/".app(GeneralSettings::class)->favicon))
+            ->brandName('فضاء الطالب')
             ->discoverResources(in: app_path('Filament/Student/Resources'), for: 'App\\Filament\\Student\\Resources')
             ->discoverPages(in: app_path('Filament/Student/Pages'), for: 'App\\Filament\\Student\\Pages')
             ->pages([
                 Pages\Dashboard::class,
+               
             ])
             ->discoverWidgets(in: app_path('Filament/Student/Widgets'), for: 'App\\Filament\\Student\\Widgets')
             ->widgets([
@@ -51,7 +58,7 @@ class StudentPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-                //\App\Http\Middleware\IsStudent::class,
+                \App\Http\Middleware\IsStudent::class,
             ])
             ->authMiddleware([
                 Authenticate::class,

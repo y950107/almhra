@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
 use App\Models\RecitationSession;
 use App\Settings\GeneralSettings;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\Finder\Glob;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Queue\SerializesModels;
@@ -16,6 +17,7 @@ use Filament\Notifications\Notification;
 use Illuminate\Queue\InteractsWithQueue;
 use App\Notifications\StudentAccountCreated;
 use App\Notifications\TeacherAccountCreated;
+use App\Notifications\CandidateEvaluationNotification;
 
 
 
@@ -68,66 +70,179 @@ if (!function_exists('TeacherToUser')) {
 if (!function_exists('sendToInterview')) {
     function sendToInterview($candidate)
     {
+        try {
+            DB::beginTransaction();
 
-    
-        if (Evaluation::where('candidate_id', $candidate->id)->exists()) {
+            if (Evaluation::where('candidate_id', $candidate->id)->exists()) {
+                Notification::make()
+                    ->title('المترشح لديه تقييم بالفعل!')
+                    ->warning()
+                    ->send();
+                return;
+            }
+
+
+            Evaluation::create([
+                'candidate_id' => $candidate->id,
+                'evaluator_id' => $candidate->teacher_id,
+                'tajweed_score' => 0,
+                'voice_score' => 0,
+                'memorization_score' => 0,
+                'total_score' => 0,
+                'note' => null,
+                'status' => 'pending',
+            ]);
+
+            // تحديث حالة المترشح
+            $candidate->update(['status' => 'interview']);
+
             Notification::make()
-                ->title('المترشح لديه تقييم بالفعل!')
-                ->danger()
+                ->title('تم إرسال المترشح إلى المقابلة بنجاح!')
+                ->success()
                 ->send();
-            return;
+        } catch (\Exception $ex) {
+
+            Db::rollBack();
+
+            Notification::make()
+                ->title(' محاولة لانشاء نفس الطالب لنفس المترشح!')
+                ->success()
+                ->send();
         }
-
-    
-        Evaluation::create([
-            'candidate_id' => $candidate->id,
-            'evaluator_id' => $candidate->teacher_id,
-            'tajweed_score' => 0,
-            'voice_score' => 0,
-            'memorization_score' => 0,
-            'total_score' => 0,
-            'note' => null,
-            'status' => 'pending',
-        ]);
-
-        // تحديث حالة المترشح
-        $candidate->update(['status' => 'interview']);
-
         // إشعار بنجاح الإرسال
-        Notification::make()
-            ->title('تم إرسال المترشح إلى المقابلة بنجاح!')
-            ->success()
-            ->send();
+
     }
 }
 
-/*** accept candidate and create a new user**/ 
+/*** accept candidate and create a new user**/
 
 if (!function_exists('acceptedStudent')) {
     function acceptedStudent($candidate)
     {
-        $password = Str::random(8);
+        try {
+            DB::beginTransaction();
+            $password = Str::random(8);
 
-        $user = User::create([
-            'name' => $candidate->full_name,
-            'email' => $candidate->name.'@gmail.com',
-            'password' => Hash::make($password),
-            'type' => 'student',
-            'phone' => $candidate->phone
-        ]);
+            $user = User::create([
+                'name' => $candidate->full_name,
+                'email' => $candidate->email,
+                'password' => Hash::make($password),
+                'type' => 'student',
+                'phone' => $candidate->phone
+            ]);
 
-        // إنشاء سجل طالب
-        Student::create([
-            'user_id' => $user->id,
-            'teacher_id' => $candidate->teacher_id,
-            'candidate_id'=>$candidate->id,
-            'start_date' => now(),
-        ]);
-        $user->assignRole('Student');
-        $candidate->update(['status' => 'accepted'], ['evaluated'=>true]);
-        $user->notify(new StudentAccountCreated(  $user->email,  $password));
+            // إنشاء سجل طالب
+            Student::create([
+                'user_id' => $user->id,
+                'teacher_id' => $candidate->teacher_id,
+                'candidate_id' => $candidate->id,
+                'start_date' => now(),
+            ]);
+            $user->assignRole('Student');
+            $candidate->update(['status' => 'accepted'], ['evaluated' => true]);
+            DB::commit();
+            $user->notify(new StudentAccountCreated($user->email,  $password));
+        } catch (\Exception $ex) {
+            Db::rollBack();
+
+            Notification::make()
+                ->title('   الطالب تم انشأه مسبقا يرجى مراجعة قائمة الطلاب !')
+                ->danger()
+                ->send();
+        }
     }
 };
+
+
+// if (!function_exists('evaluateCandidate')) {
+//     function evaluateCandidate($candidate)
+//     {
+//         try {
+//             DB::beginTransaction();
+
+//             $evaluation = Evaluation::where('candidate_id', $candidate->id)->first();
+//             if (!$evaluation) {
+//                 throw new Exception('Evaluation record not found');
+//             }
+
+//             if ($evaluation->total_score >= 80) {
+//                 $evaluation->update(['status' => 'passed']);
+                
+//                 $password = Str::random(8);
+//                 $user = User::where('email', $candidate->email)
+//                     ->orWhere('phone', $candidate->phone)
+//                     ->first();
+
+//                 if (!$user) {
+//                     $user = User::create([
+//                         'name' => $candidate->full_name,
+//                         'email' => $candidate->email,
+//                         'password' => Hash::make($password),
+//                         'type' => 'student',
+//                         'phone' => $candidate->phone
+//                     ]);
+
+//                     // تعيين الصلاحيات للطالب
+//                     $user->assignRole('student');
+
+//                     // إشعار المترشح
+//                     Notification::send($candidate, new CandidateEvaluationNotification('accepted', $user->email, $password));
+//                 }
+
+//                 // إنشاء سجل الطالب إذا لم يكن موجودًا
+//                 $student = Student::where('user_id', $user->id)->first();
+//                 if (!$student) {
+//                     Student::create([
+//                         'user_id' => $user->id,
+//                         'teacher_id' => $candidate->teacher_id,
+//                         'candidate_id' => $candidate->id,
+//                         'start_date' => now(),
+//                     ]);
+//                 }
+
+//                 $candidate->update(['status' => 'accepted']);
+                
+//                 Notification::make()
+//                     ->title('تهانينا! لقد تم قبول الطالب.')
+//                     ->success()
+//                     ->send();
+//             } else {
+//                 $candidate->update(['status' => 'pending']);
+
+//                 Notification::make()
+//                     ->title('لم يتم القبول! حاول مرة أخرى لاحقًا.')
+//                     ->warning()
+//                     ->send();
+//             }
+
+//             DB::commit();
+//         } catch (\Exception $ex) {
+//             DB::rollBack();
+
+//             Notification::make()
+//                 ->title('حدث خطأ ما! الرجاء المحاولة لاحقًا.')
+//                 ->danger()
+//                 ->send();
+//         }
+//     }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

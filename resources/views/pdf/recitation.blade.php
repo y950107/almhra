@@ -116,11 +116,7 @@
 
     </section>
 
-    @php
-    use App\Settings\GeneralSettings;
-    $logo= app(GeneralSettings::class)->logo;
-    //dd($logo);
-    @endphp
+ 
     <div class="row">
         <table>
             <thead>
@@ -128,7 +124,7 @@
                     <th style="text-align: right;">
 
                         <img style="align-content: space-around; width: 15%;"
-                        src="data:image/png;base64,{{ base64_encode(file_get_contents( url($logo)) ) }}" alt="شعار المنشأة">
+                            src="{{ public_path('assets/logo.png') }}" alt="شعار المنشأة">
 
                     </th>
                     <th style="">
@@ -152,7 +148,7 @@
                     </th>
                     <th style="text-align: left;">
                         <img style="align-content: space-around; width: 15%;"
-                            src="{{ public_path('assets/images/logorapport/mahara.png') }}" alt="شعار المنشأة">
+                            src="{{ public_path('assets/favicon.png') }}" alt="شعار المنشأة">
                     </th>
                 </tr>
             </thead>

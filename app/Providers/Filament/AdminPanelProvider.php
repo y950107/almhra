@@ -6,21 +6,10 @@ namespace App\Providers\Filament;
 
 use Filament\Pages;
 use Filament\Panel;
-use Filament\Widgets;
 use Filament\PanelProvider;
-use App\Filament\Auth\Login;
-use Filament\Pages\Dashboard;
+use App\Filament\Pages\Login;
 use Filament\Support\Colors\Color;
-use App\Filament\Pages\UserProfile;
-use Filament\Forms\Components\Grid;
-use Filament\Navigation\NavigationItem;
-use Illuminate\Support\ServiceProvider;
-use App\Filament\Widgets\CalendarWidget;
-use App\Filament\Widgets\DashboardStats;
-use Filament\Navigation\NavigationGroup;
-use App\Filament\Widgets\StatDashboardNew;
 use Filament\Http\Middleware\Authenticate;
-use Filament\Navigation\NavigationBuilder;
 use Filament\FontProviders\GoogleFontProvider;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -35,11 +24,13 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Saade\FilamentFullCalendar\FilamentFullCalendarPlugin;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use App\Filament\Resources\SettingsResource\Pages\GeneralSettingsPage;
+use App\Settings\GeneralSettings;
 
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+        // dd(asset(app(GeneralSettings::class)->logo));
         return $panel
             ->default()
             ->id('admin')
@@ -47,8 +38,8 @@ class AdminPanelProvider extends PanelProvider
             ->login(Login::class)
             
             ->font('Noto Kufi Arabic' , provider: GoogleFontProvider::class)
-            //->brandLogo(asset('storage/'.Setting::first()->app_logo))
-            //->favicon(asset('storage/'.Setting::first()->favicon))
+            ->brandLogo(asset("assets/".app(GeneralSettings::class)->logo))
+            ->favicon(asset("assets/".app(GeneralSettings::class)->favicon))
             ->colors([
                 'primary' => Color::Amber,
             ])
