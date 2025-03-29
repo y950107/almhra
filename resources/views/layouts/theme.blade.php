@@ -19,14 +19,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap" rel="stylesheet">
     
-    <meta name="description" content="مقرأة المهرة  - جامع والدة الأمير بندر بن عبد العزيز">
+    <meta name="description" content="{{ app(\App\Settings\GeneralSettings::class)->company_name - app(\App\Settings\GeneralSettings::class)->branch_name }}">
     <meta name="keywords" content="مقرأة المهرة,قرءان كريم,تحفيظ القرءان,القرءان,جامع والدى الأمير بندر بن عبد العزيز,جلسات التسميع للقرءان,علوم التجويد">
-    <meta name="author" content="مقرأة المهرة  - جامع والدة الأمير بندر بن عبد العزيز">
+    <meta name="author" content="{{ app(\App\Settings\GeneralSettings::class)->company_name - app(\App\Settings\GeneralSettings::class)->branch_name }}">
     <meta name="website" content="https://almhrah.com">
     <meta name="email" content="contact@almhrah.com">
     <meta name="version" content="2.0.0">
 
-    <meta itemprop="name" content="مقرأة المهرة  - جامع والدة الأمير بندر بن عبد العزيز">
+    <meta itemprop="name" content="{{ app(\App\Settings\GeneralSettings::class)->company_name - app(\App\Settings\GeneralSettings::class)->branch_name }}">
     <meta itemprop="description" content="{{ app(\App\Settings\GeneralSettings::class)->company_name }}">
     <meta itemprop="image" content="{{asset("assets/".app(\App\Settings\GeneralSettings::class)->logo)}}">
 
@@ -45,8 +45,8 @@
     <meta property="og:site_name" content="{{ app(\App\Settings\GeneralSettings::class)->company_name }}" />
     <meta property="fb:app_id" content>
     <!-- favicon -->
-    <link href="{{ app(\App\Settings\GeneralSettings::class)->favicon ? asset("storage/".app(\App\Settings\GeneralSettings::class)->favicon) : asset('favicon.ico')}}" rel="shortcut icon" type="image/x-icon">
-    <link rel="icon" href="{{ app(\App\Settings\GeneralSettings::class)->favicon ? asset("storage/".app(\App\Settings\GeneralSettings::class)->favicon) : asset('favicon.ico')}}" type="image/x-icon">
+    <link href="{{ app(\App\Settings\GeneralSettings::class)->favicon ? asset("assets/".app(\App\Settings\GeneralSettings::class)->favicon) : asset('favicon.ico')}}" rel="shortcut icon" type="image/x-icon">
+    <link rel="icon" href="{{ app(\App\Settings\GeneralSettings::class)->favicon ? asset("assets/".app(\App\Settings\GeneralSettings::class)->favicon) : asset('favicon.ico')}}" type="image/x-icon">
 
 
     <style>
