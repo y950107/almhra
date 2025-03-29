@@ -35,7 +35,7 @@ class Evaluation extends Model
     // العلاقات
     public function candidate()
     {
-        return $this->belongsTo(Candidate::class);
+        return $this->belongsTo(Candidate::class, 'candidate_id');
     }
 
     public function evaluator()
@@ -53,70 +53,64 @@ class Evaluation extends Model
         return $this->belongsTo(Student::class);
     }
 
-    protected static function boot()
-    {
-        parent::boot();
+    
+    // protected static function boot()
+    // {
+    //     parent::boot();
 
-        static::updated(function ($evaluation) {
-            if ($evaluation->total_score >= 80) {
-                //$evaluation->update(['status' => 'passed']);
-                DB::table('evaluations')
-                    ->where('id', $evaluation->id)
-                    ->update(['status' => 'passed']);
+    //     try {
+    //         static::updated(function ($evaluation) {
+    //             if ($evaluation->total_score >= 80) {
 
-                $password = Str::random(8);
-                $user = User::where('email', $evaluation->candidate->full_name . '@gmail.com')
-                    ->orWhere('phone', $evaluation->candidate->phone)
-                    ->first();
 
-                if (!$user) {
-                    // ✅ إنشاء حساب مستخدم جديد للطالب
-                    $password = Str::random(8);
-                    $user = User::create([
-                        'name' => $evaluation->candidate->full_name,
-                        'email' => $evaluation->candidate->full_name . '@gmail.com',
-                        'password' => Hash::make($password),
-                        'type' => 'student',
-                        'phone' => $evaluation->candidate->phone
-                    ]);
-                    $evaluation->candidate->notify(new CandidateEvaluationNotification('accepted', $user->email, $password));
-                }
-                $student = Student::where('user_id', $user->id)->first();
-                if (!$student) {
-                    // ✅ إنشاء سجل جديد للطالب
-                    Student::create([
-                        'user_id' => $user->id,
-                        'teacher_id' => $evaluation->candidate->teacher_id,
-                        'candidate_id' => $evaluation->candidate->id,
-                        'start_date' => now(),
-                    ]);
-                }
 
-                $evaluation->candidate->update(['status' => 'accepted']);
-            } else {
+    //                 DB::beginTransaction();
 
-                $evaluation->candidate->update(['status' => 'pending']);
-            }
-        });
-    }
+    //                 $password = Str::random(8);
+    //                 $user = User::where('email', $evaluation->candidate->email)
+    //                     ->orWhere('phone', $evaluation->candidate->phone)
+    //                     ->first();
 
-    public function convertToStudent()
-{
-    if ($this->status !== 'passed') {
-        return;
-    }
+    //                 if (!$user) {
+    //                     // ✅ إنشاء حساب مستخدم جديد للطالب
+    //                     $password = Str::random(8);
+    //                     $user = User::create([
+    //                         'name' => $evaluation->candidate->full_name,
+    //                         'email' => $evaluation->candidate->email,
+    //                         'password' => Hash::make($password),
+    //                         'type' => 'student',
+    //                         'phone' => $evaluation->candidate->phone
+    //                     ]);
+    //                     $evaluation->candidate->notify(new CandidateEvaluationNotification('accepted', $user->email, $password));
+    //                 }
+    //                 $student = Student::where('user_id', $user->id)->first();
+    //                 if (!$student) {
+    //                     // ✅ إنشاء سجل جديد للطالب
+    //                     Student::create([
+    //                         'user_id' => $user->id,
+    //                         'teacher_id' => $evaluation->candidate->teacher_id,
+    //                         'candidate_id' => $evaluation->candidate->id,
+    //                         'start_date' => now(),
+    //                     ]);
+    //                 }
+    //                 $evaluation->update(['status' => 'passed']);
+    //                 dd($evaluation->status);
 
-    // إنشاء طالب جديد من بيانات المترشح
-    Student::create([
-        'name' => $this->candidate->full_name,
-        'email' => $this->candidate->email,
-        'phone' => $this->candidate->phone,
-        'candidate_id' => $this->candidate_id,
-    ]);
+    //                 DB::commit();
 
-    // حذف التقييم بعد التحويل
-    $this->delete();
-}
+    //                 $evaluation->refresh();
+    //                 $evaluation->candidate->update(['status' => 'accepted']);
+    //             } else {
+
+    //                 $evaluation->candidate->update(['status' => 'pending']);
+    //             }
+    //         });
+    //     } catch (\Exception $ex) {
+
+    //         throw $ex;
+    //     }
+    // }
+
 
 
 

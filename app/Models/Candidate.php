@@ -30,25 +30,23 @@ class Candidate extends Model
         'evaluated'// 
     ];
 
+
     protected $casts = [
         'qualification' => 'array',
         'ijaza_types' => 'array',
         'desired_recitations' => 'array',
         'birthdate' => 'date',
-        'interview_date' => 'datetime',
+        'interview_date' => 'date',
+        'has_ijaza' => 'boolean',
         'status' => CandidateStatus::class,
     ];
 
 
     public function teacher()
 {
-    return $this->belongsTo(Teacher::class, 'teacher_id');
+    return $this->belongsTo(Teacher::class, 'teacher_id', 'id');
 }
 
-public function evaluation()
-{
-    return $this->belongsTo(Evaluation::class, 'teacher_id');
-}
 
 public static function getQuranLevels(): array
 {

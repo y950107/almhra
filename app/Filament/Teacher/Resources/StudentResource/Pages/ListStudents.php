@@ -10,6 +10,13 @@ class ListStudents extends ListRecords
 {
     protected static string $resource = StudentResource::class;
 
+
+    // protected function mutateFormDataBeforeCreate(array $data): array
+    // {
+    //     $user = auth()->guard('web')->id();
+    //     dd($user);
+    // }
+
     protected function getHeaderActions(): array
     {
         return [

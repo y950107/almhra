@@ -12,7 +12,9 @@ use App\Settings\GeneralSettings;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Finder\Glob;
 use Illuminate\Support\Facades\Hash;
+use App\Notifications\EvaluationNotif;
 use Illuminate\Queue\SerializesModels;
+use App\Notifications\CandidateAccepted;
 use Filament\Notifications\Notification;
 use Illuminate\Queue\InteractsWithQueue;
 use App\Notifications\StudentAccountCreated;
@@ -70,7 +72,10 @@ if (!function_exists('TeacherToUser')) {
 if (!function_exists('sendToInterview')) {
     function sendToInterview($candidate)
     {
+
+
         try {
+
             DB::beginTransaction();
 
             if (Evaluation::where('candidate_id', $candidate->id)->exists()) {
@@ -81,10 +86,9 @@ if (!function_exists('sendToInterview')) {
                 return;
             }
 
-
             Evaluation::create([
                 'candidate_id' => $candidate->id,
-                'evaluator_id' => $candidate->teacher_id,
+                'evaluator_id' => $candidate->teacher->user_id,
                 'tajweed_score' => 0,
                 'voice_score' => 0,
                 'memorization_score' => 0,
@@ -96,13 +100,20 @@ if (!function_exists('sendToInterview')) {
             // تحديث حالة المترشح
             $candidate->update(['status' => 'interview']);
 
+            DB::commit();
+
+            $candidate->notify((new EvaluationNotif($candidate))->afterCommit());
+
+            // Notification::route('mail', $candidate->email)
+            //     ->notify((new EvaluationNotif($candidate))->afterCommit());
+
             Notification::make()
-                ->title('تم إرسال المترشح إلى المقابلة بنجاح!')
+                ->title('  تم إرسال المترشح إلى المقابلة بنجاح! مع اشعار ')
                 ->success()
                 ->send();
         } catch (\Exception $ex) {
 
-            Db::rollBack();
+
 
             Notification::make()
                 ->title(' محاولة لانشاء نفس الطالب لنفس المترشح!')
@@ -119,9 +130,11 @@ if (!function_exists('sendToInterview')) {
 if (!function_exists('acceptedStudent')) {
     function acceptedStudent($candidate)
     {
+        $password = Str::random(8);
+
         try {
             DB::beginTransaction();
-            $password = Str::random(8);
+
 
             $user = User::create([
                 'name' => $candidate->full_name,
@@ -134,14 +147,69 @@ if (!function_exists('acceptedStudent')) {
             // إنشاء سجل طالب
             Student::create([
                 'user_id' => $user->id,
-                'teacher_id' => $candidate->teacher_id,
+                'teacher_id' => $candidate->teacher->user_id,
                 'candidate_id' => $candidate->id,
                 'start_date' => now(),
             ]);
             $user->assignRole('Student');
             $candidate->update(['status' => 'accepted'], ['evaluated' => true]);
+
             DB::commit();
-            $user->notify(new StudentAccountCreated($user->email,  $password));
+
+            $user->notify((new StudentAccountCreated($user->email, $password))->afterCommit());
+
+            Notification::make()
+                ->title('  تم إرسال المترشح إلى المقابلة بنجاح! مع اشعار ')
+                ->success()
+                ->send();
+        } catch (\Exception $ex) {
+            Db::rollBack();
+
+            Notification::make()
+                ->title('   الطالب تم انشأه مسبقا يرجى مراجعة قائمة الطلاب !')
+                ->danger()
+                ->send();
+        }
+    }
+};
+
+/**************************** */
+
+if (!function_exists('acceptedCandidate')) {
+    function acceptedCandidate($candidate)
+    {
+        $password = Str::random(8);
+
+        try {
+            DB::beginTransaction();
+
+
+            $user = User::create([
+                'name' => $candidate->full_name,
+                'email' => $candidate->email,
+                'password' => Hash::make($password),
+                'type' => 'student',
+                'phone' => $candidate->phone
+            ]);
+
+            // إنشاء سجل طالب
+            Student::create([
+                'user_id' => $user->id,
+                'teacher_id' => $candidate->teacher->user_id,
+                'candidate_id' => $candidate->id,
+                'start_date' => now(),
+            ]);
+            $user->assignRole('Student');
+            $candidate->update(['status' => 'accepted'], ['evaluated' => true]);
+
+            DB::commit();
+
+            $user->notify((new CandidateAccepted($password))->afterCommit());
+
+            Notification::make()
+                ->title(' تم ارسال شعار للطالب!')
+                ->danger()
+                ->send();
         } catch (\Exception $ex) {
             Db::rollBack();
 
@@ -154,78 +222,92 @@ if (!function_exists('acceptedStudent')) {
 };
 
 
-// if (!function_exists('evaluateCandidate')) {
-//     function evaluateCandidate($candidate)
-//     {
-//         try {
-//             DB::beginTransaction();
+/************************ */
 
-//             $evaluation = Evaluation::where('candidate_id', $candidate->id)->first();
-//             if (!$evaluation) {
-//                 throw new Exception('Evaluation record not found');
-//             }
 
-//             if ($evaluation->total_score >= 80) {
-//                 $evaluation->update(['status' => 'passed']);
+if (!function_exists('evaluateCandidate')) {
+    function evaluateCandidate($evaluations)
+    {
+        
+        try {
+            
+            $evaluation = Evaluation::find($evaluations->id);
+
+            if (!$evaluation) {
+                throw new \Exception('التقييم غير موجود');
+            }
+
+            $password = Str::random(8);
+
+            if ($evaluation->total_score >= 80) {
+                DB::beginTransaction();
+
+                $user = User::create([
+                    'name' => $evaluation->candidate->full_name,
+                    'email' => $evaluation->candidate->email,
+                    'password' => Hash::make($password),
+                    'type' => 'student',
+                    'phone' => $evaluation->candidate->phone
+                ]);
+
+
+                Student::create([
+                    'user_id' => $user->id,
+                    'teacher_id' => $evaluation->candidate->teacher->user_id,
+                    'candidate_id' => $evaluation->candidate->id,
+                    'start_date' => now(),
+                ]);
+
+
+                $user->assignRole('Student');
+
+
+                $evaluation->update(['status' => 'passed']);
+                $evaluation->candidate->update(['status' => 'accepted', 'evaluated' => true]);
+
+                DB::commit();
+
+
+                $user->notify(new CandidateEvaluationNotification(
+                    $evaluation->candidate->status->value,
+                    $user->email,
+                    $password
+                ));
+
+                Notification::make()
+                    ->title('تهانينا! لقد تم قبوله كالطالب.')
+                    ->success()
+                    ->send();
+            } else {
                 
-//                 $password = Str::random(8);
-//                 $user = User::where('email', $candidate->email)
-//                     ->orWhere('phone', $candidate->phone)
-//                     ->first();
+                $evaluation->update(['status' => 'failed']);
+                $evaluation->candidate->update(['status' => 'pending','evaluated' => true]);
 
-//                 if (!$user) {
-//                     $user = User::create([
-//                         'name' => $candidate->full_name,
-//                         'email' => $candidate->email,
-//                         'password' => Hash::make($password),
-//                         'type' => 'student',
-//                         'phone' => $candidate->phone
-//                     ]);
+                // إرسال إشعار إلى البريد الإلكتروني للمترشح (بدون إنشاء حساب)
+                $evaluation->candidate->notify(new CandidateEvaluationNotification(
+                    'pending',
+                    $evaluation->candidate->email,
+                    null // لا يوجد كلمة مرور في حالة الرفض
+                ));
 
-//                     // تعيين الصلاحيات للطالب
-//                     $user->assignRole('student');
-
-//                     // إشعار المترشح
-//                     Notification::send($candidate, new CandidateEvaluationNotification('accepted', $user->email, $password));
-//                 }
-
-//                 // إنشاء سجل الطالب إذا لم يكن موجودًا
-//                 $student = Student::where('user_id', $user->id)->first();
-//                 if (!$student) {
-//                     Student::create([
-//                         'user_id' => $user->id,
-//                         'teacher_id' => $candidate->teacher_id,
-//                         'candidate_id' => $candidate->id,
-//                         'start_date' => now(),
-//                     ]);
-//                 }
-
-//                 $candidate->update(['status' => 'accepted']);
+                Notification::make()
+                    ->title('لم يتم القبول. سيتم إدراجه ضمن قائمة الاحتياط!')
+                    ->warning()
+                    ->send();
                 
-//                 Notification::make()
-//                     ->title('تهانينا! لقد تم قبول الطالب.')
-//                     ->success()
-//                     ->send();
-//             } else {
-//                 $candidate->update(['status' => 'pending']);
+            }
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            logger()->error('Evaluation failed: ' . $ex->getMessage());
 
-//                 Notification::make()
-//                     ->title('لم يتم القبول! حاول مرة أخرى لاحقًا.')
-//                     ->warning()
-//                     ->send();
-//             }
-
-//             DB::commit();
-//         } catch (\Exception $ex) {
-//             DB::rollBack();
-
-//             Notification::make()
-//                 ->title('حدث خطأ ما! الرجاء المحاولة لاحقًا.')
-//                 ->danger()
-//                 ->send();
-//         }
-//     }
-// }
+            Notification::make()
+                ->title('حدث خطأ ما! الرجاء المحاولة لاحقًا.')
+                ->body($ex->getMessage())
+                ->danger()
+                ->send();
+        }
+    }
+}
 
 
 

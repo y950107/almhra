@@ -30,7 +30,8 @@
 				<div class="d-flex justify-content-between align-items-center flex-wrap">
 					
 					<div class="logo-box">
-						<div class="logo"><a href=""><img src="{{asset('assets/logo.png')}}" alt="" title=""></a></div>
+						<div class="logo"><a href=""><img src="{{asset('assets/logo.png')}}"  alt="" title=""></a></div>
+						<div class="logo"><a href=""><img src="{{asset('assets/favicon.png')}}"  alt="" title=""></a></div>
 					</div>
 					
 					<div class="nav-outer">

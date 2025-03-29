@@ -4,24 +4,27 @@ namespace App\Filament\Resources;
 
 use Tabs\Tab;
 use Carbon\Carbon;
+use App\Models\Halaka;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use App\Models\RecitationSession;
+use App\Settings\GeneralSettings;
 use Filament\Forms\Components\Tabs;
 use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Section;
+use App\Services\Moshaf_madina_Service;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\RecitationSessionResource\Pages;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use App\Filament\Resources\RecitationSessionResource\RelationManagers;
-use App\Services\Moshaf_madina_Service;
 
 class RecitationSessionResource extends Resource implements HasShieldPermissions
 {
@@ -60,12 +63,52 @@ class RecitationSessionResource extends Resource implements HasShieldPermissions
                         //  المعلومات الأساسية
                         Tabs\Tab::make('المعلومات الأساسية')->schema([
                             Select::make('halaka_id')
-                                ->relationship('halaka', 'name')
+                                ->relationship(
+                                    name: 'halaka',
+                                    titleAttribute: 'name',
+                                    modifyQueryUsing: function (Builder $query) {
+                                        $maxStudents = app(GeneralSettings::class)->students_per_group;
+
+                                        return $query->where(function ($q) use ($maxStudents) {
+                                            $q->whereHas('students', function ($q) use ($maxStudents) {
+                                                $q->groupBy('halaka_id')
+                                                    ->havingRaw('count(*) < ?', [$maxStudents]);
+                                            })->orWhereDoesntHave('students');
+                                        });
+                                    }
+                                )
                                 ->label('الحلقة')
-                                ->required(),
+                                ->required()
+                                ->searchable()
+                                ->preload()
+                                ->native(false)
+                                ->disabled(function ($get, $state) {
+                                    if (!$state) return false;
+
+                                    $halaka = Halaka::find($state);
+                                    if (!$halaka) return false;
+
+                                    $currentStudents = $halaka->students()->count();
+                                    $maxStudents = app(GeneralSettings::class)->students_per_group;
+
+                                    return $currentStudents >= $maxStudents;
+                                })
+                                ->helperText(function ($get, $state) {
+                                    if (!$state) return 'اختر حلقة';
+
+                                    $halaka = Halaka::find($state);
+                                    if (!$halaka) return 'الحلقة غير موجودة';
+
+                                    $current = $halaka->students()->count();
+                                    $max = app(GeneralSettings::class)->students_per_group;
+
+                                    return "الطلاب المسجلون: {$current}/{$max}";
+                                })
+                                ->reactive(),
 
                             Select::make('student_id')
-                                ->relationship('student.candidate', 'full_name')
+                                ->relationship('student', 'id')
+                                ->getOptionLabelFromRecordUsing(fn($record) => "{$record->candidate->full_name}")
                                 ->label('الطالب')
                                 ->unique(table: 'recitation_sessions', column: 'student_id', ignoreRecord: true, modifyRuleUsing: function ($rule, $get) {
                                     return $rule->where('halaka_id', $get('halaka_id'));
@@ -101,7 +144,7 @@ class RecitationSessionResource extends Resource implements HasShieldPermissions
                                         ? collect($quranService->getAyahs($get('start_surah_id')))
                                         ->mapWithKeys(function ($ayah) {
                                             return [
-                                                $ayah['number'] => "{$ayah['number']} - {$ayah['text']}" 
+                                                $ayah['number'] => "{$ayah['number']} - {$ayah['text']}"
                                             ];
                                         })
                                         : []
@@ -109,14 +152,14 @@ class RecitationSessionResource extends Resource implements HasShieldPermissions
                                 ->reactive()
                                 ->live()
                                 ->searchable()
-                                
+
                                 ->afterStateUpdated(function ($get, $set) use ($quranService) {
                                     if ($get('start_surah_id') && $get('start_ayah_id')) {
                                         $startPage = $quranService->getStartPageByAyah($get('start_surah_id'), $get('start_ayah_id'));
                                         $set('start_page', $startPage);
                                     }
                                 }),
-                            
+
 
                             Select::make('end_surah_id')
                                 ->label('سورة النهاية')
@@ -132,7 +175,7 @@ class RecitationSessionResource extends Resource implements HasShieldPermissions
                                         ? collect($quranService->getAyahs($get('end_surah_id')))
                                         ->mapWithKeys(function ($ayah) {
                                             return [
-                                                $ayah['number'] => "{$ayah['number']} - {$ayah['text']}" 
+                                                $ayah['number'] => "{$ayah['number']} - {$ayah['text']}"
                                             ];
                                         })
                                         : []
@@ -157,24 +200,24 @@ class RecitationSessionResource extends Resource implements HasShieldPermissions
                                     $startSurahId = $get('start_surah_id');
                                     $targetPages = 0;
 
-                                    if ($startSurahId == 1) { 
-                                        $targetLines -= 7; 
-                                        $targetPages = ceil($targetLines / 15) + 1; 
+                                    if ($startSurahId == 1) {
+                                        $targetLines -= 7;
+                                        $targetPages = ceil($targetLines / 15) + 1;
                                     } else {
-                                        $targetPages = ceil($targetLines / 15); 
+                                        $targetPages = ceil($targetLines / 15);
                                     }
                                     $targetPages = number_format($targetPages, 2);
-                                    $set('target_pages', $targetPages); 
+                                    $set('target_pages', $targetPages);
                                 }),
 
-                                TextInput::make('start_page')
+                            TextInput::make('start_page')
                                 ->label('صفحة البداية')
                                 ->numeric()
                                 ->disabled()
                                 ->dehydrated()
                                 ->required(),
 
-                                TextInput::make('end_page')
+                            TextInput::make('end_page')
                                 ->label('صفحة النهاية')
                                 ->numeric()
                                 ->disabled()
@@ -211,7 +254,7 @@ class RecitationSessionResource extends Resource implements HasShieldPermissions
                                         ? collect($quranService->getAyahs($get('actual_end_surah_id')))
                                         ->mapWithKeys(function ($ayah) {
                                             return [
-                                                $ayah['number'] => "{$ayah['number']} - {$ayah['text']}" 
+                                                $ayah['number'] => "{$ayah['number']} - {$ayah['text']}"
                                             ];
                                         })
                                         : []
@@ -238,16 +281,16 @@ class RecitationSessionResource extends Resource implements HasShieldPermissions
                                     $targetPages = 0;
 
                                     if ($startSurahId == 1) {
-                                        $actuelLines -= 7; 
-                                        $targetPages = ($actuelLines / 15) + 1; 
+                                        $actuelLines -= 7;
+                                        $targetPages = ($actuelLines / 15) + 1;
                                     } else {
-                                        $targetPages = ($actuelLines / 15); 
+                                        $targetPages = ($actuelLines / 15);
                                     }
                                     $targetPages = number_format($targetPages, 2);
-                                    $set('actual_pages', $targetPages); 
+                                    $set('actual_pages', $targetPages);
                                 }),
 
-                                TextInput::make('actual_end_page')
+                            TextInput::make('actual_end_page')
                                 ->label('صفحة النهاية الفعلية')
                                 ->numeric()
                                 ->disabled()
@@ -272,7 +315,7 @@ class RecitationSessionResource extends Resource implements HasShieldPermissions
                                 ->label('حالة الحضور')
                                 ->onColor('success')
                                 ->offColor('danger')
-                                ->live(), 
+                                ->live(),
 
                             TextInput::make('tajweed_score')
                                 ->numeric()
@@ -335,7 +378,6 @@ class RecitationSessionResource extends Resource implements HasShieldPermissions
         ])
             ->filters([
                 SelectFilter::make('halaka_id')->label('الحلقة')->relationship('halaka', 'name'),
-                //DateFilter::make('session_date')->label('تاريخ الجلسة'),
             ])
             ->actions([
                 Action::make('تعديل')

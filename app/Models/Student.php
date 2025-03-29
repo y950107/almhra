@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
+use Carbon\Carbon;
 
 class Student extends Model
 {
@@ -29,7 +30,7 @@ class Student extends Model
 
     public function teacher()
     {
-        return $this->belongsTo(Teacher::class);
+        return $this->belongsTo(Teacher::class,'teacher_id',"id");
     }
     public function candidate()
     {
@@ -48,4 +49,6 @@ class Student extends Model
     {
         return $this->hasMany(RecitationSession::class);
     }
+
+    
 }

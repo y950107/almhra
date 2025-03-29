@@ -23,8 +23,12 @@
     <link rel="icon" href="{{asset('assets/images/favicon.png')}}" type="image/x-icon">
     <style>
         .logo a img{
-            height: 150px;
-            width: 180px;
+
+                height: 120px;
+                width: 140px;
+        }
+        .logo{
+            display: contents;
         }
     </style>
    <!--[if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script><![endif]-->

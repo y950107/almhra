@@ -19,6 +19,7 @@ use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\RecitationSessionControler;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Livewire\Recitations\ListRecitations;
 use Illuminate\Support\Facades\Config;
 
 // Route::get('/', function () {
@@ -91,6 +92,8 @@ Route::get('/teachers/pdf-download', [PDFController::class, 'download'])->name('
 
 Route::get('/recitations/pdf-preview', [RecitationSessionControler::class, 'preview'])->name('recitations.pdf-preview');
 Route::get('/recitations/pdf-download', [RecitationSessionControler::class, 'download'])->name('recitations.pdf-download');
+
+
 
 // Route::get('language/{locale}', function (string $locale) {
 //     if (! in_array($locale, ['en', 'ar'])) {

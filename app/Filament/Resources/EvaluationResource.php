@@ -5,7 +5,6 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
-use App\Models\Candidate;
 use App\Models\Evaluation;
 use Filament\Tables\Table;
 use App\Enums\EvaluationStatus;
@@ -20,7 +19,7 @@ class EvaluationResource extends Resource implements HasShieldPermissions
     protected static ?string $model = Evaluation::class;
     protected static ?string $navigationIcon = 'icon-evaluation';
 
-    
+
     public static function getNavigationLabel(): string
     {
         return __('filament.evaluations.navigation_label');
@@ -59,9 +58,14 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                     ->relationship('candidate', 'full_name')
                     ->required(),
 
-                Forms\Components\Select::make('evaluator_id')
+                Forms\Components\Select::make('evaluator_id') //لازم تخدم على الاستاذ كانه مستخدم و ليس  idv الاستلذ 
+
                     ->label('المقيّم')
                     ->relationship('evaluator', 'name')
+                    //->getOptionLabelFromRecordUsing(fn($record) => "{$record->name}")
+                    ->required()
+                    ->searchable()
+                    ->preload()
                     ->required(),
 
                 Forms\Components\Section::make('درجات التقييم')
@@ -70,7 +74,7 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                             ->label('التجويد')
                             ->numeric()
                             ->minValue(0)
-                            ->maxValue(100),
+                            ->maxValue(100), //   لازم تخدم على الاستاذ كانه مستخدم و ليس  idv الاستلذ 
 
                         Forms\Components\TextInput::make('voice_score')
                             ->label('جودة الصوت')
@@ -104,7 +108,14 @@ class EvaluationResource extends Resource implements HasShieldPermissions
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('candidate.full_name')
-                    ->label('المترشح'),
+                    ->label('المترشح')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('evaluator.name')
+                    ->label('المشرف')
+                    ->searchable()
+                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('tajweed_score')
                     ->label('درجة التجويد'),
@@ -116,10 +127,20 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                     ->label('درجة الحفظ'),
 
                 Tables\Columns\TextColumn::make('total_score')
-                    ->label('المعدل'),
+                    ->label('المعدل')
+                    ->formatStateUsing(fn($state) => $state . '%')
+                    ->badge()
+                    ->colors([
+                        'success' => fn($state) => $state >= 80,
+                        'warning' => fn($state) => $state < 80 && $state >= 50,
+                        'danger'  => fn($state) => $state < 50
+                    ])
+                    ->toggleable(),
 
                 TextColumn::make('status')
                     ->label(__('filament.status'))
+                    ->searchable()
+                    ->sortable()
                     ->formatStateUsing(fn(EvaluationStatus $state) => $state->label())
                     ->badge()
                     ->color(fn(EvaluationStatus $state) => match ($state) {
@@ -144,13 +165,14 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                 Tables\Actions\Action::make('convert_to_student')
                     ->label('تحويل إلى طالب')
                     ->icon('heroicon-o-users')
-                    ->action(fn(Candidate $candidate) => acceptedStudent($candidate))
+                    ->action(fn(Evaluation $evaluation) => evaluateCandidate($evaluation))
                     ->requiresConfirmation()
-                    ->visible(fn($record) => $record->status !== 'passed'),
+                    ->visible(fn(Evaluation $evaluation) => auth()?->user()?->hasPermissionTo('accept_candidate') && in_array($evaluation?->status?->value, ['pending', 'failed'])),
 
-                    Tables\Actions\EditAction::make()
+
+                Tables\Actions\EditAction::make()
                     ->label('تقييم المترشح')
-                    
+
             ]);
     }
 

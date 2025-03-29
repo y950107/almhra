@@ -1036,8 +1036,11 @@
 	text-align:left;	
 }
 
-.mobile-menu .nav-logo img{
-	max-width:200px;
+.mobile-menu .nav-logo img {
+	max-width: 200px;
+	margin: auto;
+	display: block;
+	height: 150px;
 }
 
 .mobile-menu-visible{

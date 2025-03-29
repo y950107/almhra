@@ -6,7 +6,7 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
-use App\Filament\Pages\Login;
+use App\Filament\Auth\Login;
 use App\Settings\GeneralSettings;
 use Filament\Support\Colors\Color;
 use Filament\Http\Middleware\Authenticate;
@@ -62,6 +62,7 @@ class StudentPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->viteTheme('resources/css/filament/admin/theme.css');
     }
 }

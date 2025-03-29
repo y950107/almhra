@@ -10,6 +10,8 @@ use App\Models\Candidate;
 use Filament\Tables\Table;
 use App\Enums\CandidateStatus;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Tabs;
+use Filament\Forms\Components\Section;
 use App\Jobs\ConvertCandidateToStudent;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
@@ -44,63 +46,150 @@ class CandidateResource extends Resource implements HasShieldPermissions
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('المعلومات الأساسية')
-                    ->columns(2)
+                Section::make()
                     ->schema([
-                        Forms\Components\TextInput::make('full_name')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('phone')
-                            ->required()
-                            ->unique(ignoreRecord: true),
+                        Tabs::make('Candidate Details')
+                            ->tabs([
+                                Tabs\Tab::make('Basic Information')
+                                    ->icon('heroicon-o-user')
+                                    ->schema([
+                                        Forms\Components\Section::make('Personal Details')
+                                            ->columns(2)
+                                            ->schema([
+                                                Forms\Components\TextInput::make('full_name')
+                                                    ->required()
+                                                    ->maxLength(255)
+                                                    ->label('Full Name'),
 
-                        Forms\Components\TextInput::make('email')
-                            ->required()
-                            ->unique(ignoreRecord: true),
-
-                        Forms\Components\DatePicker::make('birthdate')
-                            ->required(),
-
-                        Forms\Components\Select::make('qualification')
-                            ->options([
-                                'bac' => 'باكالوريا',
-                                'licence' => 'ليسانس',
-                                'master' => 'ماستر',
-                            ]),
-                    ]),
+                                                Forms\Components\TextInput::make('phone')
+                                                    ->tel()
+                                                    ->live()
+                                                    ->required()
+                                                    ->unique(ignoreRecord: true)
+                                                    ->label('رقم الجوال ')
+                                                    ->prefix('+966')
+                                                    ->mask('5 9999 9999'),
 
 
+                                                Forms\Components\TextInput::make('email')
+                                                    ->email()
+                                                    ->required()
+                                                    ->unique(ignoreRecord: true)
+                                                    ->label('Email Address'),
 
-                Forms\Components\Section::make('المعلومات القرآنية')
-                    ->columns(3)
-                    ->schema([
-                        Forms\Components\Select::make('quran_level')
-                            ->options([
-                                'beginner' => 'مبتدئ',
-                                'intermediate' => 'متوسط',
-                                'advanced' => 'متقدم',
+                                                Forms\Components\DatePicker::make('birthdate')
+                                                    ->required()
+                                                    ->maxDate(now()->subYears(10))
+                                                    ->label('Birth Date'),
+
+                                                Forms\Components\Select::make('qualification')
+                                                    ->options([
+                                                        'bac' => 'باكالوريا',
+                                                        'licence' => 'ليسانس',
+                                                        'master' => 'ماستر',
+                                                        'doctorate' => 'دكتوراه',
+                                                    ])
+                                                    ->required()
+                                                    ->label('Academic Qualification'),
+                                            ]),
+                                    ]),
+
+                                Tabs\Tab::make('Quranic Information')
+                                    ->icon('heroicon-o-book-open')
+                                    ->schema([
+                                        Forms\Components\Section::make('Quranic Background')
+                                            ->columns(3)
+                                            ->schema([
+                                                Forms\Components\Select::make('quran_level')
+                                                    ->options([
+                                                        'beginner' => 'مبتدئ',
+                                                        'intermediate' => 'متوسط',
+                                                        'advanced' => 'متقدم',
+                                                    ])
+                                                    ->required()
+                                                    ->label('Current Level'),
+
+                                                Forms\Components\Select::make('desired_recitations')
+                                                    ->options([
+                                                        'hafs' => 'حفص',
+                                                        'warsh' => 'ورش',
+                                                        'qalun' => 'قالون',
+                                                        'tajweed' => 'تجويد',
+                                                        'complete' => 'ختمة كاملة',
+                                                    ])
+                                                    ->multiple()
+                                                    ->label('Desired Recitation Types')
+                                                    ->columnSpanFull(),
+
+                                                Forms\Components\Select::make('self_evaluation')
+                                                    ->options([
+                                                       50,70,80,90,100
+                                                    ])
+                                                    ->label('Self Evaluation'),
+
+                                                Forms\Components\Toggle::make('has_ijaza')
+                                                    ->label('Has Ijaza?')
+                                                    ->live(),
+
+                                                Forms\Components\CheckboxList::make('ijaza_types')
+                                                    ->options([
+                                                        'hafs' => 'حفص',
+                                                        'warsh' => 'ورش',
+                                                        'qalun' => 'قالون',
+                                                        'duri' => 'الدوري',
+                                                    ])
+                                                    ->visible(fn(Forms\Get $get) => $get('has_ijaza'))
+                                                    ->label('Ijaza Types'),
+                                            ]),
+                                    ]),
+
+                                Tabs\Tab::make('Documents')
+                                    ->icon('heroicon-o-document')
+                                    ->schema([
+                                        Forms\Components\Section::make('Attachments')
+                                            ->schema([
+                                                Forms\Components\FileUpload::make('qualification_file')
+                                                    ->acceptedFileTypes(['application/pdf'])
+                                                    ->directory('candidates/qualifications')
+                                                    ->downloadable()
+                                                    ->openable()
+                                                    ->label('Qualification Document'),
+
+                                                Forms\Components\FileUpload::make('audio_recitation')
+                                                    ->acceptedFileTypes(['audio/mpeg', 'audio/wav'])
+                                                    ->directory('candidates/recitations')
+                                                    ->maxSize(10240) // 10MB
+                                                    ->label('Recitation Sample (MP3/WAV)'),
+                                            ]),
+                                    ]),
+
+                                Tabs\Tab::make('Administrative')
+                                    ->icon('heroicon-o-cog')
+                                    ->schema([
+                                        Forms\Components\Section::make('Administrative Details')
+                                            ->schema([
+                                                Forms\Components\Select::make('teacher_id')
+                                                    ->relationship('teacher', 'name')
+                                                    ->searchable()
+                                                    ->preload()
+                                                    ->label('Assigned Teacher'),
+
+                                                Forms\Components\Select::make('status')
+                                                    ->options([
+                                                        'pending' => 'Pending',
+                                                        'interview' => 'Interview',
+                                                        'accepted' => 'Accepted',
+                                                        'rejected' => 'Rejected',
+                                                    ])
+                                                    ->default('pending')
+                                                    ->label('Application Status'),
+                                            ]),
+                                    ]),
                             ])
-                            ->required(),
-                        Forms\Components\Toggle::make('has_ijaza'),
-                        Forms\Components\CheckboxList::make('ijaza_types')
-                            ->options([
-                                'hafs' => 'حفص',
-                                'warsh' => 'ورش',
-                                'qalun' => 'قالون',
-                            ])
+                            ->columnSpanFull()
+                            ->persistTabInQueryString(),
 
-                    ]),
-
-                Forms\Components\Section::make('المرفقات')
-                    ->schema([
-                        Forms\Components\FileUpload::make('qualification_file')
-                            ->acceptedFileTypes(['application/pdf'])
-                            ->directory('qualifications')
-                            ->openable(),
-                        Forms\Components\FileUpload::make('audio_recitation')
-                            // mp3 ...... forma  nta3ha men ba3d nzidalha 
-                            ->directory('recitations'),
-                    ]),
+                    ])
             ]);
     }
 
@@ -110,7 +199,7 @@ class CandidateResource extends Resource implements HasShieldPermissions
             ->columns([
                 Tables\Columns\TextColumn::make('full_name')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('email')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('phone')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('phone')->searchable()->formatStateUsing(fn ($state) => preg_replace('/^(\+?\d{3})(\d{3})(\d{4})$/', '$1 $2 $3', $state))->sortable(),
 
                 Tables\Columns\TextColumn::make('quran_level')
                     ->label('مستوى الحفظ')
@@ -176,7 +265,7 @@ class CandidateResource extends Resource implements HasShieldPermissions
                     ->label('قبول')
                     ->color('success')
                     ->icon('heroicon-o-check-circle')
-                    ->action(fn(Candidate $record) => acceptedStudent($record))
+                    ->action(fn(Candidate $record) => acceptedCandidate($record))
                     ->requiresConfirmation()
                     ->visible(fn(Candidate $record) => auth()?->user()?->hasPermissionTo('accept_candidate') && $record?->status?->value === 'pending'),
 

@@ -42,7 +42,7 @@ class RecitationSessionControler extends Controller
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         $currentMonth = Carbon::now()->locale('ar')->translatedFormat('F Y');
-
+        $presentstatus = RecitationSession::getPresentationPercent();
         if ($timeRange === 'custom' && (!$startDate || !$endDate)) {
             return back()->withErrors(['error' => 'يرجى تحديد تاريخ البداية والنهاية للتقرير المخصص']);
         }
@@ -66,9 +66,10 @@ class RecitationSessionControler extends Controller
             })
             ->get();
 
-        $html = View::make('pdf.recitation', compact('sessions', 'timeRange', 'startDate', 'endDate', 'currentMonth','sumTargetPages','sumActualPages','sumTotalTargetPages','sumToactualPages'))->render();
+        $html = View::make('pdf.recitation', compact('sessions', 'timeRange', 'startDate', 'endDate', 'currentMonth','sumTargetPages','sumActualPages','sumTotalTargetPages','sumToactualPages','presentstatus'))->render();
 
         $mpdf = new Mpdf([
+            'tempDir'=>storage_path('tempdir'),
             'mode' => 'utf-8',
             'format' => 'A4-L',
             'default_font' => 'Cairo',

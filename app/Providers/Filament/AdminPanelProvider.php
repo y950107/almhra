@@ -7,7 +7,7 @@ namespace App\Providers\Filament;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
-use App\Filament\Pages\Login;
+use App\Filament\Auth\Login;
 use Filament\Support\Colors\Color;
 use Filament\Http\Middleware\Authenticate;
 use Filament\FontProviders\GoogleFontProvider;

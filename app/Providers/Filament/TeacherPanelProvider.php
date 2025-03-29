@@ -6,7 +6,7 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
-use App\Filament\Pages\Login;
+use App\Filament\Auth\Login;
 use App\Settings\GeneralSettings;
 use Filament\Support\Colors\Color;
 use Filament\Http\Middleware\Authenticate;
@@ -33,7 +33,7 @@ class TeacherPanelProvider extends PanelProvider
             ->profile()
             ->topNavigation()
             ->colors([
-                'primary' => Color::Lime,
+                'primary' => Color::Amber,
             ])
             ->plugins([
                
@@ -48,8 +48,8 @@ class TeacherPanelProvider extends PanelProvider
             ->pages([
                 Pages\Dashboard::class,
             ])
-            //->discoverWidgets(in: app_path('Filament/Teacher/Widgets'), for: 'App\\Filament\\Teacher\\Widgets')
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            ->discoverWidgets(in: app_path('Filament/Teacher/Widgets'), for: 'App\\Filament\\Teacher\\Widgets')
+            //->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             
             ->widgets([
                 Widgets\AccountWidget::class,
@@ -69,6 +69,7 @@ class TeacherPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->viteTheme('resources/css/filament/admin/theme.css');
     }
 }

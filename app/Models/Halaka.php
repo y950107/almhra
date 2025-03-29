@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Services\QuranPageCalculator;
+use App\Settings\GeneralSettings;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -20,7 +21,7 @@ class halaka extends Model
     // علاقة الحلقة بالمعلم
     public function teacher()
     {
-        return $this->belongsTo(Teacher::class);
+        return $this->belongsTo(Teacher::class, 'teacher_id', 'id');
     }
 
     // علاقة الحلقة بجلسات التسميع الفردية
@@ -35,18 +36,20 @@ class halaka extends Model
         return $this->hasManyThrough(Student::class, RecitationSession::class, 'halaka_id', 'id', 'id', 'student_id');
     }
 
-    
-   public function getStudentsCountAttribute()
+
+    public function getStudentsCountAttribute()
     {
         $getcount = $this->students()->count();
-        if($getcount>0){
-            return $getcount;
+        if ($getcount > 0) {
+            return $getcount .'/'. app(GeneralSettings::class)->students_per_group .' '.'طالب';
         }
-        return 'لا طلاب ';
-    } 
+        return  $getcount .'/'. app(GeneralSettings::class)->students_per_group .' '.'طالب';
+    }
 
-        public function getStatusAttribute()
+    public function getStatusAttribute()
     {
-        return $this->students_count >= $this->max_students ? ' العدد مكتمل' : 'السجيل متاح';
-    } 
+        $countStudents = $this->students_count;
+        $maxStudents = app(GeneralSettings::class)->students_per_group;
+        return $countStudents > $maxStudents ? 'العدد مكتمل' : 'التسجيل متاح';
+    }
 }

@@ -2,12 +2,15 @@
 
 namespace App\Filament\Resources;
 
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Student;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Enums\CandidateStatus;
 use Filament\Resources\Resource;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\StudentResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -45,11 +48,11 @@ class StudentResource extends Resource implements HasShieldPermissions
                     ->label('المشرف')
                     ->relationship('teacher', 'name')
                     ->required(),
-                
+
                 Forms\Components\DatePicker::make('start_date')
                     ->label('تاريخ الالتحاق')
                     ->required(),
-                
+
                 Forms\Components\Section::make('التقدم الدراسي')
                     ->schema([
                         Forms\Components\TextInput::make('current_level')
@@ -70,14 +73,28 @@ class StudentResource extends Resource implements HasShieldPermissions
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
-                    ->label('الاسم'),
+                    ->label('الاسم')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('candidate.birthdate')
+                    ->label('تاريخ الازدياد ')
+                    ->date('Y-m-d'),
+
+                    Tables\Columns\TextColumn::make('candidate.email')
+                    ->label('الايمل')->sortable()->searchable(),
+
+                    Tables\Columns\IconColumn::make('candidate.has_ijaza')
+                    ->label('لديه إجازة')
+                    ->boolean()->sortable()->toggleable(),
+
+                
+
                 Tables\Columns\TextColumn::make('teacher.name')
-                    ->label('المشرف'),
+                    ->label('المشرف')->sortable()->searchable()->badge()->color('success'),
                 Tables\Columns\TextColumn::make('start_date')
                     ->label('تاريخ الالتحاق')
-                    ->date(),
-                Tables\Columns\TextColumn::make('current_level')
-                    ->label('المستوى')
+                    ->date('Y-m-d'),
+
+
+
             ]);
     }
 

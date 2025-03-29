@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Student;
+use Filament\Facades\Filament;
 use App\Settings\GeneralSettings;
 use Spatie\LaravelSettings\Settings;
 use Illuminate\Support\ServiceProvider;
@@ -24,7 +26,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-
 
         LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
             $switch

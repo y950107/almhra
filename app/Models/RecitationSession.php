@@ -45,15 +45,9 @@ class RecitationSession extends Model
 
     public function halaka()
     {
-        return $this->belongsTo(Halaka::class);
+        return $this->belongsTo(Halaka::class,'halaka_id','id');
     }
-
-    public function teacher()
-    {
-        return $this->belongsTo(Teacher::class);
-    }
-
-
+    
     public function student()
     {
         return $this->belongsTo(Student::class);
@@ -133,6 +127,13 @@ class RecitationSession extends Model
         $quranService = app(Moshaf_madina_Service::class);
         $ayahs = $quranService->getAyahs($this->actual_end_surah_id);
         return collect($ayahs)->where('number', $this->actual_end_ayah_id)->first()['text'] ?? null;
+    }
+
+    public static function getPresentationPercent(){
+        $countP = self::where('present_status', false)->count() ?? 0;
+        $totalP = self::select(DB::raw('actual_pages'))->count() ?? 0;
+        $result = ($countP/$totalP)*100;
+        return $result;
     }
 }
 

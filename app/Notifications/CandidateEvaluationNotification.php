@@ -17,7 +17,7 @@ class CandidateEvaluationNotification extends Notification implements ShouldQueu
     /**
      * Create a new notification instance.
      */
-    public function __construct(string $status, $email, $password)
+    public function __construct($status, $email, $password)
     {
         $this->status = $status;
         $this->email = $email;
@@ -48,7 +48,7 @@ class CandidateEvaluationNotification extends Notification implements ShouldQueu
                 ->line('يمكنك الآن تسجيل الدخول باستخدام البيانات التالية:')
                 ->line('📧 البريد الإلكتروني: ' . $this->email)
                 ->line('🔑 كلمة المرور: ' . $this->password)
-                ->action('تسجيل الدخول', url('/login'))
+                ->action('تسجيل الدخول', url('/student/login'))
                 ->line('نرجو لك رحلة مباركة في حفظ كتاب الله.');
         } else {
             $mailMessage->line('نأسف، لم تحقق نسبة النجاح المطلوبة وتم وضعك في قائمة الاحتياط.')

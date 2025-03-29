@@ -84,14 +84,14 @@ class SessionsResource extends Resource implements HasShieldPermissions
             TextColumn::make('students_count')
                 ->label('عدد الطلاب')
                 ->sortable()
-                ->getStateUsing(fn(Halaka $record) => $record->getStudentsCountAttribute())
+                ->getStateUsing(fn(Halaka $record) => $record->students_count) 
                 ->badge()
                 ->color('warning'),
 
-            TextColumn::make('status')
+                TextColumn::make('status')
                 ->label('حالة الحلقة')
-                ->formatStateUsing(fn($state) => $state === 'مكتمل' ? 'مكتمل' : 'غير مكتمل')
-                ->color(fn($state) => $state === 'مكتمل' ? 'danger' : 'success'),
+                ->formatStateUsing(fn($state) => $state === 'العدد مكتمل' ? 'التسجيل متاح' : 'التسجيل مفتوح')
+                ->color(fn($state) => $state === 'العدد مكتمل' ? 'danger' : 'success'),
         ])
             ->filters([
                 Tables\Filters\SelectFilter::make('teacher_id')
@@ -99,11 +99,11 @@ class SessionsResource extends Resource implements HasShieldPermissions
                     ->relationship('teacher', 'name'),
             ])
             ->actions([
-                EditAction::make(), // ✔️ تأكد من أنك تستعمل `EditAction`
-                //DeleteAction::make()->visible(fn($record) => auth()->user()->can('delete', $record)), 
+                EditAction::make(), //  `EditAction`
+                DeleteAction::make()->visible(fn($record) => auth()->user()->can('delete', $record)), 
             ])
             ->bulkActions([
-                DeleteBulkAction::make(), // ✔️ تأكد من أنك تستعمل `DeleteBulkAction`
+                DeleteBulkAction::make(),
             ]);
     }
 

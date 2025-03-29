@@ -203,9 +203,9 @@
                 <tr class="{{ $session->present_status ? '' : 'absent' }}">
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $session->student->candidate->full_name }}</td>
-                    <td>{{ $session->student->teacher->name }}</td>
-                    <td>{{ $session->student->creates_at }}</td>
-                    <td>{{ $session->student->candidate->desired_recitations[1] }}</td>
+                    <td>{{ $session->halaka->teacher->name }}</td>
+                    <td>{{ $session->student->start_date }}</td>
+                    <td>{{ $session->student->candidate->desired_recitations[1]['value'] ?? 'غير محدد' }}</td>
                     <td>
                         {{ $quranService->getSurahName($session->start_surah_id) }} -
                         {{ $quranService->getSurahName($session->end_surah_id) }}
@@ -214,15 +214,15 @@
                     <td>{{ $session->present_status ? 'حاضر' : 'غائب' }}</td>
                     <td>{{ $session->actual_pages }}</td>
                     <td>{{ $session->target_pages }}</td>
-                    <td>{{ $session->achievement_percentage }}%</td>
+                    <td>{{ $session->achievement_percentage ?? 0}} %</td>
 
                     <td>{{ $totalActualtPages }}</td>
                     <td>{{ $totalTargetPages }}</td>
                     <td>
                         @if ($totalTargetPages > 0)
-                            {{ round(($totalActualtPages / $totalTargetPages) * 100, 2) }}%
+                            {{ round(($totalActualtPages / $totalTargetPages) * 100, 2) }} %
                         @else
-                            0%
+                            0 %
                         @endif
                     </td>
                 </tr>
@@ -235,15 +235,15 @@
             <tr>
                 <th colspan="7" rowspan="2">مؤشر الأداء لجميع الحلقات لشهر: {{ $currentMonth }}</th>
 
-                <th></th>
+                <th>{{$presentstatus ?? 0 }} %</th>
                 <th>{{$sumActualPages }}</th>
                 <th>{{$sumTargetPages}}</th>
-                <th> {{ sprintf('%.2f%%', ($sumActualPages/$sumTargetPages)*100)}}</th>
+                <th> {{ sprintf('%.2f%%', ($sumActualPages/$sumTargetPages)*100 ?? 0)}} %</th>
                 <th>
                {{$sumToactualPages}}
                 </th>
                 <th>{{$sumTotalTargetPages}}</th>
-                <th>{{ sprintf('%.2f%%', ($sumToactualPages/$sumTotalTargetPages)*100)}}</th>
+                <th>{{ sprintf('%.2f%%', ($sumToactualPages/$sumTotalTargetPages)*100 ?? 0)}} %</th>
 
             </tr>
             <tr>
