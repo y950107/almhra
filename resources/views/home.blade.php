@@ -2,10 +2,10 @@
 @section('content')
 <div>
 	<section class="slider-four">
-		<div class="slider-four_bg" style="background-image:url(assets/images/main-slider/7.png)"></div>
-		<div class="slider-four_mosque" style="background-image:url(assets/images/main-slider/mosque.png)"></div>
-		<div class="slider-four_border" style="background-image:url(assets/images/main-slider/vector.png)"></div>
-		<div class="slider-four_quran"><img src="assets/images/main-slider/quran.png" alt="" /></div>
+		<div class="slider-four_bg" style="background-image:url({{asset('assets/images/main-slider/7.png')}})"></div>
+		<div class="slider-four_mosque" style="background-image:url({{asset('assets/images/main-slider/mosque.png')}})"></div>
+		<div class="slider-four_border" style="background-image:url({{asset('assets/images/main-slider/vector.png')}})"></div>
+		<div class="slider-four_quran"><img src="{{asset('assets/images/main-slider/quran.png')}}" alt="" /></div>
 		<div class="main-slider_two swiper-container">
 			<div class="swiper-wrapper">
 
@@ -20,9 +20,9 @@
 							<!-- Content Column -->
 							<div class="slider-four_content col-xl-8 col-lg-12 col-md-12 col-sm-12">
 								<div class="slider-four_content-inner">
-									<div class="slider-four_title"><img src="assets/images/main-slider/title-light.png" alt="" /></div>
-									<div class="slider-four_arrow" style="background-image:url(assets/images/main-slider/arrow.png)"></div>
-									<div class="slider-four_shape" style="background-image:url(assets/images/main-slider/vector-2.png)"></div>
+									<div class="slider-four_title"><img src="{{asset('assets/images/main-slider/title-light.png')}}" alt="" /></div>
+									<div class="slider-four_arrow" style="background-image:url({{asset('assets/images/main-slider/arrow.png')}})"></div>
+									<div class="slider-four_shape" style="background-image:url({{asset('assets/images/main-slider/vector-2.png')}})"></div>
 									<h1 class="slider-four_heading">تجربة  <br> انتقائية في تعلم القرءان وتحفيظه
 									<div class="slider-four_text">من خلال جلسات تسميع مصغرة ومفتوحة</div>
 									<div class="slider-four_button">
@@ -34,14 +34,14 @@
 							<!-- Images Column -->
 							<div class="slider-four_images-column col-xl-4 col-lg-12 col-md-12 col-sm-12">
 								<div class="slider-four_images-outer">
-									<div class="slider-four_vector style-two"><img src="assets/images/main-slider/vector-1.png" alt="" /></div>
+									<div class="slider-four_vector style-two"><img src="{{asset('assets/images/main-slider/vector-1.png')}}" alt="" /></div>
 									<div class="slider-four_circle style-two">
-										<img src="assets/images/main-slider/slider-three_rotate.png" alt="" />
+										<img src="{{asset('assets/images/main-slider/slider-three_rotate.png')}}" alt="" />
 									</div>
 									<div class="image">
-										<img src="assets/images/main-slider/image-5.png" alt=""/>
+										<img src="{{asset('assets/images/main-slider/image-5.png')}}" alt=""/>
 									</div>
-									<div class="slider-four_vector-two"><img src="assets/images/main-slider/vector-1.png" alt="" /></div>
+									<div class="slider-four_vector-two"><img src="{{asset('assets/images/main-slider/vector-1.png')}}" alt="" /></div>
 								</div>
 							</div>
 
@@ -57,9 +57,9 @@
 							<!-- Content Column -->
 							<div class="slider-four_content col-xl-8 col-lg-12 col-md-12 col-sm-12">
 								<div class="slider-four_content-inner">
-									<div class="slider-four_title"><img src="assets/images/main-slider/title-light.png" alt="" /></div>
-									<div class="slider-four_arrow" style="background-image:url(assets/images/main-slider/arrow.png)"></div>
-									<div class="slider-four_shape" style="background-image:url(assets/images/main-slider/vector-2.png)"></div>
+									<div class="slider-four_title"><img src="{{asset('assets/images/main-slider/title-light.png')}}" alt="" /></div>
+									<div class="slider-four_arrow" style="background-image:url({{asset('assets/images/main-slider/arrow.png')}})"></div>
+									<div class="slider-four_shape" style="background-image:url({{asset('assets/images/main-slider/vector-2.png')}})"></div>
 									<h1 class="slider-four_heading" >منصة رقمية  <br> لمتابعة ومراجعة تحفيظ القرآن</h1>
 									<div class="slider-four_text" >برامج مراجعة تلقائية.</div>
 									<div class="slider-four_button">
@@ -71,14 +71,14 @@
 							<!-- Images Column -->
 							<div class="slider-four_images-column col-xl-4 col-lg-12 col-md-12 col-sm-12">
 								<div class="slider-four_images-outer">
-									<div class="slider-four_vector"><img src="assets/images/main-slider/vector-1.png" alt="" /></div>
+									<div class="slider-four_vector"><img src="{{asset('assets/images/main-slider/vector-1.png')}}" alt="" /></div>
 									<div class="slider-four_circle">
-										<img src="assets/images/main-slider/slider-three_rotate.png" alt="" />
+										<img src="{{asset('assets/images/main-slider/slider-three_rotate.png')}}" alt="" />
 									</div>
 									<div class="image">
-										<img src="assets/images/main-slider/image-4.png" alt=""/>
+										<img src="{{asset('assets/images/main-slider/image-4.png')}}" alt=""/>
 									</div>
-									<div class="slider-four_vector-two"><img src="assets/images/main-slider/vector-1.png" alt="" /></div>
+									<div class="slider-four_vector-two"><img src="{{asset('assets/images/main-slider/vector-1.png')}}" alt="" /></div>
 								</div>
 							</div>
 
@@ -130,8 +130,8 @@
 
 	<!-- Welcome One -->
 	<section class="welcome-one">
-		<div class="welcome-one_pattern" style="background-image:url({{asset('(assets/images/background/pattern-1.png')}})"></div>
-		<div class="welcome-one_pattern-two" style="background-image:url({{asset('(assets/images/background/pattern-2.png')}})"></div>
+		<div class="welcome-one_pattern" style="background-image:url({{asset('assets/images/background/pattern-1.png')}})"></div>
+		<div class="welcome-one_pattern-two" style="background-image:url({{asset('assets/images/background/pattern-2.png')}})"></div>
 		<div class="auto-container">
 			<div class="row clearfix">
 
@@ -180,7 +180,7 @@
 	<!-- End Welcome One -->
 
 	<!-- Service One -->
-	<section class="service-one" style="background-image:url({{asset('(assets/images/background/service-bg.png')}})">
+	<section class="service-one" style="background-image:url({{asset('assets/images/background/service-bg.png')}})">
 		<div class="auto-container">
 			<!-- Sec Title -->
 			<div class="sec-title centered light">
@@ -249,7 +249,7 @@
 	<section class="students-one">
 		<div class="auto-container">
 			<div class="inner-container">
-				<div class="students-one_pattern" style="background-image:url({{asset('(assets/images/background/student-bg.png')}})"></div>
+				<div class="students-one_pattern" style="background-image:url({{asset('assets/images/background/student-bg.png')}})"></div>
 				<div class="row clearfix">
 
 					<!-- Content Column -->
@@ -319,11 +319,11 @@
 	<section class="cta-one">
 		<div class="auto-container">
 			<div class="inner-container d-flex justify-content-between align-items-center flex-wrap">
-				<div class="cta-one_bg" style="background-image:url({{asset('(assets/images/background/cta-one_bg.png')}})"></div>
+				<div class="cta-one_bg" style="background-image:url({{asset('assets/images/background/cta-one_bg.png')}})"></div>
 				<h3 class="cta-one_heading">القرآن مكتوب في المصاحف، محفوظ في الصدور، مقروء بالألسنة، مسموع بالآذان،.<br>  فالاشتغال بالقرآن من أفضل العبادات</h3>
 				<!-- Button Box -->
 				<div class="cta-one_button">
-					<a href="contact.html" class="theme-btn btn-style-one">
+					<a href="{{route('candidate.create')}}" class="theme-btn btn-style-one">
 						<span class="btn-wrap">
 							<span class="text-one">سجل الان</span>
 						</span>
@@ -439,7 +439,7 @@
 				<h3 class="cta-two_heading">فخورين بخدمة القرءان وأهل القرءان <br> ليصبحوا من المهرة بالقرءان</h3>
 				<!-- Button Box -->
 				<div class="cta-two_button">
-					<a href="contact.html" class="theme-btn btn-style-three">
+					<a href="{{route('candidate.create')}}" class="theme-btn btn-style-three">
 						<span class="btn-wrap">
 							<span class="text-one">التسجيل</span>
 						</span>
