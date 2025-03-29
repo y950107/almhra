@@ -45,16 +45,10 @@
     <meta property="og:site_name" content="{{ app(\App\Settings\GeneralSettings::class)->company_name }}" />
     <meta property="fb:app_id" content>
     <!-- favicon -->
-    <link href="{{ app(\App\Settings\GeneralSettings::class)->favicon ? asset("storage/".app(\App\Settings\GeneralSettings::class)->favicon) : asset('favicon.ico')}}" rel="shortcut icon">
-    <link rel="icon" href="{{ app(\App\Settings\GeneralSettings::class)->favicon ? asset("storage/".app(\App\Settings\GeneralSettings::class)->favicon) : asset('favicon.ico')}}">
+    <link href="{{ app(\App\Settings\GeneralSettings::class)->favicon ? asset("storage/".app(\App\Settings\GeneralSettings::class)->favicon) : asset('favicon.ico')}}" rel="shortcut icon" type="image/x-icon">
+    <link rel="icon" href="{{ app(\App\Settings\GeneralSettings::class)->favicon ? asset("storage/".app(\App\Settings\GeneralSettings::class)->favicon) : asset('favicon.ico')}}" type="image/x-icon">
 
-    <!-- bing registration service-->
-    <meta name="msvalidate.01" content="BDFBD7C7EF3727604D37A7FFE4A7649F" />
-    <!-- Css -->
-    <link href="{{asset('assets/libs/tobii/css/tobii.min.css')}}" rel="stylesheet">
-    <link href="{{asset('assets/libs/tiny-slider/tiny-slider.css')}}" rel="stylesheet">
-    <link rel="shortcut icon" href="{{asset('assets/images/favicon.png')}}" type="image/x-icon">
-    <link rel="icon" href="{{asset('assets/images/favicon.png')}}" type="image/x-icon">
+
     <style>
         .logo a img{
 
