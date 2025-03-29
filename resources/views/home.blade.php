@@ -1,7 +1,9 @@
 @extends('layouts.theme')
 @section('content')
 <div>
-	<section class="slider-four">
+	<section class="slider-four" style="background-position: center center;
+    background-repeat: no-repeat;
+    background-color: var(--color-twelve);" >
 		<div class="slider-four_bg" style="background-image:url({{asset('assets/images/main-slider/service-bg.png')}})"></div>
 		<div class="slider-four_mosque" style="background-image:url({{asset('assets/images/main-slider/mosque.png')}})"></div>
 		<div class="slider-four_border" style="background-image:url({{asset('assets/images/main-slider/vector.png')}})"></div>
