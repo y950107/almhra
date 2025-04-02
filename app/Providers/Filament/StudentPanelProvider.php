@@ -29,7 +29,9 @@ class StudentPanelProvider extends PanelProvider
             ->id('student')
             ->path('student')
             ->login(Login::class)
+            ->registration()
             ->topNavigation()
+            
             ->colors([
                 'primary' => Color::Red,
             ])

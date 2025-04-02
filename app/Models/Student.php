@@ -13,7 +13,7 @@ class Student extends Model
 
     protected $fillable = [
         'user_id',
-        'teacher_id',
+        'evaluator_id',
         'candidate_id',
         'start_date',
         'current_level'
@@ -28,9 +28,9 @@ class Student extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function teacher()
+    public function evaluator()
     {
-        return $this->belongsTo(Teacher::class,'teacher_id',"id");
+        return $this->belongsTo(User::class,'evaluator_id',"id");
     }
     public function candidate()
     {

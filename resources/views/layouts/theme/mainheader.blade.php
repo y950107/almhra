@@ -74,9 +74,9 @@
 
 						<!-- Button Box -->
 						<div class="header_button-box">
-							<a href="{{ route('candidate.create') }}" class="theme-btn btn-style-one">
+							<a href="{{ route('filament.student.auth.login') }}" class="theme-btn btn-style-one">
 								<span class="btn-wrap">
-									<span class="text-one">التسجيل</span>
+									<span class="text-one">تسجيل الدخول</span>
 								</span>
 							</a>
 						</div>

@@ -46,7 +46,7 @@ class CandidateController extends Controller
 
         $validated = $request->validate([
             'full_name'          => 'required|string|max:255',
-            'phone'              => 'required|string|max:20',
+            'phone'              => 'required|unique:candidates|string|max:20',
             'email'              => 'required|email|unique:candidates,email',
             'birthdate'          => 'required|date',
             'qualification' => 'required|array',
@@ -88,6 +88,6 @@ class CandidateController extends Controller
 
         Candidate::create($validated);
 
-        return redirect()->route('candidate.create')->with('success', 'تم تقديم الطلب بنجاح.');
+        return back()->with('success', 'تم تقديم الطلب بنجاح.');
     }
 }

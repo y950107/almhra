@@ -147,7 +147,7 @@ if (!function_exists('acceptedStudent')) {
             // إنشاء سجل طالب
             Student::create([
                 'user_id' => $user->id,
-                'teacher_id' => $candidate->teacher->user_id,
+                'teacher_id' => $candidate->teacher->id,
                 'candidate_id' => $candidate->id,
                 'start_date' => now(),
             ]);
@@ -195,7 +195,7 @@ if (!function_exists('acceptedCandidate')) {
             // إنشاء سجل طالب
             Student::create([
                 'user_id' => $user->id,
-                'teacher_id' => $candidate->teacher->user_id,
+                'teacher_id' => $candidate->teacher->id,
                 'candidate_id' => $candidate->id,
                 'start_date' => now(),
             ]);
@@ -250,10 +250,10 @@ if (!function_exists('evaluateCandidate')) {
                     'phone' => $evaluation->candidate->phone
                 ]);
 
-
+                
                 Student::create([
                     'user_id' => $user->id,
-                    'teacher_id' => $evaluation->candidate->teacher->user_id,
+                    'evalutaor_id' => $evaluation->evaluator_id,
                     'candidate_id' => $evaluation->candidate->id,
                     'start_date' => now(),
                 ]);

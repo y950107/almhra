@@ -5,10 +5,16 @@
 @section('title', 'تقديم الطلب للمترشحين')
 
 @section('content')
+
     <div class="">
         <div class="">
             <h1 class="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-6">تقديم الطلب للمترشحين</h1>
 
+            @if (session()->has('success'))
+                <div class="mb-4 p-4 bg-green-100 text-green-600 rounded">
+                    {{session()->get('success')}}
+                </div>
+            @endif
             @if ($errors->any())
                 <div class="mb-4 p-4 bg-red-100 text-red-600 rounded">
                     <ul class="list-disc list-inside text-sm">
@@ -112,16 +118,20 @@
                     </div>
 
                    
-
+                    
                     <!-- القراءات المراد قراءتها -->
                     <div class="mb-4">
                         <label for="desired_recitations" class="block text-sm font-medium text-gray-700">القراءات المراد قراءتها</label>
                         <select name="desired_recitations[]" id="desired_recitations" multiple class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                            @foreach ($recitations as $recitation)
+                            
+                            @forelse($recitations as $recitation)
                                 <option value="{{ $recitation['reading'] }}" {{ in_array($recitation['reading'], old('desired_recitations', [])) ? 'selected' : '' }}>
                                     {{ $recitation['reading'] }}
                                 </option>
-                            @endforeach
+                            
+                            @empty
+                            <option value="" disabled>لايوجد أي قراءات</option>
+                            @endforelse
                         </select>
                     </div>
 

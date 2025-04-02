@@ -439,9 +439,9 @@
 				<h3 class="cta-two_heading">فخورين بخدمة القرءان وأهل القرءان <br> ليصبحوا من المهرة بالقرءان</h3>
 				<!-- Button Box -->
 				<div class="cta-two_button">
-					<a href="contact.html" class="theme-btn btn-style-three">
+					<a href="{{route('filament.student.auth.login')}}" class="theme-btn btn-style-three">
 						<span class="btn-wrap">
-							<span class="text-one">التسجيل</span>
+							<span class="text-one">تسجيل الدخول</span>
 						</span>
 					</a>
 				</div>

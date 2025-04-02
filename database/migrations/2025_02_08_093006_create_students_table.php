@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('students', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('teacher_id')->constrained()->onDelete('cascade');
+            $table->foreignId('evaluator_id')->constrained()->onDelete('cascade');
             $table->foreignId('candidate_id')->constrained()->onDelete('cascade');
             $table->date('start_date');
             $table->integer('current_level')->default(1);
