@@ -15,9 +15,13 @@ class Stateteacher extends BaseWidget
     {
         return [
             Stat::make('عدد الطلاب', function () {
-                return Student::whereHas('teacher.user', function ($query) {
-                    $query->where('id', auth()->id());
-                })->count();
+                try {
+                    return Student::whereHas('teacher.user', function ($query) {
+                        $query->where('id', auth()->id());
+                    })->count();
+                } catch (\Exception $e) {
+                    return 0;
+                }
             })
                 ->description('الطلاب تحت اشرافكم')
                 ->descriptionIcon('icon-students')
@@ -26,11 +30,17 @@ class Stateteacher extends BaseWidget
                     'class' => 'cursor-pointer',
                     'wire:click' => "\$dispatch('setStatusFilter', { filter: 'processed' })",
                 ]),
+
             Stat::make('المترشحين المحالين الى مقابلة ', function () {
-                return candidate::where('evaluated', false)->whereHas('teacher.user', function ($query) {
-                    return $query->where('id', auth()->id());
-                })->count();
-            })->description('مقابلات التقييم')
+                try {
+                    return candidate::where('evaluated', false)->whereHas('teacher.user', function ($query) {
+                        return $query->where('id', auth()->id());
+                    })->count();
+                } catch (\Exception $e) {
+                    return 0;
+                }
+            })
+                ->description('مقابلات التقييم')
                 ->descriptionIcon('icon-condidates')
                 ->color('success')
                 ->extraAttributes([
@@ -39,10 +49,13 @@ class Stateteacher extends BaseWidget
                 ]),
 
             Stat::make('عدد الحلقات المفتوحة', function () {
-                return Halaka::whereHas('teacher.user', function ($query) {
-                    $query->where('id', auth()->id());
-                })
-                    ->count();
+                try {
+                    return Halaka::whereHas('teacher.user', function ($query) {
+                        $query->where('id', auth()->id());
+                    })->count();
+                } catch (\Exception $e) {
+                    return 0;
+                }
             })
                 ->description('الحلقات المفتوحة')
                 ->descriptionIcon('icon-sessions')
@@ -53,23 +66,21 @@ class Stateteacher extends BaseWidget
                 ]),
 
             Stat::make('عدد الحصص المنجزة', function () {
-                return RecitationSession::whereHas('halaka.teacher.user', function ($query) {
-                    $query->where('id', auth()->id());
-                })
-                ->count();
+                try {
+                    return RecitationSession::whereHas('halaka.teacher.user', function ($query) {
+                        $query->where('id', auth()->id());
+                    })->count();
+                } catch (\Exception $e) {
+                    return 0;
+                }
             })
-            ->description('حصص التسميع')
+                ->description('حصص التسميع')
                 ->descriptionIcon('icon-reports')
                 ->color('warning')
                 ->extraAttributes([
                     'class' => 'cursor-pointer',
                     'wire:click' => "\$dispatch('setStatusFilter', { filter: 'processed' })",
                 ]),
-
-
-            // Stat::make('عدد حصص التسميع  ', RecitationSession::count()),
-            // Stat::make('User ID', auth()->id())
-            //     ->description('المستخدم الحالي'),
         ];
     }
 }

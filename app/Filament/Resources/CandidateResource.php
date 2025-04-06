@@ -67,8 +67,7 @@ class CandidateResource extends Resource implements HasShieldPermissions
                                                     ->required()
                                                     ->unique(ignoreRecord: true)
                                                     ->label('رقم الجوال ')
-                                                    ->prefix('+966')
-                                                    ->mask('5 9999 9999'),
+                                                    ->prefix('+966'),
 
 
                                                 Forms\Components\TextInput::make('email')
@@ -90,7 +89,7 @@ class CandidateResource extends Resource implements HasShieldPermissions
                                                         'doctorate' => 'دكتوراه',
                                                     ])
                                                     ->required()
-                                                    ->label('Academic Qualification'),
+                                                    ->label('المؤهل الدراسي'),
                                             ]),
                                     ]),
 
@@ -128,7 +127,7 @@ class CandidateResource extends Resource implements HasShieldPermissions
                                                     ->label('Self Evaluation'),
 
                                                 Forms\Components\Toggle::make('has_ijaza')
-                                                    ->label('Has Ijaza?')
+                                                    ->label('اجازة')
                                                     ->live(),
 
                                                 Forms\Components\CheckboxList::make('ijaza_types')

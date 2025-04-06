@@ -52,7 +52,7 @@ class StudentsResource extends Resource
     {
         return $table
         ->query(
-            Student::whereHas('teacher.user', function ($query) {
+            Student::whereHas('user', function ($query) {
                 return $query->where('id', auth()->id());
             })
         )

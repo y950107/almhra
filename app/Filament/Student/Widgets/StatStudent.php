@@ -34,15 +34,13 @@ class StatStudent extends BaseWidget
 
 
         return [
-            Stat::make('عدد الاوجه المحققة', $totalActualPages)
+            Stat::make('عدد الاوجه المحققة', $totalActualPages ?? 0)
                 ->description('نسبة % ')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('success')
-                ->chart([7, 2, 10, 3, 15, 4, 17])
-            ->color('success'),
-
-
-            Stat::make('مجموع الاوجه المستهدفة', $totalTargetPages)
+                ->chart([7, 2, 10, 3, 15, 4, 17]),
+        
+            Stat::make('مجموع الاوجه المستهدفة', $totalTargetPages ?? 0)
                 ->description('إجمالي الأوجه المستهدفة')
                 ->descriptionIcon('heroicon-m-clipboard-document')
                 ->color('info')
@@ -50,15 +48,12 @@ class StatStudent extends BaseWidget
                     'class' => 'cursor-pointer',
                     'wire:click' => "\$dispatch('setStatusFilter', { filter: 'processed' })",
                 ]),
-                
-            Stat::make('نسبة الانجاز', $averageTargetPercentage . '%')
-            ->chart([7, 50, 70, 90, 50, 30, 20])
-            ->color('success'),
-
-
-
-            Stat::make('عدد حصص التسميع  ', $totalRecitation),
-            // Stat::make('عدد الطلاب المحولين إلى الحلقات المفتوحة', Student::whereNotNull('halaka_id')->count()),
+        
+            Stat::make('نسبة الانجاز', ($averageTargetPercentage ?? 0) . '%')
+                ->chart([7, 50, 70, 90, 50, 30, 20])
+                ->color('success'),
+        
+            Stat::make('عدد حصص التسميع  ', $totalRecitation ?? 0),
         ];
     }
 }
