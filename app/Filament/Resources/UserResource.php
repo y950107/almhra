@@ -9,6 +9,7 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Section;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use App\Filament\Resources\UserResource\Pages;
@@ -38,39 +39,43 @@ class UserResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            TextInput::make('name')
-                ->label('الاسم')
-                ->required(),
-            TextInput::make('email')
-                ->label('البريد الإلكتروني')
-                ->email()
-                ->required(),
-            TextInput::make('phone')
-                ->label('الهاتف')
-                ->required(),
-            TextInput::make('password')
-                ->label('كلمة المرور')
-                ->password()
-                ->dehydrateStateUsing(fn($state, $record) => filled($state) ? bcrypt($state) : $record->password)
-                ->required(fn($context) => $context === 'create'),
-            Select::make('type')
-                ->label('نوع المستخدم')
-                ->options([
-                    'admin' => 'مدير',
-                    'teacher' => 'معلم',
-                    'student' => 'طالب',
-                ])
-                ->required(),
-            Toggle::make('account_status')
-                ->label('حالة الحساب')
-                ->default(true)
-                ->reactive(),
-            Select::make('roles')
-                ->label('الدور')
-                ->relationship('roles', 'name')
-                ->multiple()
-                ->preload()
-                ->required(),
+                Section::make()
+                ->columns(2)
+                ->schema([
+                    TextInput::make('name')
+                    ->label('الاسم')
+                    ->required(),
+                    TextInput::make('email')
+                        ->label('البريد الإلكتروني')
+                        ->email()
+                        ->required(),
+                    TextInput::make('phone')
+                        ->label('الهاتف')
+                        ->required(),
+                    TextInput::make('password')
+                        ->label('كلمة المرور')
+                        ->password()
+                        ->dehydrateStateUsing(fn($state, $record) => filled($state) ? bcrypt($state) : $record->password)
+                        ->required(fn($context) => $context === 'create'),
+                    Select::make('type')
+                        ->label('نوع المستخدم')
+                        ->options([
+                            'admin' => 'مدير',
+                            'teacher' => 'معلم',
+                            'student' => 'طالب',
+                        ])
+                        ->required(),
+                    Toggle::make('account_status')
+                        ->label('حالة الحساب')
+                        ->default(true)
+                        ->reactive(),
+                    Select::make('roles')
+                        ->label('الدور')
+                        ->relationship('roles', 'name')
+                        ->multiple()
+                        ->preload()
+                        ->required(),
+                ]),
         ]);
     }
 
@@ -93,7 +98,7 @@ class UserResource extends Resource
                 ->colors([
                     'success' => fn($state) => $state ? 'green' : 'red',
                 ]),
-            TextColumn::make('created_at')->label('تاريخ الإنشاء')->dateTime(),
+            TextColumn::make('created_at')->label('تاريخ الإنشاء')->date('Y-m-d'),
         ]);
     }
 

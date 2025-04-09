@@ -22,26 +22,20 @@
 							<!-- Content Column -->
 							<div class="slider-four_content col-xl-8 col-lg-12 col-md-12 col-sm-12">
 								<div class="slider-four_content-inner">
-									<div class="slider-four_title"><img src="{{asset('assets/images/main-slider/title-light.png')}}" alt="" /></div>
+									<!--<div class="slider-four_title"><img src="{{asset('assets/images/main-slider/title-light.png')}}" alt="" /></div>-->
 									<div class="slider-four_arrow" style="background-image:url({{asset('assets/images/main-slider/arrow.png')}})"></div>
 									<div class="slider-four_shape" style="background-image:url({{asset('assets/images/main-slider/vector-2.png')}})"></div>
-									<h1 class="slider-four_heading">تجربة  <br> انتقائية في تعلم القرءان وتحفيظه
-									<div class="slider-four_text">من خلال جلسات تسميع مصغرة ومفتوحة</div>
-									<div class="slider-four_button">
-										<a href="{{route('filament.student.auth.login')}}" class="theme-btn" style="    position: relative;
-                                                font-weight: 600;
-                                                overflow: hidden;
-                                                text-align: center;
-                                                border-radius: 5px;
-                                                padding: 0 2rem;
-                                                display: inline-block;
-                                                color: var(--color-six);
-                                                font-size: var(--font-14);
-                                                text-transform: capitalize;
-                                                background-color: var(--color-seven);
-                                            ">
-                    						<span class="btn-wrap">
-                    							<span class="text-one">تسجيل الدخول</span>
+									<h1 class="slider-four_heading">حلقات جامع والدة الأمير بندر بن عبدالعزيز- بحي الندى  
+									<div class="slider-four_text"></div>
+									<div class="slider-four_button" id="login-as-wrap">
+										<a href="{{route('filament.student.auth.login')}}" class="" style="">
+                    						<span class="btn-wrap login-as">
+                    							<span class="text-one">تسجيل الدخول كطالب </span>
+                    						</span>
+                					    </a>
+										<a href="{{route('filament.teacher.auth.login')}}" class="" style="">
+                    						<span class="btn-wrap login-as sec">
+                    							<span class="text-one">تسجيل الدخول كمعلم</span>
                     						</span>
                 					    </a>
 									</div>
@@ -79,10 +73,15 @@
 									<div class="slider-four_shape" style="background-image:url({{asset('assets/images/main-slider/vector-2.png')}})"></div>
 									<h1 class="slider-four_heading" >منصة رقمية  <br> لمتابعة ومراجعة تحفيظ القرآن</h1>
 									<div class="slider-four_text" >برامج مراجعة تلقائية.</div>
-									<div class="slider-four_button">
-										<a href="{{route('filament.student.auth.login')}}" class="theme-btn btn-style-three" >
-                    						<span class="btn-wrap">
-                    							<span class="text-one">تسجيل الدخول</span>
+									<div class="slider-four_button" id="login-as-wrap">
+										<a href="{{route('filament.student.auth.login')}}" class="" style="">
+                    						<span class="btn-wrap login-as">
+                    							<span class="text-one">تسجيل الدخول كطالب </span>
+                    						</span>
+                					    </a>
+										<a href="{{route('filament.teacher.auth.login')}}" class="" style="">
+                    						<span class="btn-wrap login-as sec">
+                    							<span class="text-one">تسجيل الدخول كمعلم</span>
                     						</span>
                 					    </a>
 									</div>
@@ -459,13 +458,13 @@
 				<div class="cta-two_icon flaticon-nabawi-mosque"></div>
 				<h3 class="cta-two_heading">فخورين بخدمة القرءان وأهل القرءان <br> ليصبحوا من المهرة بالقرءان</h3>
 				<!-- Button Box -->
-				<div class="cta-two_button">
-					<a href="{{route('filament.student.auth.login')}}" class="theme-btn btn-style-three">
-						<span class="btn-wrap">
-							<span class="text-one">تسجيل الدخول</span>
-						</span>
-					</a>
-				</div>
+				<!--<div class="cta-two_button">-->
+				<!--	<a href="{{route('filament.student.auth.login')}}" class="theme-btn btn-style-three">-->
+				<!--		<span class="btn-wrap">-->
+				<!--			<span class="text-one">تسجيل الدخول</span>-->
+				<!--		</span>-->
+				<!--	</a>-->
+				<!--</div>-->
 			</div>
 		</div>
 	</section>

@@ -23,7 +23,7 @@ class Stateteacher extends BaseWidget
                     return 0;
                 }
             })
-                ->description('الطلاب تحت اشرافكم')
+                ->description('الطلاب تحت إشرافكم')
                 ->descriptionIcon('icon-students')
                 ->color('success')
                 ->extraAttributes([

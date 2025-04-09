@@ -30,8 +30,20 @@ class SessionsResource extends Resource implements HasShieldPermissions
 
     protected static ?string $model = Halaka::class;
     protected static ?string $navigationIcon = 'icon-sessions';
-    protected static ?string $navigationLabel = 'الحلقات';
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.sessions.navigation_label');
+    }
 
+    public static function getModelLabel(): string
+    {
+        return __('filament.sessions.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.evaluations.plural_model_label');
+    }
     public static function getPermissionPrefixes(): array
     {
         return ['view', 'view_any', 'create', 'update', 'delete', 'delete_any', 'restore', 'force_delete'];

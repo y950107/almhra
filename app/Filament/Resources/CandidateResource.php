@@ -150,8 +150,10 @@ class CandidateResource extends Resource implements HasShieldPermissions
                                                 Forms\Components\FileUpload::make('qualification_file')
                                                     ->acceptedFileTypes(['application/pdf'])
                                                     ->directory('candidates/qualifications')
+                                                    ->visibility('public')
                                                     ->downloadable()
                                                     ->openable()
+                                                    ->required()
                                                     ->label('Qualification Document'),
 
                                                 Forms\Components\FileUpload::make('audio_recitation')
@@ -196,9 +198,9 @@ class CandidateResource extends Resource implements HasShieldPermissions
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('full_name')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('email')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('phone')->searchable()->formatStateUsing(fn ($state) => preg_replace('/^(\+?\d{3})(\d{3})(\d{4})$/', '$1 $2 $3', $state))->sortable(),
+                Tables\Columns\TextColumn::make('full_name')->label('اسم المترشح')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('email')->label('البريد الالكتروني')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('phone')->label('الهاتف')->searchable()->formatStateUsing(fn ($state) => preg_replace('/^(\+?\d{3})(\d{3})(\d{4})$/', '$1 $2 $3', $state))->sortable(),
 
                 Tables\Columns\TextColumn::make('quran_level')
                     ->label('مستوى الحفظ')
@@ -214,6 +216,7 @@ class CandidateResource extends Resource implements HasShieldPermissions
                     ->boolean()->sortable()->toggleable(),
 
                 Tables\Columns\TextColumn::make('status')
+                    ->label('حالة الطلب')
                     ->sortable()->toggleable()
                     ->formatStateUsing(fn($state) => $state instanceof CandidateStatus ? $state->value : 'غير معروف')
                     ->badge(),

@@ -95,9 +95,11 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                     ->nullable(),
 
                 Forms\Components\Hidden::make('total_score')
+                    ->label('المعدل')
                     ->default(fn($get) => ($get('tajweed_score') + $get('voice_score') + $get('memorization_score')) / 3),
 
                 Forms\Components\Hidden::make('status')
+                    ->label('الحالة')
                     ->default(fn($get) => ($get('total_score') >= 80 ? 'passed' : 'pending')),
             ]);
     }
@@ -138,7 +140,7 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                     ->toggleable(),
 
                 TextColumn::make('status')
-                    ->label(__('filament.status'))
+                    ->label('الحالة')
                     ->searchable()
                     ->sortable()
                     ->formatStateUsing(fn(EvaluationStatus $state) => $state->label())
@@ -155,7 +157,7 @@ class EvaluationResource extends Resource implements HasShieldPermissions
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->label('فلترة بالحالة')
+                    ->label('فلترة حسب الحالة')
                     ->options([
                         'pending' => 'احتياطي',
                         'passed' => 'مقبول',

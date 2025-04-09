@@ -37,7 +37,7 @@ class StudentPanelProvider extends PanelProvider
             ])
             ->font('Noto Kufi Arabic' , provider: GoogleFontProvider::class)
             ->brandLogo(asset("assets/".app(GeneralSettings::class)->logo))
-            ->favicon(asset("assets/".app(GeneralSettings::class)->favicon))
+            ->favicon(asset("assets/".app(GeneralSettings::class)->logo))
             ->brandName('فضاء الطالب')
             ->discoverResources(in: app_path('Filament/Student/Resources'), for: 'App\\Filament\\Student\\Resources')
             ->discoverPages(in: app_path('Filament/Student/Pages'), for: 'App\\Filament\\Student\\Pages')

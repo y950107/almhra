@@ -58,6 +58,33 @@
         .logo{
             display: contents;
         }
+        #login-as-wrap{display:flex;align-items:center;justify-content:start;gap:1rem}
+        .login-as{
+            position: relative;
+            font-weight: 600;
+            overflow: hidden;
+            text-align: center;
+            border-radius: 5px;
+            padding: 0px 2rem;
+            display: flex  ;
+            color: var(--color-six);
+            font-size: var(--font-14);
+            text-transform: capitalize;
+            background-color: var(--color-seven);
+            height: 51px;
+            align-items: center;
+        }
+        .login-as.sec{
+            background-color: white;
+        }
+        @media(max-width:500px)
+        {
+            .login-as{
+                    font-size: 0.81rem;
+                    display: inherit;
+                    padding: 0.3rem;
+            }
+        }
     </style>
    <!--[if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script><![endif]-->
 <!--[if lt IE 9]><script src="js/respond.js"></script><![endif]-->

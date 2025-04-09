@@ -34,13 +34,13 @@ class StatStudent extends BaseWidget
 
 
         return [
-            Stat::make('عدد الاوجه المحققة', $totalActualPages ?? 0)
+            Stat::make('عدد الأوجه المحققة', $totalActualPages ?? 0)
                 ->description('نسبة % ')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('success')
                 ->chart([7, 2, 10, 3, 15, 4, 17]),
         
-            Stat::make('مجموع الاوجه المستهدفة', $totalTargetPages ?? 0)
+            Stat::make('مجموع الأوجه المستهدفة', $totalTargetPages ?? 0)
                 ->description('إجمالي الأوجه المستهدفة')
                 ->descriptionIcon('heroicon-m-clipboard-document')
                 ->color('info')
@@ -49,7 +49,7 @@ class StatStudent extends BaseWidget
                     'wire:click' => "\$dispatch('setStatusFilter', { filter: 'processed' })",
                 ]),
         
-            Stat::make('نسبة الانجاز', ($averageTargetPercentage ?? 0) . '%')
+            Stat::make('نسبة الإنجاز', ($averageTargetPercentage ?? 0) . '%')
                 ->chart([7, 50, 70, 90, 50, 30, 20])
                 ->color('success'),
         

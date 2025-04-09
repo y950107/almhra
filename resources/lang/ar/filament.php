@@ -14,6 +14,7 @@ return [
     'switch_to_ar' => 'التبديل إلى العربية',
     'switch_to_en' => 'التبديل إلى الإنجليزية',
     'grouplabel'=>'اعدادات الموقع',
+    'general_settings'=>'الإعدادات العامة',
 
     'evaluations' => [
         'navigation_label' => 'مقابلات التقييم',
@@ -24,16 +25,21 @@ return [
 
 
 
-    'blogs' => [
-        'navigation_label' => 'قسم المقالات',
-        'model_label' => 'مقال',
-        'plural_model_label' => ' مقالات',
+    'ads' => [
+        'navigation_label' => 'قسم الإعلانات',
+        'model_label' => 'إعلان',
+        'plural_model_label' => 'إعلانات',
+    ],
+    'sessions' => [
+        'navigation_label' => 'قسم الحلقات',
+        'model_label' => 'حلقة',
+        'plural_model_label' => 'حلقات',
     ],
 
     'posts' => [
-        'navigation_label' => 'قسم الاعلانات',
-        'model_label' => 'اعلان',
-        'plural_model_label' => ' اعلانات',
+        'navigation_label' => 'قسم المقالات',
+        'model_label' => 'مقال',
+        'plural_model_label' => 'مقالات',
     ],
 
     'banner' => [
@@ -44,29 +50,29 @@ return [
 
     'recitationsesion' => [
         'navigation_label' => 'قسم التسميع ',
-        'model_label' => 'حصةتسميع',
+        'model_label' => 'حصة تسميع',
         'plural_model_label' => ' حصص التسميع',
     ],
     'student' => [
         'navigation_label' => 'قسم الطلاب',
         'model_label' => 'طالب',
-        'plural_model_label' => ' الطلاب',
+        'plural_model_label' => ' طلاب',
     ],
 
     'candidate' => [
         'navigation_label' => 'قسم المترشحين',
         'model_label' => 'مترشح',
-        'plural_model_label' => ' المترشحين',
+        'plural_model_label' => ' مترشحين',
     ],
 
     'teacher' => [
         'navigation_label' => 'قسم المعلمين',
         'model_label' => 'معلم',
-        'plural_model_label' => ' المعلمين',
+        'plural_model_label' => ' معلمين',
     ],
     'user' => [
         'navigation_label' => 'قسم المستخدمين',
         'model_label' => 'مستخدم',
-        'plural_model_label' => ' المستخدمين',
+        'plural_model_label' => ' مستخدمين',
     ],
 ];

@@ -10,6 +10,7 @@ use Filament\Tables\Table;
 use App\Models\Evaluations;
 use App\Enums\EvaluationStatus;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Section;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -53,7 +54,9 @@ class EvaluationsResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('candidate_id')
+                Section::make()
+                    ->schema([
+                        Forms\Components\Select::make('candidate_id')
                     ->label('المترشح')
                     ->relationship('candidate', 'full_name')
                     ->required(),
@@ -95,10 +98,13 @@ class EvaluationsResource extends Resource
                     ->nullable(),
 
                 Forms\Components\Hidden::make('total_score')
+                    ->label('المعدل')
                     ->default(fn($get) => ($get('tajweed_score') + $get('voice_score') + $get('memorization_score')) / 3),
 
                 Forms\Components\Hidden::make('status')
+                    ->label('الحالة')
                     ->default(fn($get) => ($get('total_score') >= 80 ? 'passed' : 'pending')),
+                    ])
             ]);
     }
 

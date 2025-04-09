@@ -59,6 +59,7 @@ class BannersResource extends Resource implements HasShieldPermissions
                 ->nullable(),
 
             FileUpload::make('background')
+                ->columnSpanFull()
                 ->label('الخلفية')
                 ->image()
                 ->required(),
@@ -71,7 +72,7 @@ class BannersResource extends Resource implements HasShieldPermissions
             TextColumn::make('title')->label('العنوان')->searchable(),
             TextColumn::make('subtitle')->label('العنوان الفرعي')->searchable(),
             ImageColumn::make('background')->label('الخلفية'),
-            TextColumn::make('created_at')->label('تاريخ الإنشاء')->dateTime(),
+            TextColumn::make('created_at')->label('تاريخ الإنشاء')->date('Y-m-d'),
         ]);
     }
 

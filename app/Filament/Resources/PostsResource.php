@@ -95,7 +95,8 @@ class PostsResource extends Resource
                 Tables\Columns\ToggleColumn::make('is_visible')
                     ->label('الحالة'),
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->date()
+                    ->label('تاريخ التحديث')
+                    ->date('Y-m-d')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

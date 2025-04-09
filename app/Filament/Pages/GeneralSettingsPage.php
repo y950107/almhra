@@ -30,6 +30,15 @@ class GeneralSettingsPage extends SettingsPage
     protected static ?string $navigationLabel = 'الإعدادات العامة';
     protected static ?string $navigationGroup = 'الإعدادات';
     protected static string $settings = GeneralSettings::class;
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.general_settings');
+    }
+    public static function getModelLabel(): string
+    {
+        return __('filament.general_settings');
+    }
+
     /*   public static function canAccess(): bool
     {
         $user = Auth::user();

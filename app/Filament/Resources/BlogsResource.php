@@ -33,23 +33,25 @@ class BlogsResource extends Resource implements HasShieldPermissions
     }
     public static function getNavigationLabel(): string
     {
-        return __('filament.blogs.navigation_label');
+        return __('filament.ads.navigation_label');
     }
    
     public static function getModelLabel(): string
     {
-        return __('filament.blogs.model_label');
+        return __('filament.ads.model_label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('filament.blogs.plural_model_label');
+        return __('filament.ads.plural_model_label');
     }
 
     public static function form(Forms\Form $form): Forms\Form
     {
         return $form
             ->schema([
+               Forms\Components\Section::make()
+               ->columns([
                 TextInput::make('title')
                     ->label('العنوان')
                     ->maxLength(400)
@@ -60,9 +62,11 @@ class BlogsResource extends Resource implements HasShieldPermissions
                     ->nullable(),
 
                 FileUpload::make('background')
+                    ->columnSpanFull()
                     ->label('صورة الخلفية')
                     ->image()
                     ->required(),
+                ]),
             ]);
     }
 
@@ -73,7 +77,7 @@ class BlogsResource extends Resource implements HasShieldPermissions
                 TextColumn::make('title')->label('العنوان')->searchable()->sortable(),
                 TextColumn::make('bio')->label('الوصف')->limit(50),
                 ImageColumn::make('background')->label('الخلفية'),
-                TextColumn::make('created_at')->label('تاريخ الإضافة')->dateTime(),
+                TextColumn::make('created_at')->label('تاريخ الإضافة')->date('Y-m-d')->sortable(),
             ])
             ->filters([])
             ->actions([
