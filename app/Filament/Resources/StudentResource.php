@@ -45,7 +45,7 @@ class StudentResource extends Resource implements HasShieldPermissions
         return $form
             ->schema([
                 Forms\Components\Select::make('teacher_id')
-                    ->label('المشرف')
+                    ->label('الشيخ')
                     ->relationship('teacher', 'name')
                     ->required(),
 
@@ -79,7 +79,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                     ->date('Y-m-d'),
 
                     Tables\Columns\TextColumn::make('candidate.email')
-                    ->label('الايمل')->sortable()->searchable(),
+                    ->label('البريد الالكتروني')->sortable()->searchable(),
 
                     Tables\Columns\IconColumn::make('candidate.has_ijaza')
                     ->label('لديه إجازة')
@@ -88,7 +88,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                 
 
                 Tables\Columns\TextColumn::make('teacher.name')
-                    ->label('المشرف')->sortable()->searchable()->badge()->color('success'),
+                    ->label('الشيح')->sortable()->searchable()->badge()->color('success'),
                 Tables\Columns\TextColumn::make('start_date')
                     ->label('تاريخ الالتحاق')
                     ->date('Y-m-d'),
