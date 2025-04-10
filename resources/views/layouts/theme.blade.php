@@ -82,7 +82,8 @@
             .login-as{
                     font-size: 0.81rem;
                     display: inherit;
-                    padding: 0.3rem;
+                    padding: 0.6rem;
+        height: auto;
             }
         }
     </style>
