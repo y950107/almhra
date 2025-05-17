@@ -20,14 +20,14 @@ use Filament\Forms\Components\FileUpload;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 
 
-
-
 class GeneralSettingsPage extends SettingsPage
 {
     use HasPageShield;
 
     protected static ?string $navigationIcon = 'heroicon-o-cog';
     protected static ?string $navigationLabel = 'الإعدادات العامة';
+
+    protected static ?string $title = 'الإعدادات العامة';
     protected static ?string $navigationGroup = 'الإعدادات';
     protected static string $settings = GeneralSettings::class;
     public static function getNavigationLabel(): string
@@ -58,13 +58,12 @@ class GeneralSettingsPage extends SettingsPage
 
                     ->schema([
 
-                        Tabs::make('Tabs')
+                        Tabs::make('Tabs')->persistTabInQueryString()
                             ->tabs([
                                 Tabs\Tab::make('اعدادات الحصص')
                                     ->icon('icon-settings')
                                     ->schema([
-                                        Forms\Components\Section::make('إعدادات الفئة العمرية')
-                                            ->description('تحديد الحد الأدنى والأقصى لعمر الطلاب')
+                                        Forms\Components\Section::make('إعدادات عامة')
                                             ->schema([
                                                 Forms\Components\TextInput::make('min_age')
                                                     ->label('العمر الأدنى')
@@ -75,50 +74,16 @@ class GeneralSettingsPage extends SettingsPage
                                                     ->label('العمر الأقصى')
                                                     ->required()
                                                     ->numeric(),
-                                            ]),
 
-                                        Forms\Components\Section::make('إعدادات النجاح')
-                                            ->description('تحديد النسبة المطلوبة للنجاح')
-                                            ->schema([
                                                 Forms\Components\TextInput::make('passing_percentage')
                                                     ->label('نسبة النجاح')
                                                     ->required()
                                                     ->numeric(),
-                                            ]),
-
-                                        Forms\Components\Section::make('إعدادات المجموعات')
-                                            ->description('تحديد عدد الطلاب في الحلقة')
-                                            ->schema([
                                                 Forms\Components\TextInput::make('students_per_group')
                                                     ->label('عدد الطلاب في الحلقة')
                                                     ->required()
                                                     ->numeric(),
-                                            ]),
-                                        Forms\Components\Section::make('إعدادات نوع القراءة')
-                                            ->description('يمكنك إضافة عدة قراءات لاختيارها في الحصص')
-                                            ->schema([
-                                                Forms\Components\Repeater::make('reading_types')
-                                                    ->label('أنواع القراءات')
-                                                    ->schema([
-                                                        Forms\Components\TextInput::make('reading')
-                                                            ->label('اسم القراءة')
-                                                            ->placeholder('مثال: حفص عن عاصم'),
-                                                    ])
-                                                    ->minItems(1)
-                                                    ->addable()
-                                                    ->reorderable()
-                                                    ->deletable(),
-                                            ]),
-                                        Forms\Components\Section::make('إعدادات التسجيل')
-                                            ->description('تحديد طريقة قبول الطلاب الجدد')
-                                            ->schema([
-                                                Forms\Components\Toggle::make('auto_accept_students')
-                                                    ->label('قبول الطلاب تلقائياً'),
-                                            ]),
 
-                                        Forms\Components\Section::make('إعدادات الجلسات')
-                                            ->description('إعدادات الجلسات وحجمها')
-                                            ->schema([
                                                 Forms\Components\TextInput::make('session_duration')
                                                     ->label('مدة الجلسة بالدقائق')
                                                     ->required()
@@ -128,6 +93,64 @@ class GeneralSettingsPage extends SettingsPage
                                                     ->label('أقصى عدد للصفحات في الجلسة')
                                                     ->required()
                                                     ->numeric(),
+
+                                            ])->columns(2),
+
+                                        Forms\Components\Section::make('إعدادات نوع القراءة')
+                                            ->description('يمكنك إضافة عدة قراءات لاختيارها في الحصص')
+                                            ->schema([
+                                                Forms\Components\Repeater::make('reading_types')
+                                                    ->label('أنواع القراءات')
+                                                    ->simple(
+                                                        Forms\Components\TextInput::make('reading_types')
+                                                            ->label('اسم القراءة')
+                                                            ->placeholder('مثال: حفص عن عاصم'),
+                                                    )
+                                                    ->minItems(1)
+                                                    ->addable()
+                                                    ->reorderable()
+                                                    ->deletable()
+                                            ]),
+
+                                        Forms\Components\Section::make('إعدادات الإجازات')
+                                            ->description('يمكنك إضافة عدة أنواع من الإجازات')
+                                            ->schema([
+                                                Forms\Components\Repeater::make('ijaza_types')
+                                                    ->label('أنواع الإجازات')
+                                                    ->simple(
+                                                        Forms\Components\TextInput::make('ijaza_types')
+                                                            ->label('اسم الإجازة')
+                                                            ->placeholder('مثال: إجازة برواية حفص')
+                                                            ->required(),
+                                                    )
+                                                    ->minItems(1)
+                                                    ->addable()
+                                                    ->reorderable()
+                                                    ->deletable(),
+                                            ]),
+                                        Forms\Components\Section::make('المؤهلات العلمية')
+                                            ->description('أضف المؤهلات العلمية التي يمكن تعيينها للطلاب')
+                                            ->schema([
+                                                Forms\Components\Repeater::make('qualifications')
+                                                    ->label('المؤهلات')
+                                                    ->simple(
+                                                        Forms\Components\TextInput::make('qualifications')
+                                                            ->label('اسم المؤهل')
+                                                            ->placeholder('مثال: بكالوريوس')
+                                                            ->required(),
+                                                    )
+                                                    ->minItems(1)
+                                                    ->addable()
+                                                    ->reorderable()
+                                                    ->deletable(),
+                                            ]),
+
+
+                                        Forms\Components\Section::make('إعدادات التسجيل')
+                                            ->description('تحديد طريقة قبول الطلاب الجدد')
+                                            ->schema([
+                                                Forms\Components\Toggle::make('auto_accept_students')
+                                                    ->label('قبول الطلاب تلقائياً'),
                                             ]),
                                     ]),
                                 Tabs\Tab::make('اعدادات الموقع')
@@ -212,7 +235,7 @@ class GeneralSettingsPage extends SettingsPage
                                                             ->label('النقاط المطلوبة')
                                                             ->required()
                                                             ->numeric(),
-                                                    ]),
+                                                    ])->columns(),
 
                                                 Forms\Components\Repeater::make('badge_criteria')
                                                     ->label('معايير الحصول على الأوسمة')
@@ -225,7 +248,7 @@ class GeneralSettingsPage extends SettingsPage
                                                             ->label('النقاط')
                                                             ->required()
                                                             ->numeric(),
-                                                    ]),
+                                                    ])->columns(),
                                             ]),
                                     ]),
 
@@ -320,15 +343,17 @@ class GeneralSettingsPage extends SettingsPage
                                                     ->label('أوقات الصلاة')
                                                     ->schema([
                                                         Forms\Components\TextInput::make('prayer_name')
-                                                            ->label('اسم الصلاة'),
+                                                            ->label('اسم الصلاة')->disabled(),
 
                                                         Forms\Components\TimePicker::make('prayer_time')
                                                             ->label('وقت الصلاة'),
                                                     ])
                                                     ->minItems(5)
-                                                    ->addable()
-                                                    ->reorderable()
-                                                    ->deletable(),
+                                                    ->maxItems(5)
+                                                    ->addable(false)
+                                                    ->reorderable(false)
+                                                    ->deletable(false)
+                                                  ->columns(),
                                             ]),
                                     ]),
                             ])

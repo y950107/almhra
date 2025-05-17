@@ -37,7 +37,7 @@ class ConvertToInterviw implements ShouldQueue
         // إنشاء التقييم
         Evaluation::create([
             'candidate_id' => $this->candidate->id,
-            'evaluator_id' => $this->candidate->teacher_id,
+            'evaluator_id' => $this->candidate->evaluator_id,
             'tajweed_score' => 0,
             'voice_score' => 0,
             'memorization_score' => 0,
@@ -49,6 +49,6 @@ class ConvertToInterviw implements ShouldQueue
         // تحديث حالة المترشح
         $this->candidate->update(['status' => 'interview']);
 
-        
+
     }
 }

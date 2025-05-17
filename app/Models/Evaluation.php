@@ -53,7 +53,7 @@ class Evaluation extends Model
         return $this->belongsTo(Student::class);
     }
 
-    
+
     // protected static function boot()
     // {
     //     parent::boot();
@@ -122,8 +122,8 @@ class Evaluation extends Model
     {
         static::saving(function ($evaluation) {
             $evaluation->total_score = (
-                $evaluation->tajweed_score + 
-                $evaluation->voice_score + 
+                $evaluation->tajweed_score +
+                $evaluation->voice_score +
                 $evaluation->memorization_score
             ) / 3;
         });

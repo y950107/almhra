@@ -31,7 +31,7 @@
         color: #374151; /* text-gray-700 */
         margin: 0.5rem auto;
     }
-    
+
     .quran-level-select {
         width: 100%;
         padding: 0.5rem 1.75rem; /* py-2 px-3 */
@@ -43,17 +43,17 @@
         box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); /* shadow-sm */
         transition: border-color 0.2s, box-shadow 0.2s;
     }
-    
+
     .quran-level-select:focus {
         outline: none;
         border-color: #3b82f6; /* focus:border-blue-500 */
         box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); /* focus:ring-2 focus:ring-blue-500 */
     }
-    
+
     .quran-level-select option {
         padding: 0.25rem;
     }
-    
+
     .quran-level-select option:hover {
         background-color: #eff6ff; /* hover:bg-blue-50 */
     }
@@ -133,9 +133,9 @@
 </style>
 </head>
 <body class="flex items-center justify-center min-h-screen gradient-bg bg-cover bg-center" style="background-image: url('{{ asset('assets/images/background/1.jpg') }}');">
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
-       
-            <div class="text-center mb-8">
+    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 w-full pb-6">
+
+            <div class="text-center">
                 <a href="/">
                     <img class="w-40 h-40 mx-auto" src="{{ asset('assets/logo.png') }}" alt="شعار المنشأة">
                 </a>
@@ -144,6 +144,14 @@
             <main class="w-full">
                 @yield('content')
             </main>
-        
+
+    </div>
+    <!-- تذييل الصفحة (Footer) -->
+    <footer class="w-full bg-gray-800 text-white py-2 mt-16 fixed bottom-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p class="text-center"> مقرأة المهرة
+                بجامع والدة الأمير بندر بن عبد العزيز - بحي الندى . جميع الحقوق محفوظة &copy; {{ date('Y') }}</p>
+        </div>
+    </footer>
     </body>
 </html>

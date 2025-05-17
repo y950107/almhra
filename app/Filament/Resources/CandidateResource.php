@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use Carbon\Carbon;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
@@ -17,6 +18,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use App\Filament\Resources\CandidateResource\Pages;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
+use Illuminate\Validation\Rules\Can;
 
 class CandidateResource extends Resource implements HasShieldPermissions
 {
@@ -27,10 +29,12 @@ class CandidateResource extends Resource implements HasShieldPermissions
     {
         return ['view', 'view_any', 'create', 'update', 'delete', 'delete_any', 'accept', 'tointerview'];
     }
+
     public static function getNavigationLabel(): string
     {
         return __('filament.candidate.navigation_label');
     }
+
     public static function getModelLabel(): string
     {
         return __('filament.candidate.model_label');
@@ -41,111 +45,88 @@ class CandidateResource extends Resource implements HasShieldPermissions
         return __('filament.candidate.plural_model_label');
     }
 
-
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Section::make()
                     ->schema([
-                        Tabs::make('Candidate Details')
+                        Tabs::make(__('filament.candidate.tabs.details'))
                             ->tabs([
-                                Tabs\Tab::make('Basic Information')
+                                Tabs\Tab::make(__('filament.candidate.tabs.basic_information'))
                                     ->icon('heroicon-o-user')
                                     ->schema([
-                                        Forms\Components\Section::make('Personal Details')
+                                        Section::make(__('filament.candidate.sections.personal_details'))
                                             ->columns(2)
                                             ->schema([
                                                 Forms\Components\TextInput::make('full_name')
                                                     ->required()
                                                     ->maxLength(255)
-                                                    ->label('Full Name'),
+                                                    ->label(__('filament.candidate.fields.full_name')),
 
                                                 Forms\Components\TextInput::make('phone')
                                                     ->tel()
                                                     ->live()
                                                     ->required()
                                                     ->unique(ignoreRecord: true)
-                                                    ->label('رقم الجوال ')
+                                                    ->label(__('filament.candidate.fields.phone'))
                                                     ->prefix('+966'),
-
 
                                                 Forms\Components\TextInput::make('email')
                                                     ->email()
                                                     ->required()
                                                     ->unique(ignoreRecord: true)
-                                                    ->label('Email Address'),
+                                                    ->label(__('filament.candidate.fields.email')),
 
                                                 Forms\Components\DatePicker::make('birthdate')
                                                     ->required()
-                                                    ->maxDate(now()->subYears(10))
-                                                    ->label('Birth Date'),
+                                                    ->maxDate(Carbon::now()->subYears(settings("min_age",10)))
+                                                    ->minDate(Carbon::now()->subYears(settings("max_age",70)))
+                                                    ->label(__('filament.candidate.fields.birthdate')),
 
                                                 Forms\Components\Select::make('qualification')
-                                                    ->options([
-                                                        'bac' => 'باكالوريا',
-                                                        'licence' => 'ليسانس',
-                                                        'master' => 'ماستر',
-                                                        'doctorate' => 'دكتوراه',
-                                                    ])
+                                                    ->options(settings('qualifications'))
                                                     ->required()
-                                                    ->label('المؤهل الدراسي'),
+                                                    ->label(__('filament.candidate.fields.qualification')),
                                             ]),
                                     ]),
 
-                                Tabs\Tab::make('Quranic Information')
+                                Tabs\Tab::make(__('filament.candidate.tabs.quranic_information'))
                                     ->icon('heroicon-o-book-open')
                                     ->schema([
-                                        Forms\Components\Section::make('Quranic Background')
-                                            ->columns(3)
+                                        Section::make(__('filament.candidate.sections.quranic_background'))
+                                            ->columns()
                                             ->schema([
                                                 Forms\Components\Select::make('quran_level')
-                                                    ->options([
-                                                        'beginner' => 'مبتدئ',
-                                                        'intermediate' => 'متوسط',
-                                                        'advanced' => 'متقدم',
-                                                    ])
+                                                    ->options(Candidate::getQuranLevels())
                                                     ->required()
-                                                    ->label('Current Level'),
-
+                                                    ->label(__('filament.candidate.fields.quran_level')),
+                                                Forms\Components\Select::make('self_evaluation')
+                                                    ->options([60, 70, 80, 90, 100])
+                                                    ->label(__('filament.candidate.fields.self_evaluation')),
                                                 Forms\Components\Select::make('desired_recitations')
-                                                    ->options([
-                                                        'hafs' => 'حفص',
-                                                        'warsh' => 'ورش',
-                                                        'qalun' => 'قالون',
-                                                        'tajweed' => 'تجويد',
-                                                        'complete' => 'ختمة كاملة',
-                                                    ])
+                                                    ->options(settings("reading_types"))
                                                     ->multiple()
-                                                    ->label('Desired Recitation Types')
+                                                    ->label(__('filament.candidate.fields.desired_recitations'))
                                                     ->columnSpanFull(),
 
-                                                Forms\Components\Select::make('self_evaluation')
-                                                    ->options([
-                                                       50,70,80,90,100
-                                                    ])
-                                                    ->label('Self Evaluation'),
+
 
                                                 Forms\Components\Toggle::make('has_ijaza')
-                                                    ->label('اجازة')
+                                                    ->label(__('filament.candidate.fields.has_ijaza'))
                                                     ->live(),
 
                                                 Forms\Components\CheckboxList::make('ijaza_types')
-                                                    ->options([
-                                                        'hafs' => 'حفص',
-                                                        'warsh' => 'ورش',
-                                                        'qalun' => 'قالون',
-                                                        'duri' => 'الدوري',
-                                                    ])
+                                                    ->options(settings('ijaza_types'))
                                                     ->visible(fn(Forms\Get $get) => $get('has_ijaza'))
-                                                    ->label('Ijaza Types'),
+                                                    ->label(__('filament.candidate.fields.ijaza_types')),
                                             ]),
                                     ]),
 
-                                Tabs\Tab::make('Documents')
+                                Tabs\Tab::make(__('filament.candidate.tabs.documents'))
                                     ->icon('heroicon-o-document')
                                     ->schema([
-                                        Forms\Components\Section::make('Attachments')
+                                        Section::make(__('filament.candidate.sections.attachments'))
                                             ->schema([
                                                 Forms\Components\FileUpload::make('qualification_file')
                                                     ->acceptedFileTypes(['application/pdf'])
@@ -154,42 +135,41 @@ class CandidateResource extends Resource implements HasShieldPermissions
                                                     ->downloadable()
                                                     ->openable()
                                                     ->required()
-                                                    ->label('Qualification Document'),
+                                                    ->label(__('filament.candidate.fields.qualification_file')),
 
                                                 Forms\Components\FileUpload::make('audio_recitation')
                                                     ->acceptedFileTypes(['audio/mpeg', 'audio/wav'])
                                                     ->directory('candidates/recitations')
-                                                    ->maxSize(10240) // 10MB
-                                                    ->label('Recitation Sample (MP3/WAV)'),
+                                                    ->maxSize(10240)
+                                                    ->label(__('filament.candidate.fields.audio_recitation')),
                                             ]),
                                     ]),
 
-                                Tabs\Tab::make('Administrative')
+                                Tabs\Tab::make(__('filament.candidate.tabs.administrative'))
                                     ->icon('heroicon-o-cog')
                                     ->schema([
-                                        Forms\Components\Section::make('Administrative Details')
+                                        Section::make(__('filament.candidate.sections.administrative_details'))
                                             ->schema([
                                                 Forms\Components\Select::make('teacher_id')
                                                     ->relationship('teacher', 'name')
                                                     ->searchable()
                                                     ->preload()
-                                                    ->label('Assigned Teacher'),
+                                                    ->label(__('filament.candidate.fields.teacher')),
 
                                                 Forms\Components\Select::make('status')
                                                     ->options([
-                                                        'pending' => 'Pending',
-                                                        'interview' => 'Interview',
-                                                        'accepted' => 'Accepted',
-                                                        'rejected' => 'Rejected',
+                                                        'pending' => __('filament.candidate.status.pending'),
+                                                        'interview' => __('filament.candidate.status.interview'),
+                                                        'accepted' => __('filament.candidate.status.accepted'),
+                                                        'rejected' => __('filament.candidate.status.rejected'),
                                                     ])
                                                     ->default('pending')
-                                                    ->label('Application Status'),
+                                                    ->label(__('filament.candidate.fields.status')),
                                             ]),
                                     ]),
                             ])
                             ->columnSpanFull()
                             ->persistTabInQueryString(),
-
                     ])
             ]);
     }
@@ -198,73 +178,66 @@ class CandidateResource extends Resource implements HasShieldPermissions
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('full_name')->label('اسم المترشح')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('email')->label('البريد الالكتروني')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('phone')->label('الهاتف')->searchable()->formatStateUsing(fn ($state) => preg_replace('/^(\+?\d{3})(\d{3})(\d{4})$/', '$1 $2 $3', $state))->sortable(),
+                Tables\Columns\TextColumn::make('full_name')->label(__('filament.candidate.fields.full_name'))->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('email')->label(__('filament.candidate.fields.email'))->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('phone')->label(__('filament.candidate.fields.phone'))->searchable()->sortable(),
 
                 Tables\Columns\TextColumn::make('quran_level')
-                    ->label('مستوى الحفظ')
-                    ->formatStateUsing(fn($state) => match ($state) {
-                        'beginner' => 'مبتدئ',
-                        'intermediate' => 'متوسط',
-                        'advanced' => 'متقدم',
-                        default => $state,
-                    })->sortable()->toggleable(),
+                    ->label(__('filament.candidate.fields.quran_level'))
+                    ->formatStateUsing(fn($state) => __('filament.candidate.levels.' . $state))
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\IconColumn::make('has_ijaza')
-                    ->label('لديه إجازة')
-                    ->boolean()->sortable()->toggleable(),
+                    ->label(__('filament.candidate.fields.has_ijaza'))
+                    ->boolean()
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('status')
-                    ->label('حالة الطلب')
-                    ->sortable()->toggleable()
-                    ->formatStateUsing(fn($state) => $state instanceof CandidateStatus ? $state->value : 'غير معروف')
+                    ->label(__('filament.candidate.fields.status'))
+                    ->sortable()
+                    ->toggleable()
+                    ->formatStateUsing(fn($state) => $state instanceof CandidateStatus ? __('filament.candidate.status.'.$state->value) : __('filament.candidate.status.unknown'))
                     ->badge(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('تاريخ التسجيل')
-                    ->date()->toggleable(),
+                    ->label(__('filament.candidate.fields.created_at'))
+                    ->date()
+                    ->toggleable(),
 
                 Tables\Columns\ViewColumn::make('qualification_file')
-                    ->label('ملف المؤهل')
+                    ->label(__('filament.candidate.fields.qualification_file'))
                     ->view('tables.columns.file-embed'),
 
                 Tables\Columns\ViewColumn::make('audio')
-                    ->label('التسجيل الصوتي')
+                    ->label(__('filament.candidate.fields.audio_recitation'))
                     ->view('tables.columns.audio-player')
                     ->sortable()
                     ->searchable(),
-
             ])
-
             ->filters([
                 SelectFilter::make('status')
-                    ->label('حالة الطلب')
+                    ->label(__('filament.candidate.fields.status'))
                     ->options([
-                        'pending' => 'قيد الانتظار',
-                        'accepted' => 'مقبول',
-                        'rejected' => 'مرفوض',
-                        'interview' => 'في المقابلة',
+                        'pending' => __('filament.candidate.status.pending'),
+                        'accepted' => __('filament.candidate.status.accepted'),
+                        'rejected' => __('filament.candidate.status.rejected'),
+                        'interview' => __('filament.candidate.status.interview'),
                     ]),
 
                 SelectFilter::make('quran_level')
-                    ->label('مستوى الحفظ')
-                    ->options([
-                        'beginner' => 'مبتدئ',
-                        'intermediate' => 'متوسط',
-                        'advanced' => 'متقدم',
-                    ]),
+                    ->label(__('filament.candidate.fields.quran_level'))
+                    ->options(Candidate::getQuranLevels()),
 
                 TernaryFilter::make('has_ijaza')
-                    ->label('لديه إجازة')
-                    ->trueLabel('نعم')
-                    ->falseLabel('لا'),
+                    ->label(__('filament.candidate.fields.has_ijaza'))
+                    ->trueLabel(__('filament.general.yes'))
+                    ->falseLabel(__('filament.general.no')),
             ])
-
             ->actions([
-
                 Tables\Actions\Action::make('accept')
-                    ->label('قبول')
+                    ->label(__('filament.candidate.actions.accept'))
                     ->color('success')
                     ->icon('heroicon-o-check-circle')
                     ->action(fn(Candidate $record) => acceptedCandidate($record))
@@ -272,61 +245,48 @@ class CandidateResource extends Resource implements HasShieldPermissions
                     ->visible(fn(Candidate $record) => auth()?->user()?->hasPermissionTo('accept_candidate') && $record?->status?->value === 'pending'),
 
                 Tables\Actions\Action::make('sendToInterview')
-                    ->label('إرسال إلى المقابلة')
+                    ->label(__('filament.candidate.actions.send_to_interview'))
                     ->icon('heroicon-o-check-circle')
                     ->requiresConfirmation()
                     ->action(fn(Candidate $record) => sendToInterview($record))
                     ->color('primary')
                     ->visible(fn(Candidate $record) => auth()?->user()?->hasPermissionTo('tointerview_candidate') && $record?->status?->value !== 'accepted'),
 
-
-
                 Tables\Actions\Action::make('viewDetails')
-                    ->label('عرض التفاصيل')
+                    ->label(__('filament.candidate.actions.view_details'))
                     ->icon('heroicon-o-eye')
-                    ->modalHeading('تفاصيل المترشح')
+                    ->modalHeading(__('filament.candidate.actions.details'))
                     ->modalWidth('1xxl')
                     ->form([
-                        Forms\Components\TextInput::make('full_name')->label('الاسم الكامل')->disabled(),
-                        Forms\Components\TextInput::make('email')->label('البريد الإلكتروني')->disabled(),
-                        Forms\Components\TextInput::make('phone')->label('رقم الهاتف')->disabled(),
-                        Forms\Components\TextInput::make('birthdate')->label('تاريخ الميلاد')->disabled(),
-                        Forms\Components\TextInput::make('qualification')->label('المؤهل الدراسي')->disabled(),
+                        Forms\Components\TextInput::make('full_name')->label(__('filament.candidate.fields.full_name'))->disabled(),
+                        Forms\Components\TextInput::make('email')->label(__('filament.candidate.fields.email'))->disabled(),
+                        Forms\Components\TextInput::make('phone')->label(__('filament.candidate.fields.phone'))->disabled(),
+                        Forms\Components\TextInput::make('birthdate')->label(__('filament.candidate.fields.birthdate'))->disabled(),
+                        Forms\Components\TextInput::make('qualification')->label(__('filament.candidate.fields.qualification'))->disabled(),
                         Forms\Components\Select::make('quran_level')
-                            ->label('مستوى الحفظ')
+                            ->label(__('filament.candidate.fields.quran_level'))
                             ->options([
-                                'beginner' => 'مبتدئ',
-                                'intermediate' => 'متوسط',
-                                'advanced' => 'متقدم',
+                                'beginner' => __('filament.candidate.levels.beginner'),
+                                'intermediate' => __('filament.candidate.levels.intermediate'),
+                                'advanced' => __('filament.candidate.levels.advanced'),
                             ])
                             ->disabled(),
-                        Forms\Components\Toggle::make('has_ijaza')->label('لديه إجازة')->disabled(),
-                        Forms\Components\TextInput::make('qualification_file')->label('ملف المؤهل')->disabled(),
-
+                        Forms\Components\Toggle::make('has_ijaza')->label(__('filament.candidate.fields.has_ijaza'))->disabled(),
+                        Forms\Components\TextInput::make('qualification_file')->label(__('filament.candidate.fields.qualification_file'))->disabled(),
                     ])
-                    ->fillForm(fn(Candidate $record) => [
-                        'full_name' => $record->full_name,
-                        'email' => $record->email,
-                        'phone' => $record->phone,
-                        'birthdate' => $record->birthdate,
-                        'qualification' => $record->qualification,
-                        'quran_level' => $record->quran_level,
-                        'has_ijaza' => $record->has_ijaza,
-                        'qualification_file' => $record->qualification_file,
-                        'audio_recitation' => $record->audio_recitation,
-                    ]),
+                    ->fillForm(fn(Candidate $record) => $record->only([
+                        'full_name', 'email', 'phone', 'birthdate',
+                        'qualification', 'quran_level', 'has_ijaza',
+                        'qualification_file', 'audio_recitation',
+                    ])),
 
                 Tables\Actions\EditAction::make(),
             ]);
     }
 
-
-
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

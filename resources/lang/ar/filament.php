@@ -23,7 +23,9 @@ return [
     ],
 
 
-
+    'auth' => [
+        'username' => 'رقم الهاتف / البريد الالكتروني',
+    ],
 
     'ads' => [
         'navigation_label' => 'قسم الإعلانات',
@@ -59,10 +61,79 @@ return [
         'plural_model_label' => ' طلاب',
     ],
 
+
+    'general' => [
+        'yes' => 'نعم',
+        'no' => 'لا',
+    ],
+
     'candidate' => [
         'navigation_label' => 'قسم المترشحين',
         'model_label' => 'مترشح',
         'plural_model_label' => ' مترشحين',
+
+        'tabs' => [
+            'details' => 'تفاصيل',
+            'basic_information' => 'المعلومات الأساسية',
+            'quranic_information' => 'معلومات قرآنية',
+            'documents' => 'المرفقات',
+            'administrative' => 'الإدارية',
+        ],
+
+        'sections' => [
+            'personal_details' => 'البيانات الشخصية',
+            'quranic_background' => 'الخلفية القرآنية',
+            'attachments' => 'المرفقات',
+            'administrative_details' => 'تفاصيل إدارية',
+        ],
+
+        'fields' => [
+            'full_name' => 'الاسم الكامل',
+            'phone' => 'رقم الهاتف',
+            'email' => 'البريد الإلكتروني',
+            'birthdate' => 'تاريخ الميلاد',
+            'qualification' => 'المؤهل',
+            'quran_level' => 'المستوى القرآني',
+            'desired_recitations' => 'القراءات المرغوبة',
+            'self_evaluation' => 'تقييم ذاتي',
+            'has_ijaza' => 'هل لديه إجازة؟',
+            'ijaza_types' => 'أنواع الإجازات',
+            'qualification_file' => 'ملف المؤهل',
+            'audio_recitation' => 'تسجيل التلاوة',
+            'teacher' => 'المعلم',
+            'status' => 'الحالة',
+            'created_at' => 'تاريخ الإنشاء',
+        ],
+
+        'levels' => [
+            'beginner' => 'مبتدئ',
+            'intermediate' => 'متوسط',
+            'advanced' => 'متقدم',
+        ],
+
+        'recitations' => [
+            'hafs' => 'حفص',
+            'warsh' => 'ورش',
+            'qalun' => 'قالون',
+            'tajweed' => 'تجويد',
+            'complete' => 'إكمال الحفظ',
+            'duri' => 'الدوري',
+        ],
+
+        'status' => [
+            'pending' => 'قيد الانتظار',
+            'interview' => 'مقابلة',
+            'accepted' => 'مقبول',
+            'rejected' => 'مرفوض',
+            'unknown' => 'غير معروف',
+        ],
+
+        'actions' => [
+            'accept' => 'قبول',
+            'send_to_interview' => 'إرسال للمقابلة',
+            'view_details' => 'عرض التفاصيل',
+            'details' => 'تفاصيل',
+        ],
     ],
 
     'teacher' => [

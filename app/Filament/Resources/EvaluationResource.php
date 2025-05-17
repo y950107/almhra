@@ -58,7 +58,7 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                     ->relationship('candidate', 'full_name')
                     ->required(),
 
-                Forms\Components\Select::make('evaluator_id') //لازم تخدم على الاستاذ كانه مستخدم و ليس  idv الاستلذ 
+                Forms\Components\Select::make('evaluator_id') //لازم تخدم على الاستاذ كانه مستخدم و ليس  idv الاستلذ
 
                     ->label('المقيّم')
                     ->relationship('evaluator', 'name')
@@ -74,7 +74,7 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                             ->label('التجويد')
                             ->numeric()
                             ->minValue(0)
-                            ->maxValue(100), //   لازم تخدم على الاستاذ كانه مستخدم و ليس  idv الاستلذ 
+                            ->maxValue(100), //   لازم تخدم على الاستاذ كانه مستخدم و ليس  idv الاستلذ
 
                         Forms\Components\TextInput::make('voice_score')
                             ->label('جودة الصوت')
@@ -149,19 +149,16 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                         EvaluationStatus::PENDING => 'warning',
                         EvaluationStatus::PASSED => 'success',
                         EvaluationStatus::FAILED => 'danger',
-                    })
-                    ->colors([
-                        'pending' => 'warning',
-                        'passed' => 'success',
-                    ]),
+                    }),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->label('فلترة حسب الحالة')
-                    ->options([
-                        'pending' => 'احتياطي',
-                        'passed' => 'مقبول',
-                    ]),
+                    ->options(
+                        collect(EvaluationStatus::cases())->mapWithKeys(fn ($status) => [
+                            $status->value => $status->label(),
+                        ])->toArray()
+                    ),
             ])
             ->actions([
                 Tables\Actions\Action::make('convert_to_student')

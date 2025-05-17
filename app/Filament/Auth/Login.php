@@ -12,14 +12,14 @@ use Filament\Pages\Auth\Login as BaseAuth;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Http\Responses\Auth\Contracts\LoginResponse;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
- 
+
 class Login extends BaseAuth
 {
 
-    
+
     public function authenticate(): ?LoginResponse
     {
-       
+
         try {
             $this->rateLimit(5);
         } catch (TooManyRequestsException $exception) {
@@ -39,7 +39,7 @@ class Login extends BaseAuth
         }
 
         $data = $this->form->getState();
-     
+
         if (! Filament::auth()->attempt($this->getCredentialsFromFormData($data), $data['remember'] ?? false)) {
             $this->throwFailureValidationException();
         }
@@ -66,22 +66,22 @@ class Login extends BaseAuth
     {
         return $form
             ->schema([
-                $this->getUserNameFormComponent(), 
+                $this->getUserNameFormComponent(),
                 $this->getPasswordFormComponent(),
                 $this->getRememberFormComponent(),
             ])
             ->statePath('data');
     }
- 
-    protected function getUserNameFormComponent(): Component 
+
+    protected function getUserNameFormComponent(): Component
     {
         return TextInput::make('username')
-            ->label('رقم الهاتف / البريد الالكتروني')
+            ->label(__('filament.auth.username'))
             ->required()
             ->autocomplete()
             ->autofocus()
             ->extraInputAttributes(['tabindex' => 1]);
-    } 
+    }
 
     protected function getCredentialsFromFormData(array $data): array
     {
@@ -105,5 +105,5 @@ class Login extends BaseAuth
         };
     }
 
-    
+
 }

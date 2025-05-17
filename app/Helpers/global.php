@@ -33,33 +33,57 @@ if (! function_exists('settings')) {
 /**end settings */
 
 
-//// manage teacher 
+//// manage teacher
 if (!function_exists('TeacherToUser')) {
     function TeacherToUser($teacher)
     {
+        try {
+            // Check if a user account was already created for this teacher
+            if (Teacher::where('id', $teacher->user_id)->whereNull('user_id')->exists()) {
+                Notification::make()
+                    ->title('لقد تم انشاء حساب مسبقا !!')
+                    ->warning()
+                    ->send();
+                return;
+            }
 
-        if (Teacher::where('id', $teacher->user_id)->whereNull('user_id')->exists()) {
+            // Generate random password
+            $password = "password"; // default password
+
+            // Create user
+            $user = User::create([
+                'name' => $teacher->name,
+                'email' => $teacher->email,
+                'phone' => $teacher->phone,
+                'password' => Hash::make($password),
+                'type' => 'teacher',
+            ]);
+
+            // Assign role and link user to teacher
+            $user->assignRole('Teacher');
+            $user->save();
+            $teacher->update(['user_id' => $user->id]);
+
+            // Notify user
+            $user->notify(new TeacherAccountCreated($password));
+
             Notification::make()
-                ->title('  لقد تم انشاء حساب مسبقا !!')
-                ->warning()
+                ->title('تم إنشاء الحساب بنجاح')
+                ->success()
                 ->send();
-            return;
+        } catch (\Illuminate\Database\QueryException $e) {
+            Notification::make()
+                ->title('خطأ في قاعدة البيانات')
+                ->body($e->getMessage()) // Or log this and display a more user-friendly message
+                ->danger()
+                ->send();
+        } catch (\Exception $e) {
+            Notification::make()
+                ->title('حدث خطأ غير متوقع')
+                ->body($e->getMessage()) // Same here—be careful with exposing internal errors
+                ->danger()
+                ->send();
         }
-        $password = Str::random(8);
-
-        $user = User::create([
-            'name' =>  $teacher->name,
-            'email' => $teacher->email,
-            'phone' => $teacher->phone,
-            'password' => Hash::make($password),
-            'type' => 'Teacher'
-        ]);
-
-
-
-        $user->assignRole('Teacher');
-        $teacher->update(['user_id' => $user->id]);
-        $user->notify(new TeacherAccountCreated($password));
     }
 }
 
@@ -72,18 +96,26 @@ if (!function_exists('TeacherToUser')) {
 if (!function_exists('sendToInterview')) {
     function sendToInterview($candidate)
     {
-
-
         try {
-
             DB::beginTransaction();
 
             if (Evaluation::where('candidate_id', $candidate->id)->exists()) {
+                DB::rollBack();
+
                 Notification::make()
                     ->title('المترشح لديه تقييم بالفعل!')
                     ->warning()
                     ->send();
+
                 return;
+            }
+
+            if (is_null($candidate->teacher_id))  {
+
+                Notification::make()
+                    ->title('المترشح ليس لديه معلم!')
+                    ->danger()
+                    ->send();
             }
 
             Evaluation::create([
@@ -97,32 +129,26 @@ if (!function_exists('sendToInterview')) {
                 'status' => 'pending',
             ]);
 
-            // تحديث حالة المترشح
             $candidate->update(['status' => 'interview']);
 
             DB::commit();
 
             $candidate->notify((new EvaluationNotif($candidate))->afterCommit());
 
-            // Notification::route('mail', $candidate->email)
-            //     ->notify((new EvaluationNotif($candidate))->afterCommit());
-
             Notification::make()
-                ->title('  تم إرسال المترشح إلى المقابلة بنجاح! مع اشعار ')
+                ->title('تم إرسال المترشح إلى المقابلة بنجاح!')
                 ->success()
                 ->send();
         } catch (\Exception $ex) {
-
-
+            DB::rollBack();
 
             Notification::make()
-                ->title(' محاولة لانشاء نفس الطالب لنفس المترشح!')
-                ->success()
+                ->title('حدث خطأ أثناء إرسال المترشح للمقابلة!')
+                ->danger()
                 ->send();
         }
-        // إشعار بنجاح الإرسال
-
     }
+
 }
 
 /*** accept candidate and create a new user**/
@@ -147,7 +173,7 @@ if (!function_exists('acceptedStudent')) {
             // إنشاء سجل طالب
             Student::create([
                 'user_id' => $user->id,
-                'teacher_id' => $candidate->teacher->id,
+                'evaluator_id' => $candidate->teacher->id,
                 'candidate_id' => $candidate->id,
                 'start_date' => now(),
             ]);
@@ -228,9 +254,9 @@ if (!function_exists('acceptedCandidate')) {
 if (!function_exists('evaluateCandidate')) {
     function evaluateCandidate($evaluations)
     {
-        
+
         try {
-            
+
             $evaluation = Evaluation::find($evaluations->id);
 
             if (!$evaluation) {
@@ -238,28 +264,35 @@ if (!function_exists('evaluateCandidate')) {
             }
 
             $password = Str::random(8);
+            $passing_percentage = settings('passing_percentage',80);
 
-            if ($evaluation->total_score >= 80) {
+            if ($evaluation->total_score >= $passing_percentage) {
                 DB::beginTransaction();
 
-                $user = User::create([
-                    'name' => $evaluation->candidate->full_name,
-                    'email' => $evaluation->candidate->email,
-                    'password' => Hash::make($password),
-                    'type' => 'student',
-                    'phone' => $evaluation->candidate->phone
-                ]);
+                if (!$evaluation->candidate->user_id) {
+                    $user = User::create([
+                        'name' => $evaluation->candidate->full_name,
+                        'email' => $evaluation->candidate->email,
+                        'password' => Hash::make($password),
+                        'type' => 'student',
+                        'phone' => $evaluation->candidate->phone,
+                        'acount_status' => true
+                    ]);
+                    $user->assignRole('Student');
+                }
+                else {
+                    $user = User::findOrFail($evaluation->candidate->user_id);
+                    $user->acount_status = true;
+                    $user->save();
+                }
 
-                
                 Student::create([
                     'user_id' => $user->id,
-                    'evalutaor_id' => $evaluation->evaluator_id,
+                    'evaluator_id' => $evaluation->candidate->teacher_id,
                     'candidate_id' => $evaluation->candidate->id,
                     'start_date' => now(),
                 ]);
 
-
-                $user->assignRole('Student');
 
 
                 $evaluation->update(['status' => 'passed']);
@@ -279,7 +312,7 @@ if (!function_exists('evaluateCandidate')) {
                     ->success()
                     ->send();
             } else {
-                
+
                 $evaluation->update(['status' => 'failed']);
                 $evaluation->candidate->update(['status' => 'pending','evaluated' => true]);
 
@@ -294,7 +327,7 @@ if (!function_exists('evaluateCandidate')) {
                     ->title('لم يتم القبول. سيتم إدراجه ضمن قائمة الاحتياط!')
                     ->warning()
                     ->send();
-                
+
             }
         } catch (\Exception $ex) {
             DB::rollBack();
@@ -333,7 +366,7 @@ if (!function_exists('evaluateCandidate')) {
 //     function PageCount(RecitationSession $recitation, $startPage, $endPage)
 //     {
 
-        
+
 //         $Lastrecitation = RecitationSession::where('student_id', $recitation->student_id)
 //             ->where('session_date', '<', $recitation->session_date)
 //             ->orderBy('session_date', 'desc')
@@ -343,12 +376,12 @@ if (!function_exists('evaluateCandidate')) {
 //             return 0;
 //         }
 
-        
+
 //         if ($Lastrecitation === null) {
 //             return ($endPage - $startPage);
 //         }
 
-    
+
 //         if ($Lastrecitation->actual_end_page === $startPage) {
 //             return  abs(($end_page ?? $startPage) - $startPage);
 //         }
@@ -385,7 +418,7 @@ if (!function_exists('evaluateCandidate')) {
 
 
 
-// انشاء معلم كمستخدم 
+// انشاء معلم كمستخدم
 
 // if (! function_exists('Tointerview')) {
 //     function Tointerview($candidateId)
@@ -398,13 +431,13 @@ if (!function_exists('evaluateCandidate')) {
 //             return;
 //         }
 
-        
+
 //         if (Evaluation::where('candidate_id', $candidate->candidate_id)->exists()) {
 //             session()->flash('error', 'المترشح لديه تقييم بالفعل!');
 //             return;
 //         }
 
-        
+
 //         Evaluation::create([
 //             'candidate_id' => $candidate->id,
 //             'evaluator_id' => $candidate->teacher_id, // التأكد من أن teacher_id موجود

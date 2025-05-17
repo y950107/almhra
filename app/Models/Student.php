@@ -30,7 +30,7 @@ class Student extends Model
 
     public function teacher()
     {
-        return $this->belongsTo(User::class,'evaluator_id',"id");
+        return $this->belongsTo(Teacher::class,'evaluator_id',"id");
     }
     public function candidate()
     {
@@ -50,5 +50,5 @@ class Student extends Model
         return $this->hasMany(RecitationSession::class);
     }
 
-    
+
 }

@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notifiable;
 class Candidate extends Model
 {
     use Notifiable;
-   
+
     protected $fillable = [
         'full_name',
         'phone',
@@ -21,18 +21,19 @@ class Candidate extends Model
         'ijaza_types',
         'desired_recitations',
         'self_evaluation',
-        'teacher_id',  
+        'user_id',
+        'program_type',
+        'teacher_id',
         'qualification_file',
         'audio_recitation',
-        'status', 
+        'status',
         'interview_date',
         'interview_type',
-        'evaluated'// 
+        'evaluated'//
     ];
 
 
     protected $casts = [
-        'qualification' => 'array',
         'ijaza_types' => 'array',
         'desired_recitations' => 'array',
         'birthdate' => 'date',
@@ -41,29 +42,24 @@ class Candidate extends Model
         'status' => CandidateStatus::class,
     ];
 
-
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
     public function teacher()
-{
-    return $this->belongsTo(Teacher::class, 'teacher_id', 'id');
-}
+    {
+        return $this->belongsTo(Teacher::class, 'teacher_id', 'id');
+    }
 
 
-public static function getQuranLevels(): array
-{
-    return ['beginner' => 'مبتدئ', 'intermediate' => 'متوسط', 'advanced' => 'متقدم'];
-}
+    public static function getProgramTypes(): array
+    {
+        return ['maqraa' => 'برنامج المقرأة', 'mutqin' => 'برنامج المتقن', 'mahir' => 'برنامج الماهر'];
+    }
 
-public static function getIjazaTypes(): array
-{
-    return [
-        'hafs' => 'إجازة برواية حفص',
-        'warsh' => 'إجازة برواية ورش',
-        'qalun' => 'إجازة برواية قالون',
-        'duri' => 'إجازة برواية الدوري',
-        'susi' => 'إجازة برواية السوسي',
-        'shuba' => 'إجازة برواية شعبة',
-        'khalaf' => 'إجازة برواية خلف عن حمزة',
-        'ibn_kathir' => 'إجازة برواية ابن كثير'
-    ];
-}
+    public static function getQuranLevels(): array
+    {
+        return ['beginner' => 'مبتدئ', 'intermediate' => 'متوسط', 'advanced' => 'متقدم'];
+    }
+
 }

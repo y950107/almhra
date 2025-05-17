@@ -75,10 +75,12 @@ class TeacherResource extends Resource
                             ->required(),
                         Forms\Components\TextInput::make('email')
                             ->label('البريد الإلكتروني')
+                            ->required()
                             ->email()
                             ->unique(ignoreRecord: true),
                         Forms\Components\TextInput::make('phone')
                             ->label('الهاتف')
+                            ->required()
                             ->tel()
                             ->unique(ignoreRecord: true),
                     ])
@@ -158,7 +160,7 @@ class TeacherResource extends Resource
                     ->requiresConfirmation()
                     ->action(fn(Teacher $record) => TeacherToUser($record))
 
-                    ->hidden(fn(Teacher $record) => $record->user_id !== null), // 
+                    ->hidden(fn(Teacher $record) => $record->user_id !== null), //
 
             ])
             ->headerActions([

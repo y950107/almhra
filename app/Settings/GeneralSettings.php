@@ -8,7 +8,7 @@ class GeneralSettings extends Settings
 {
     public int $min_age;
     public int $max_age;
-    
+
     public int $passing_percentage;
     public int $students_per_group;
 
@@ -36,6 +36,10 @@ class GeneralSettings extends Settings
     public bool $dark_mode;
     public array $reading_types;
 
+    public array $ijaza_types;
+
+    public array $qualifications;
+
     public string $company_name;
     public string $branch_name;
     public string $company_manager;
@@ -43,8 +47,8 @@ class GeneralSettings extends Settings
     public string $phone_number;
     public string $contact_email;
 
-    public string $logo = "logo.png";  
-    public string $favicon="favicon.png"; 
+    public string $logo = "logo.png";
+    public string $favicon="favicon.png";
 
     public string $calendar_type;
     public array $working_days;
