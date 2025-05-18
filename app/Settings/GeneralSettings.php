@@ -36,9 +36,9 @@ class GeneralSettings extends Settings
     public bool $dark_mode;
     public array $reading_types;
 
-    public array $ijaza_types;
+    public array $ijaza_types = [];
 
-    public array $qualifications;
+    public array $qualifications = [];
 
     public string $company_name;
     public string $branch_name;

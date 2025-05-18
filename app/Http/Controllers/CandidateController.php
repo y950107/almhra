@@ -29,7 +29,7 @@ class CandidateController extends Controller
         $ijazas = settings("ijaza_types",[]);
 
 
-        return view('candidate.create', compact( 'recitations', 'qualifications', 'quranLevels', 'ijazas'));
+        return view('Candidate.create', compact( 'recitations', 'qualifications', 'quranLevels', 'ijazas'));
     }
 
 

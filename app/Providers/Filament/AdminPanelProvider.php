@@ -23,7 +23,7 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Saade\FilamentFullCalendar\FilamentFullCalendarPlugin;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use App\Filament\Resources\SettingsResource\Pages\GeneralSettingsPage;
+use App\Filament\Pages\GeneralSettingsPage;
 use App\Settings\GeneralSettings;
 
 class AdminPanelProvider extends PanelProvider
@@ -36,7 +36,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login(Login::class)
-            
+
             ->font('Noto Kufi Arabic' , provider: GoogleFontProvider::class)
             ->brandLogo(asset("assets/".app(GeneralSettings::class)->logo))
             ->favicon(asset("assets/".app(GeneralSettings::class)->logo))
@@ -53,7 +53,7 @@ class AdminPanelProvider extends PanelProvider
                 ->sectionColumnSpan(1),
                 FilamentShieldPlugin::make(),
                 FilamentFullCalendarPlugin::make()
-                
+
             ])
 
             ->resources([
@@ -65,7 +65,7 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Resources\SettingsResource::class,
                 \App\Filament\Resources\StudentResource::class,    */
             ])
-    
+
 
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
@@ -92,14 +92,14 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
                 DispatchServingFilamentEvent::class,
                 \App\Http\Middleware\IsAdmin::class,
-                
+
 
 
             ])
-            
+
             ->authMiddleware([
                 Authenticate::class,
-                
+
             ])
             ->viteTheme('resources/css/filament/admin/theme.css');
 
@@ -122,8 +122,8 @@ class AdminPanelProvider extends PanelProvider
                         ->icon('heroicon-o-cog'),
                 ]);
             }); */
-            
-        
+
+
     }
 }
 
@@ -148,41 +148,6 @@ class AdminPanelProvider extends PanelProvider
 
 
 
-    
-    
-        
-            
-            
-            
-            
-            
-                
-            
-            
-            
-            
-                
-            
-            
-            
-                
-                
-            
-            
-                
-                
-                
-                
-                
-                
-                
-                
-                
-            
-            
-                
-            
-    
 
 
 
@@ -205,37 +170,6 @@ class AdminPanelProvider extends PanelProvider
 
 
 
-    
-    
-        
-            
-            
-            
-            
-            
-                
-            
-            
-            
-            
-                
-            
-            
-            
-                
-                
-            
-            
-                
-                
-                
-                
-                
-                
-                
-                
-                
-            
 
 
 
@@ -257,41 +191,6 @@ class AdminPanelProvider extends PanelProvider
 
 
 
-    
-    
-        
-            
-            
-            
-            
-            
-                
-            
-            
-            
-            
-                
-            
-            
-            
-                
-                
-            
-            
-                
-                
-                
-                
-                
-                
-                
-                
-                
-            
-            
-                
-            
-    
 
 
 
@@ -315,47 +214,8 @@ class AdminPanelProvider extends PanelProvider
 
 
 
-    
-    
-        
-            
-            
-            
-            
-            
-                
-            
-            
-            
-            
-                
-            
-            
-            
-                
-                
-            
-            
-                
-                
-                
-                
-                
-                
-                
-                
-                
-            
-            
-                
-            
-    
 
 
-            
-                
-            
-    
 
 
 
@@ -379,41 +239,6 @@ class AdminPanelProvider extends PanelProvider
 
 
 
-    
-    
-        
-            
-            
-            
-            
-            
-                
-            
-            
-            
-            
-                
-            
-            
-            
-                
-                
-            
-            
-                
-                
-                
-                
-                
-                
-                
-                
-                
-            
-            
-                
-            
-    
 
 
 
@@ -437,37 +262,6 @@ class AdminPanelProvider extends PanelProvider
 
 
 
-    
-    
-        
-            
-            
-            
-            
-            
-                
-            
-            
-            
-            
-                
-            
-            
-            
-                
-                
-            
-            
-                
-                
-                
-                
-                
-                
-                
-                
-                
-            
 
 
 
@@ -489,41 +283,6 @@ class AdminPanelProvider extends PanelProvider
 
 
 
-    
-    
-        
-            
-            
-            
-            
-            
-                
-            
-            
-            
-            
-                
-            
-            
-            
-                
-                
-            
-            
-                
-                
-                
-                
-                
-                
-                
-                
-                
-            
-            
-                
-            
-    
 
 
 
@@ -547,47 +306,8 @@ class AdminPanelProvider extends PanelProvider
 
 
 
-    
-    
-        
-            
-            
-            
-            
-            
-                
-            
-            
-            
-            
-                
-            
-            
-            
-                
-                
-            
-            
-                
-                
-                
-                
-                
-                
-                
-                
-                
-            
-            
-                
-            
-    
 
 
-            
-                
-            
-    
 
 
 
@@ -611,41 +331,6 @@ class AdminPanelProvider extends PanelProvider
 
 
 
-    
-    
-        
-            
-            
-            
-            
-            
-                
-            
-            
-            
-            
-                
-            
-            
-            
-                
-                
-            
-            
-                
-                
-                
-                
-                
-                
-                
-                
-                
-            
-            
-                
-            
-    
 
 
 
@@ -669,37 +354,6 @@ class AdminPanelProvider extends PanelProvider
 
 
 
-    
-    
-        
-            
-            
-            
-            
-            
-                
-            
-            
-            
-            
-                
-            
-            
-            
-                
-                
-            
-            
-                
-                
-                
-                
-                
-                
-                
-                
-                
-            
 
 
 
@@ -721,41 +375,6 @@ class AdminPanelProvider extends PanelProvider
 
 
 
-    
-    
-        
-            
-            
-            
-            
-            
-                
-            
-            
-            
-            
-                
-            
-            
-            
-                
-                
-            
-            
-                
-                
-                
-                
-                
-                
-                
-                
-                
-            
-            
-                
-            
-    
 
 
 
@@ -779,47 +398,8 @@ class AdminPanelProvider extends PanelProvider
 
 
 
-    
-    
-        
-            
-            
-            
-            
-            
-                
-            
-            
-            
-            
-                
-            
-            
-            
-                
-                
-            
-            
-                
-                
-                
-                
-                
-                
-                
-                
-                
-            
-            
-                
-            
-    
 
 
-            
-                
-            
-    
 
 
 
@@ -843,40 +423,459 @@ class AdminPanelProvider extends PanelProvider
 
 
 
-    
-    
-        
-            
-            
-            
-            
-            
-                
-            
-            
-            
-            
-                
-            
-            
-            
-                
-                
-            
-            
-                
-                
-                
-                
-                
-                
-                
-                
-                
-            
-            
-                
-            
-    
 
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
