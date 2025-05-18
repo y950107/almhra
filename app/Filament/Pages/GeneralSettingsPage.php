@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Filament\Resources\SettingsResource\Pages;
+namespace App\Filament\Pages;
+
 
 
 use Tabs\Tab;

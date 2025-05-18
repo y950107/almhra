@@ -7,7 +7,7 @@ use App\Settings\GeneralSettings;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class halaka extends Model
+class Halaka extends Model
 {
     use HasFactory;
 
