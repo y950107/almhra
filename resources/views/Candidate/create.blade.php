@@ -8,7 +8,7 @@
         <h1 class="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-6">تقديم الطلب للمترشحين</h1>
 
         @if (session()->has('success'))
-            <div class="mb-4 p-4 bg-green-100 text-green-600 rounded">
+            <div class="mb-4 p-4 bag-green-100 text-green-600 rounded">
                 {{session()->get('success')}}
             </div>
             <script>
@@ -182,11 +182,13 @@
             e.preventDefault();
             document.querySelectorAll('.step').forEach(stepEl => {
                 stepEl.querySelectorAll('input, select, textarea').forEach(input => {
-                    input.disabled = false; // Re-enable all inputs before submit
+                    if (input.name === '_token') return; // Don't touch CSRF token
+                    input.disabled = false;
                 });
             });
             this.submit();
         });
+
     </script>
 
     <script>
@@ -203,8 +205,10 @@
 
                 // Disable all inputs in hidden steps
                 stepEl.querySelectorAll('input, select, textarea').forEach(input => {
+                    if (input.name === '_token') return; // Don't disable CSRF token
                     input.disabled = !isVisible;
                 });
+
             });
         }
 
