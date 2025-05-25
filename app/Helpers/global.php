@@ -1,26 +1,19 @@
 <?php
 
-use App\Models\User;
+use App\Models\Evaluation;
 use App\Models\Student;
 use App\Models\Teacher;
-use App\Models\Candidate;
-use App\Models\Evaluation;
-use Illuminate\Support\Str;
-use Illuminate\Bus\Queueable;
-use App\Models\RecitationSession;
-use App\Settings\GeneralSettings;
-use Illuminate\Support\Facades\DB;
-use Symfony\Component\Finder\Glob;
-use Illuminate\Support\Facades\Hash;
-use App\Notifications\EvaluationNotif;
-use Illuminate\Queue\SerializesModels;
+use App\Models\User;
 use App\Notifications\CandidateAccepted;
-use Filament\Notifications\Notification;
-use Illuminate\Queue\InteractsWithQueue;
+use App\Notifications\CandidateEvaluationNotification;
+use App\Notifications\EvaluationNotif;
 use App\Notifications\StudentAccountCreated;
 use App\Notifications\TeacherAccountCreated;
-use App\Notifications\CandidateEvaluationNotification;
-
+use App\Settings\GeneralSettings;
+use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 
 /**  define settings  */

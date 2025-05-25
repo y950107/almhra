@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Mpdf\Mpdf;
-use Illuminate\Http\Request;
 use App\Models\Teacher;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
+use Mpdf\Mpdf;
 
 class PDFController extends Controller
 {
@@ -30,7 +30,7 @@ class PDFController extends Controller
         $mpdf = new Mpdf([
             'mode' => 'utf-8',
             'format' => 'A4',
-            'default_font' => 'NotoKufiArabicMedium', 
+            'default_font' => 'NotoKufiArabicMedium',
         ]);
 
         $mpdf->WriteHTML($html);
@@ -41,7 +41,7 @@ class PDFController extends Controller
         );
     }
 
-    // pdf Download 
+    // pdf Download
     // public function download()
     // {
     //     $teachers = Teacher::all();

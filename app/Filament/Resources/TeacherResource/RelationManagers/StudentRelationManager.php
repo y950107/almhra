@@ -3,10 +3,8 @@
 namespace App\Filament\Resources\TeacherResource\RelationManagers;
 
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
-use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Table;
 
 class StudentRelationManager extends RelationManager
 {
@@ -17,7 +15,7 @@ class StudentRelationManager extends RelationManager
         return $table
             ->columns([
                 TextColumn::make('candidate.full_name')->label('اسم الطالب')->sortable()
-           
+
             ])
             // ->filters([
             //     Tables\Filters\Filter::make('memorization_percentage')

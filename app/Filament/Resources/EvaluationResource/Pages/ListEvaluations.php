@@ -1,11 +1,11 @@
 <?php
 
 namespace App\Filament\Resources\EvaluationResource\Pages;
+use App\Filament\Resources\EvaluationResource;
 use Filament\Actions;
 use Filament\Resources\Components\Tab;
-use Illuminate\Database\Eloquent\Builder;
 use Filament\Resources\Pages\ListRecords;
-use App\Filament\Resources\EvaluationResource;
+use Illuminate\Database\Eloquent\Builder;
 
 class ListEvaluations extends ListRecords
 {
@@ -18,7 +18,7 @@ class ListEvaluations extends ListRecords
             'all' => Tab::make('كل التقييمات '),
             'pending' => Tab::make('المترشحين الجدد')
                 ->modifyQueryUsing(fn(Builder $query) => $query->where('status', 'pending')),
-                
+
             'accepted' => Tab::make(' المترشحين المقبولين')
                 ->modifyQueryUsing(function (Builder $query) {
                     $query->where('status', 'passed');

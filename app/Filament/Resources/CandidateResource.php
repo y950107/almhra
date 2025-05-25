@@ -2,23 +2,20 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\CandidateStatus;
+use App\Filament\Resources\CandidateResource\Pages;
+use App\Models\Candidate;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Carbon\Carbon;
 use Filament\Forms;
-use App\Models\User;
-use Filament\Tables;
-use Filament\Forms\Form;
-use App\Models\Candidate;
-use Filament\Tables\Table;
-use App\Enums\CandidateStatus;
-use Filament\Resources\Resource;
-use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Section;
-use App\Jobs\ConvertCandidateToStudent;
+use Filament\Forms\Components\Tabs;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
-use App\Filament\Resources\CandidateResource\Pages;
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
-use Illuminate\Validation\Rules\Can;
+use Filament\Tables\Table;
 
 class CandidateResource extends Resource implements HasShieldPermissions
 {

@@ -2,17 +2,17 @@
 
 namespace App\Jobs;
 
-use App\Models\User;
-use App\Models\Student;
 use App\Models\Candidate;
-use Illuminate\Support\Str;
+use App\Models\Student;
+use App\Models\User;
+use App\Notifications\StudentAccountCreated;
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use App\Notifications\StudentAccountCreated;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class ConvertCandidateToStudent implements ShouldQueue
 {
@@ -24,7 +24,7 @@ class ConvertCandidateToStudent implements ShouldQueue
     {
         // إنشاء مستخدم جديد
         $password = Str::random(8);
-        
+
         $user = User::create([
             'name' => $this->candidate->full_name,
             'email' => $this->candidate->email,
@@ -42,8 +42,8 @@ class ConvertCandidateToStudent implements ShouldQueue
 
         $this->candidate->update(['status' => 'accepted']);
         $user->notify(new StudentAccountCreated('email', $password));
-        
-      
-        
+
+
+
     }
 }

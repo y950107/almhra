@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Models\User;
 use App\Models\Teacher;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -21,7 +21,7 @@ class CreateTeacherUser implements ShouldQueue
     public function handle(): void
     {
         $password = Str::random(10);
-        
+
         $user = User::create([
             'name' => $this->teacher->name,
             'email' => $this->teacher->email,
@@ -31,7 +31,7 @@ class CreateTeacherUser implements ShouldQueue
         ]);
 
         $this->teacher->update(['user_id' => $user->id]);
-        
+
         $user->notify(new \App\Notifications\TeacherAccountCreated($password));
     }
 }

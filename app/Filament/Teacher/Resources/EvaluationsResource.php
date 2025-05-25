@@ -2,27 +2,25 @@
 
 namespace App\Filament\Teacher\Resources;
 
-use Filament\Forms;
-use Filament\Tables;
-use Filament\Forms\Form;
-use App\Models\Evaluation;
-use Filament\Tables\Table;
-use App\Models\Evaluations;
 use App\Enums\EvaluationStatus;
-use Filament\Resources\Resource;
-use Filament\Forms\Components\Section;
-use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Teacher\Resources\EvaluationsResource\Pages;
 use App\Filament\Teacher\Resources\EvaluationsResource\RelationManagers;
+use App\Models\Evaluation;
+use App\Models\Evaluations;
+use Filament\Forms;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 
 class EvaluationsResource extends Resource
 {
     protected static ?string $model = Evaluation::class;
     protected static ?string $navigationIcon = 'icon-evaluation';
-     
-    protected static ?int $navigationSort = 4;
+
+    protected static ?int $navigationSort = 6;
 
     public static function getNavigationLabel(): string
     {
@@ -61,7 +59,7 @@ class EvaluationsResource extends Resource
                     ->relationship('candidate', 'full_name')
                     ->required(),
 
-                Forms\Components\Select::make('evaluator_id') //لازم تخدم على الاستاذ كانه مستخدم و ليس  idv الاستلذ 
+                Forms\Components\Select::make('evaluator_id') //لازم تخدم على الاستاذ كانه مستخدم و ليس  idv الاستلذ
 
                     ->label('المقيّم')
                     ->relationship('evaluator', 'name')
@@ -77,7 +75,7 @@ class EvaluationsResource extends Resource
                             ->label('التجويد')
                             ->numeric()
                             ->minValue(0)
-                            ->maxValue(100), //   لازم تخدم على الاستاذ كانه مستخدم و ليس  idv الاستلذ 
+                            ->maxValue(100), //   لازم تخدم على الاستاذ كانه مستخدم و ليس  idv الاستلذ
 
                         Forms\Components\TextInput::make('voice_score')
                             ->label('جودة الصوت')

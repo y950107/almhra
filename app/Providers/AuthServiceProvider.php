@@ -2,31 +2,30 @@
 
 namespace App\Providers;
 
-use App\Filament\Widgets\CalendarWidget;
-use App\Models\Post;
-use App\Models\User;
 use App\Models\banner;
-use App\Models\Halaka;
-use App\Models\Student;
-use App\Models\Teacher;
 use App\Models\Candidate;
 use App\Models\Evaluation;
-use App\Policies\PostPolicy;
-use App\Policies\RolePolicy;
-use App\Policies\BannerPolicy;
-use App\Policies\HalakaPolicy;
-use App\Policies\SessionPolicy;
-use App\Policies\StudentPolicy;
-use App\Policies\TeacherPolicy;
+use App\Models\Halaka;
+use App\Models\Post;
 use App\Models\RecitationSession;
+use App\Models\Student;
+use App\Models\Teacher;
+use App\Models\User;
+use App\Policies\BannerPolicy;
 use App\Policies\CalenderPolicy;
 use App\Policies\CandidatePolicy;
 use App\Policies\EvaluationPolicy;
+use App\Policies\GeneralSettingsPolicy;
+use App\Policies\HalakaPolicy;
+use App\Policies\PostPolicy;
+use App\Policies\RecitationSessionPolicy;
+use App\Policies\RolePolicy;
+use App\Policies\SessionPolicy;
+use App\Policies\StudentPolicy;
+use App\Policies\TeacherPolicy;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Contracts\Role;
-use App\Policies\GeneralSettingsPolicy;
-use App\Policies\RecitationSessionPolicy;
-use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -50,10 +49,10 @@ class AuthServiceProvider extends ServiceProvider
         'App\Models\GeneralSettings' => GeneralSettingsPolicy::class,
 
 
-        
+
         //Banner::class => BannerPolicy::class,
-       
-        
+
+
     ];
 
     /**

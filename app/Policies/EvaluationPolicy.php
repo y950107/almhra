@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\User;
 use App\Models\Evaluation;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class EvaluationPolicy
@@ -68,5 +68,5 @@ class EvaluationPolicy
         return $user->hasPermissionTo('delete_any_evaluation');
     }
 
-   
+
 }

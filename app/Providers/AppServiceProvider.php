@@ -2,13 +2,8 @@
 
 namespace App\Providers;
 
-use App\Models\Student;
-use Filament\Facades\Filament;
-use App\Settings\GeneralSettings;
-use Spatie\LaravelSettings\Settings;
-use Illuminate\Support\ServiceProvider;
-use Filament\Support\Facades\FilamentIcon;
 use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -18,7 +13,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
 
-      
+
     }
 
     /**
@@ -34,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
                 /* ->outsidePanelRoutes([
                     'profile',
                     'home',
-                    
+
                 ]); */
                 /* ->flags([
                     'ar' => asset('flags/saudi-arabia.svg'),
@@ -43,10 +38,10 @@ class AppServiceProvider extends ServiceProvider
                 ]); */
         });
 
-        
-        
-        
 
-      
+
+
+
+
     }
 }

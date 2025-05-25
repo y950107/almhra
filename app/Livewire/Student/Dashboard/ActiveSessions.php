@@ -4,7 +4,6 @@ namespace App\Livewire\Student\Dashboard;
 
 use App\Models\halaka;
 use Livewire\Component;
-use App\Models\RecitationSession;
 
 class ActiveSessions extends Component
 {

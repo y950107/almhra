@@ -2,20 +2,15 @@
 
 namespace App\Filament\Resources;
 
-use Carbon\Carbon;
-use Filament\Forms;
-use Filament\Tables;
-use App\Models\Student;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use App\Enums\CandidateStatus;
-use Filament\Resources\Resource;
-use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\StudentResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\StudentResource\RelationManagers;
+use App\Models\Student;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
 
 class StudentResource extends Resource implements HasShieldPermissions
 {
@@ -85,7 +80,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                     ->label('لديه إجازة')
                     ->boolean()->sortable()->toggleable(),
 
-                
+
 
                 Tables\Columns\TextColumn::make('teacher.name')
                     ->label('الشيح')->sortable()->searchable()->badge()->color('success'),

@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\User;
 use App\Models\Halaka;
+use App\Models\User;
 
 class SessionPolicy
 {
@@ -19,7 +19,7 @@ class SessionPolicy
         return $user->can('view_any_session');
     }
 
- 
+
     public function view(User $user, Halaka $session): bool
     {
         return $user->can('view_session');
@@ -30,19 +30,19 @@ class SessionPolicy
         return $user->can('create_session');
     }
 
-    
+
     public function update(User $user, Halaka $session): bool
     {
         return $user->can('update_session');
     }
 
-    
+
     public function delete(User $user, Halaka $session): bool
     {
         return $user->can('delete_session');
     }
 
-    
+
     public function deleteAny(User $user): bool
     {
         return $user->can('delete_any_session');

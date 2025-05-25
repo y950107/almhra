@@ -2,12 +2,12 @@
 
 namespace App\Filament\Teacher\Widgets;
 
-use App\Models\Halaka;
-use App\Models\Student;
 use App\Models\Candidate;
+use App\Models\Halaka;
 use App\Models\RecitationSession;
-use Filament\Widgets\StatsOverviewWidget\Stat;
+use App\Models\Student;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
+use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class Stateteacher extends BaseWidget
 {

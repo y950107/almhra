@@ -2,9 +2,7 @@
 
 namespace App\Filament\Pages;
 
-use Filament\Pages\Page;
 use Filament\Pages\BasePage;
-use Filament\Pages\Dashboard as FDashboard;
 
 class CustomDashboard extends BasePage
 {

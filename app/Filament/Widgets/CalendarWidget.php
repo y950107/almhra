@@ -2,9 +2,8 @@
 
 namespace App\Filament\Widgets;
 
-use Filament\Widgets\Widget;
-use App\Models\RecitationSession;
 use App\Filament\Resources\RecitationSessionResource;
+use App\Models\RecitationSession;
 use Saade\FilamentFullCalendar\Widgets\FullCalendarWidget;
 
 class CalendarWidget extends FullCalendarWidget

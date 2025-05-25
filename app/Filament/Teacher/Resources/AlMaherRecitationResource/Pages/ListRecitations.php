@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Teacher\Resources\RecitationResource\Pages;
+namespace App\Filament\Teacher\Resources\AlMaherRecitationResource\Pages;
 
-use App\Filament\Teacher\Resources\RecitationResource;
+use App\Filament\Teacher\Resources\AlMaherRecitationResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
 class ListRecitations extends ListRecords
 {
-    protected static string $resource = RecitationResource::class;
+    protected static string $resource = AlMaherRecitationResource::class;
 
     protected function getHeaderActions(): array
     {

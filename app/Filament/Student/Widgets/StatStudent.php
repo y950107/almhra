@@ -2,13 +2,9 @@
 
 namespace App\Filament\Student\Widgets;
 
-use App\Models\Halaka;
-use App\Models\Student;
-use App\Models\Teacher;
-use App\Models\Candidate;
 use App\Models\RecitationSession;
-use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
+use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class StatStudent extends BaseWidget
 {
@@ -39,7 +35,7 @@ class StatStudent extends BaseWidget
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('success')
                 ->chart([7, 2, 10, 3, 15, 4, 17]),
-        
+
             Stat::make('مجموع الأوجه المستهدفة', $totalTargetPages ?? 0)
                 ->description('إجمالي الأوجه المستهدفة')
                 ->descriptionIcon('heroicon-m-clipboard-document')
@@ -48,11 +44,11 @@ class StatStudent extends BaseWidget
                     'class' => 'cursor-pointer',
                     'wire:click' => "\$dispatch('setStatusFilter', { filter: 'processed' })",
                 ]),
-        
+
             Stat::make('نسبة الإنجاز', ($averageTargetPercentage ?? 0) . '%')
                 ->chart([7, 50, 70, 90, 50, 30, 20])
                 ->color('success'),
-        
+
             Stat::make('عدد حصص التسميع  ', $totalRecitation ?? 0),
         ];
     }

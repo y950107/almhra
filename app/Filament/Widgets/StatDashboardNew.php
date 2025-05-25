@@ -2,14 +2,13 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\Candidate;
 use App\Models\Halaka;
+use App\Models\RecitationSession;
 use App\Models\Student;
 use App\Models\Teacher;
-use App\Models\Candidate;
-use App\Models\RecitationSession;
-use Filament\Widgets\StatsOverviewWidget\Card;
-use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
+use Filament\Widgets\StatsOverviewWidget\Stat;
 
 
 class StatDashboardNew extends BaseWidget

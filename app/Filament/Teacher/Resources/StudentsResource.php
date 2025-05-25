@@ -4,15 +4,13 @@ namespace App\Filament\Teacher\Resources;
 
 use App\Filament\Teacher\Resources\StudentsResource\Pages;
 use App\Filament\Teacher\Resources\StudentsResource\RelationManagers;
+use App\Models\Candidate;
 use App\Models\Student;
 use App\Models\Students;
-use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class StudentsResource extends Resource
 {
@@ -23,7 +21,7 @@ class StudentsResource extends Resource
 
     public static function getPermissionPrefixes(): array
     {
-        return ['view', 'view_any', 'create', 'update', 'delete', 'delete_any'];
+        return ['view', 'view_any'];
     }
     public static function getNavigationLabel(): string
     {
@@ -40,27 +38,21 @@ class StudentsResource extends Resource
     }
 
 
-    public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                //
-            ]);
-    }
+
 
     public static function table(Table $table): Table
     {
         return $table
         ->query(
-            Student::whereHas('user', function ($query) {
-                return $query->where('id', auth()->id());
+            Student::query()->whereHas('teacher', function (Builder $query) {
+                $query->where('user_id', auth()->id());
             })
         )
         ->columns([
             Tables\Columns\TextColumn::make('user.name')
                     ->label('الاسم')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('candidate.birthdate')
-                    ->label('تاريخ الازدياد ')
+                    ->label('تاريخ الميلاد ')
                     ->date('Y-m-d'),
 
                     Tables\Columns\TextColumn::make('candidate.email')
@@ -70,10 +62,16 @@ class StudentsResource extends Resource
                     ->label('لديه إجازة')
                     ->boolean()->sortable()->toggleable(),
 
-                
 
-                Tables\Columns\TextColumn::make('teacher.name')
-                    ->label('المشرف')->sortable()->searchable()->badge()->color('success'),
+
+
+                  Tables\Columns\TextColumn::make('candidate.program_type')
+                      ->formatStateUsing(fn ($state) => Candidate::getProgramTypes()[$state] ?? 'غير معروف')
+                      ->label('البرنامج')
+                      ->sortable()
+                      ->searchable()
+                      ->badge()
+                      ->color('success'),
                 Tables\Columns\TextColumn::make('start_date')
                     ->label('تاريخ الالتحاق')
                     ->date('Y-m-d'),
@@ -91,8 +89,8 @@ class StudentsResource extends Resource
     {
         return [
             'index' => Pages\ListStudents::route('/'),
-            'create' => Pages\CreateStudents::route('/create'),
-            'edit' => Pages\EditStudents::route('/{record}/edit'),
+        //    'create' => Pages\CreateStudents::route('/create'),
+          //  'edit' => Pages\EditStudents::route('/{record}/edit'),
         ];
     }
 }

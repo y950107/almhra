@@ -2,19 +2,15 @@
 
 namespace App\Filament\Student\Resources;
 
-use Filament\Forms;
-use Filament\Tables;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
-use App\Models\RecitationSession;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use App\Filament\Student\Resources\RecitationSessionResource\Pages;
 use App\Filament\Student\Resources\RecitationSessionResource\RelationManagers;
+use App\Models\RecitationSession;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 
 class RecitationSessionResource extends Resource implements HasShieldPermissions
 {
@@ -91,11 +87,11 @@ class RecitationSessionResource extends Resource implements HasShieldPermissions
             ])
             ->filters([
                 SelectFilter::make('halaka_id')->label('الحلقة')->relationship('halaka', 'name'),
-                
+
             ]);
 
 
-        
+
 
     }
 

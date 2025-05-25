@@ -4,8 +4,8 @@
 
 namespace App\Policies;
 
-use App\Models\User;
 use App\Models\RecitationSession;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class RecitationSessionPolicy
@@ -16,12 +16,11 @@ class RecitationSessionPolicy
      * السماح برؤية جميع الجلسات
      */
 
-    public function before(User $user, $ability)
+   /* public function before(User $user, $ability)
     {
-        if ($user->hasRole('super_admin')) {
-            return true;
-        }
-    }
+        dd($user);
+        return $user->hasRole('super_admin');
+    }*/
     public function viewAny(User $user): bool
     {
         return  $user->hasRole('super_admin') || $user->hasPermissionTo('view_any_recitation::session') ;
@@ -32,7 +31,7 @@ class RecitationSessionPolicy
      */
     public function view(User $user, RecitationSession $session): bool
     {
-        return $user->can('view recitation_session');
+        return $user->can('view_recitation::session');
     }
 
     /**
@@ -40,7 +39,7 @@ class RecitationSessionPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create recitation_session');
+        return $user->can('create_recitation::session');
     }
 
     /**
@@ -48,7 +47,8 @@ class RecitationSessionPolicy
      */
     public function update(User $user, RecitationSession $session): bool
     {
-        return $user->can('update recitation_session');
+
+        return $user->can('update_recitation::session');
     }
 
     /**
@@ -56,7 +56,7 @@ class RecitationSessionPolicy
      */
     public function delete(User $user, RecitationSession $session): bool
     {
-        return $user->can('delete recitation_session');
+        return $user->can('delete_recitation::session');
     }
 
     /**
@@ -64,6 +64,6 @@ class RecitationSessionPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any recitation_session');
+        return $user->can('delete_any_recitation::session');
     }
 }

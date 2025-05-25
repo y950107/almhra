@@ -16,7 +16,7 @@ class Moshaf_madina_Service
     private function loadQuranData()
     {
         $path = database_path('data/Moshaf_Madina.json');
- 
+
         if (!File::exists($path)) {
             throw new \Exception("ملف القرآن غير موجود في $path");
         }
@@ -53,12 +53,18 @@ class Moshaf_madina_Service
     {
         $ayah = collect($this->quranData)
             ->first(fn($a) => $a['sura_no'] == $surahNumber && $a['aya_no'] == $ayahNumber);
-    
+
         return $ayah ? $ayah['page'] : null;
     }
 
     public function calculateLines($startSurah, $startAyah, $endSurah, $endAyah)
     {
+        // Normalize direction: if reading backwards, swap start and end
+        if ($startSurah > $endSurah || ($startSurah == $endSurah && $startAyah > $endAyah)) {
+            [$startSurah, $endSurah] = [$endSurah, $startSurah];
+            [$startAyah, $endAyah] = [$endAyah, $startAyah];
+        }
+
         return collect($this->quranData)
             ->filter(function ($ayah) use ($startSurah, $startAyah, $endSurah, $endAyah) {
 
@@ -80,6 +86,7 @@ class Moshaf_madina_Service
             })
             ->sum();
     }
+
 }
 
 

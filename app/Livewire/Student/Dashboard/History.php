@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Student\Dashboard;
 
-use Livewire\Component;
 use App\Models\RecitationSession;
+use Livewire\Component;
 
 class History extends Component
 {

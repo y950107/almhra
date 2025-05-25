@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Mpdf\Mpdf;
+use App\Models\RecitationSession;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Models\RecitationSession;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
+use Mpdf\Mpdf;
 
 class RecitationSessionControler extends Controller
 {
@@ -17,7 +16,7 @@ class RecitationSessionControler extends Controller
     {
         $sessions = RecitationSession::with(['student'])->get();
         $cumulativeData = RecitationSession::getTotalTargetPagesPerStudent();
-        
+
         return view('pdf.recitation', compact('sessions', 'cumulativeData'));
     }
 
@@ -76,11 +75,11 @@ class RecitationSessionControler extends Controller
             'dpi' => 300,
             'autoScriptToLang' => true,
             'autoLangToFont' => true,
-            'margin_top' => 10,    
-            'margin_bottom' => 10,    
-            'margin_left' => 5,      
-            'margin_right' => 5, 
-            'shrink_tables_to_fit' => 1,    
+            'margin_top' => 10,
+            'margin_bottom' => 10,
+            'margin_left' => 5,
+            'margin_right' => 5,
+            'shrink_tables_to_fit' => 1,
         ]);
 
         $mpdf->WriteHTML($html);

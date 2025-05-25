@@ -2,16 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Str;
 use App\Enums\EvaluationStatus;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
-use App\Notifications\StudentAccountCreated;
-use App\Notifications\CandidateEvaluationNotification;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Permission\Traits\HasRoles;
 
 class Evaluation extends Model
 {

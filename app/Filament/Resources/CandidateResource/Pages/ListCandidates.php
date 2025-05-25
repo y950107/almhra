@@ -4,8 +4,8 @@ namespace App\Filament\Resources\CandidateResource\Pages;
 
 use App\Filament\Resources\CandidateResource;
 use Filament\Actions;
-use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Components\Tab;
+use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 
 class ListCandidates extends ListRecords

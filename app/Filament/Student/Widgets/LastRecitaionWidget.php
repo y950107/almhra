@@ -2,10 +2,9 @@
 
 namespace App\Filament\Student\Widgets;
 
-use Filament\Tables;
-use Filament\Tables\Table;
 use App\Models\RecitationSession;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 
 class LastRecitaionWidget extends BaseWidget
@@ -15,7 +14,7 @@ class LastRecitaionWidget extends BaseWidget
 
     protected int|string|array $columnSpan = 2;
     protected static ?string $heading = 'آخر جلست التسميع';
-  
+
     public function table(Table $table): Table
     {
         return $table
@@ -81,5 +80,5 @@ class LastRecitaionWidget extends BaseWidget
     ->emptyStateDescription('لم يتم تسجيل أي جلسة تابعة لك بعد.');
 
     }
-   
+
 }

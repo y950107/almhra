@@ -2,9 +2,9 @@
 
 namespace App\Livewire\Student\Dashboard;
 
+use App\Models\RecitationSession;
 use id;
 use Livewire\Component;
-use App\Models\RecitationSession;
 
 class Stats extends Component
 {

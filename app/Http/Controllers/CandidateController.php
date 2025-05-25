@@ -2,15 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs;
-use App\Models\Teacher;
 use App\Models\Candidate;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Jobs\ConvertToInterviw;
-use Illuminate\Support\Facades\Bus;
-use App\Settings\GeneralSettings;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 

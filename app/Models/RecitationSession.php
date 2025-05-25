@@ -2,56 +2,50 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Traits\HasRoles;
 use App\Services\Moshaf_madina_Service;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Traits\HasRoles;
 
 class RecitationSession extends Model
 {
-    use HasFactory, Notifiable, HasRoles;
+    use Notifiable, HasRoles;
 
     protected $fillable = [
         'halaka_id',
         'student_id',
         'session_date',
-        'start_ayah_id',
-        'end_surah_id',
-        'end_ayah_id',
-        'start_surah_id',
-        'start_page',
-        'end_page',
-        'target_lines',
-        'target_pages',
-        'actual_end_surah_id',
-        'actual_end_ayah_id',
-        'actual_end_surah',
-        'actual_end_ayah',
-        'actual_end_page',
-        'actuel_lines',
-        'actual_pages',
         'tajweed_score',
         'fluency_score',
         'memory_score',
         'evaluation_notes',
         'notes',
-        'target_percentage',
-        'Progress_percentage',
-        'present_status',
+        'present',
+        'recitation_type',
+        'recitation_narration',
+        'student_evaluation',
     ];
 
+
+    protected $with = ['halaka','student'];
 
     public function halaka()
     {
         return $this->belongsTo(Halaka::class,'halaka_id','id');
     }
-    
+
     public function student()
     {
         return $this->belongsTo(Student::class);
     }
+
+    public function almaqraaRecitations()
+    {
+        return $this->hasMany(AlmaqraaRecitation::class);
+    }
+
+
     /********** */
 
 
@@ -182,18 +176,18 @@ class RecitationSession extends Model
 
     // public function getActualPagesAttribute()
     // {
-    
+
     //     $lastSession = RecitationSession::where('student_id', $this->student_id)
     //         ->where('session_date', '<', $this->session_date)
     //         ->orderBy('session_date', 'desc')
     //         ->first();
 
-       
+
     //     $actualPages = abs($this->actual_end_page - $this->start_page) + 1;
 
-     
+
     //     if ($lastSession && $this->start_page === $lastSession->actual_end_page) {
-    //         $actualPages = max(0, $actualPages - 1); 
+    //         $actualPages = max(0, $actualPages - 1);
     //     }
 
     //     return $actualPages;

@@ -55,6 +55,25 @@ return [
         'model_label' => 'حصة تسميع',
         'plural_model_label' => ' حصص التسميع',
     ],
+
+    'almaqraa-recitation' => [
+        'navigation_label' => 'قسم المقرأة',
+        'model_label' => 'حصة تسميع',
+        'plural_model_label' => ' حصص التسميع',
+    ],
+
+    'almutqin-recitation' => [
+        'navigation_label' => 'قسم المتقن',
+        'model_label' => 'حصة تسميع',
+        'plural_model_label' => ' حصص التسميع',
+    ],
+
+    'almaher-recitation' => [
+        'navigation_label' => 'قسم الماهر',
+        'model_label' => 'حصة تسميع',
+        'plural_model_label' => ' حصص التسميع',
+    ],
+
     'student' => [
         'navigation_label' => 'قسم الطلاب',
         'model_label' => 'طالب',

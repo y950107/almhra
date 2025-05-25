@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\User;
 use App\Models\Candidate;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class CandidatePolicy
@@ -70,7 +70,7 @@ class CandidatePolicy
         return $user->can('send_to_interview_candidate');
     }
 
-    
+
 
     public function accept(User $user, Candidate $candidate): bool
     {

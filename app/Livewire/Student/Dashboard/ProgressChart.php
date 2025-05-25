@@ -3,7 +3,6 @@
 namespace App\Livewire\Student\Dashboard;
 
 use Livewire\Component;
-use App\Models\RecitationSession;
 
 class ProgressChart extends Component
 {

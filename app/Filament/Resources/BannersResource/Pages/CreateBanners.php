@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\BannersResource\Pages;
 
 use App\Filament\Resources\BannersResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateBanners extends CreateRecord
