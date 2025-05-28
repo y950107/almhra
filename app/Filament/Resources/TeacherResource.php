@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TeacherResource\Pages;
+use App\Models\Candidate;
 use App\Models\Teacher;
 use Filament\Forms;
 use Filament\Forms\Components\CheckboxList;
@@ -78,6 +79,10 @@ class TeacherResource extends Resource
                             ->required()
                             ->tel()
                             ->unique(ignoreRecord: true),
+                        Forms\Components\Select::make('program_type')
+                            ->label('البرنامج')
+                        ->options(Candidate::getProgramTypes())
+                        ->required()
                     ])
                     ->columns(2),
 
@@ -106,6 +111,13 @@ class TeacherResource extends Resource
                     ->label('البريد'),
                 Tables\Columns\TextColumn::make('phone')
                     ->label('الهاتف'),
+                Tables\Columns\TextColumn::make('program_type')
+                    ->formatStateUsing(fn ($state) => Candidate::getProgramTypes()[$state] ?? 'غير معروف')
+                    ->label('البرنامج')
+                    ->sortable()
+                    ->searchable()
+                    ->badge()
+                    ->color('success'),
 
                 TextColumn::make('qualifications')
                     ->label('المؤهلات')
@@ -149,6 +161,8 @@ class TeacherResource extends Resource
 
             ])
             ->actions([
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
                 Action::make('createAccount')
                     ->label('إنشاء حساب')
                     ->icon('heroicon-o-user-plus')

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Filament\Teacher\Resources;
+namespace App\Filament\Resources;
 
-use App\Filament\Teacher\Resources\AlMaqraaRecitationResource\Pages;
-use App\Filament\Teacher\Resources\AlMaqraaRecitationResource\RelationManagers;
+use App\Filament\Resources\AlMaqraaRecitationResource\Pages;
+use App\Filament\Resources\AlMaqraaRecitationResource\RelationManagers;
 use App\Models\AlMaqraaRecitation;
 use App\Models\Halaka;
 use App\Models\RecitationSession;
@@ -40,10 +40,6 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
 
     protected static ?int $navigationSort = 3;
 
-    public static function shouldRegisterNavigation(): bool
-    {
-        return auth()->user()->teacher->program_type === 'maqraa';
-    }
 
     public static function getNavigationLabel(): string
     {
@@ -82,7 +78,7 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                                             modifyQueryUsing: function (Builder $query) {
                                                 $maxStudents = app(GeneralSettings::class)->students_per_group;
 
-                                                return $query->where('teacher_id',auth()->user()?->teacher?->id)
+                                                return $query
                                                     ->where(function ($q) use ($maxStudents) {
                                                         $q->whereHas('students', function ($q) use ($maxStudents) {
                                                             $q->groupBy('halaka_id')
@@ -209,7 +205,7 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                         ]),
 
                         //  الأهداف القرآنية
-                        Tabs\Tab::make('نتائج الحصة')
+                        Tabs\Tab::make('نتائج الحصة')->id("actual-results")
                             ->visible(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                             ->schema([
                             Select::make('start_surah_id')
@@ -374,11 +370,6 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
     {
 
         return $table
-            ->query(
-                AlMaqraaRecitation::query()->whereHas('recitationSession.halaka.teacher.user', function ($query) {
-                    return $query->where('user_id', auth()->id());
-                })
-            )
             ->columns([
                 TextColumn::make('recitationSession.session_date')
                     ->label('تاريخ الجلسة')
@@ -437,6 +428,40 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                     ->icon('heroicon-o-document-text')
                     ->color('success')
                     ->url(fn($record) => AlMaqraaRecitationResource::getUrl('edit', ['record' => $record]) . '?tab=-actual-results-tab'),
+            ])
+            ->headerActions([
+                Action::make('generate_pdf')
+                    ->label('تصدير تقرير PDF')
+                    ->icon('icon-halaka')
+                    ->color('success')
+                    ->form([
+                        Select::make('time_range')
+                            ->label('الفترة الزمنية')
+                            ->options([
+                                'monthly' => 'التقرير الشهري',
+                                'yearly' => 'التقرير السنوي',
+                                'custom' => 'تحديد نطاق زمني',
+                            ])
+                            ->required()
+                            ->live(),
+
+                        DatePicker::make('start_date')
+                            ->label('من تاريخ')
+                            ->visible(fn($get) => $get('time_range') === 'custom')
+                            ->required(fn($get) => $get('time_range') === 'custom'),
+
+                        DatePicker::make('end_date')
+                            ->label('إلى تاريخ')
+                            ->visible(fn($get) => $get('time_range') === 'custom')
+                            ->required(fn($get) => $get('time_range') === 'custom'),
+                    ])
+                    ->action(function (array $data) {
+                        return redirect()->route('recitations.pdf-download', [
+                            'time_range' => $data['time_range'],
+                            'start_date' => $data['start_date'] ?? null,
+                            'end_date' => $data['end_date'] ?? null,
+                        ]);
+                    })
             ]);
     }
 

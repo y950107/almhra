@@ -38,6 +38,12 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
 
     protected static ?string $navigationIcon = 'icon-recitations';
 
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->teacher->program_type === 'mutqin';
+    }
+
     protected static ?int $navigationSort = 4;
 
     public static function getNavigationLabel(): string

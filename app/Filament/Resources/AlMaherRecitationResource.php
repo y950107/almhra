@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Filament\Teacher\Resources;
+namespace App\Filament\Resources;
 
-use App\Filament\Teacher\Resources\AlMaherRecitationResource\Pages;
-use App\Filament\Teacher\Resources\AlMaherRecitationResource\RelationManagers;
+use App\Filament\Resources\AlMaherRecitationResource\Pages;
+use App\Filament\Resources\AlMaherRecitationResource\RelationManagers;
 use App\Models\AlMaherRecitation;
 use App\Models\Halaka;
 use App\Models\RecitationSession;
+use App\Models\Student;
 use App\Services\Moshaf_madina_Service;
 use App\Settings\GeneralSettings;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
@@ -40,11 +41,6 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
 
     protected static ?int $navigationSort = 5;
 
-    public static function shouldRegisterNavigation(): bool
-    {
-        return auth()->user()->teacher->program_type === 'maher';
-    }
-
     public static function getNavigationLabel(): string
     {
         return __('filament.almaher-recitation.navigation_label');
@@ -72,7 +68,6 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
 
                             //  المعلومات الأساسية
                             Tabs\Tab::make('المعلومات الأساسية')
-
                                 ->schema([
                                     Forms\Components\Group::make([
                                         Select::make('halaka_id')
@@ -82,7 +77,7 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                                                 modifyQueryUsing: function (Builder $query) {
                                                     $maxStudents = app(GeneralSettings::class)->students_per_group;
 
-                                                    return $query->where('teacher_id',auth()->user()?->teacher?->id)
+                                                    return $query
                                                         ->where(function ($q) use ($maxStudents) {
                                                             $q->whereHas('students', function ($q) use ($maxStudents) {
                                                                 $q->groupBy('halaka_id')
@@ -123,7 +118,7 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                                                     $q->where('program_type', 'maher');
                                                 }),
                                             )
-                                            ->getOptionLabelFromRecordUsing(fn($record) => "{$record->candidate->full_name}")
+                                            ->getOptionLabelFromRecordUsing(fn(Student $record) => "{$record->candidate->full_name}")
                                             ->label('الطالب')
                                             ->afterStateHydrated(function(Forms\Get $get, Forms\Set $set, ?RecitationSession $record) use ($quranService) {
 
@@ -209,7 +204,7 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                                 ]),
 
                             //  الأهداف القرآنية
-                            Tabs\Tab::make('نتائج الحصة')
+                            Tabs\Tab::make('نتائج الحصة')->id("actual-results")
                                 ->visible(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                 ->schema([
                                     Select::make('start_surah_id')
@@ -387,11 +382,6 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
     {
 
         return $table
-            ->query(
-                AlMaherRecitation::query()->whereHas('recitationSession.halaka.teacher.user', function ($query) {
-                    return $query->where('user_id', auth()->id());
-                })
-            )
             ->columns([
                 TextColumn::make('recitationSession.session_date')
                     ->label('تاريخ الجلسة')

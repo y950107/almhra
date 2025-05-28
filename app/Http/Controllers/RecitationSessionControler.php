@@ -35,6 +35,7 @@ class RecitationSessionControler extends Controller
         $sumActualPages = RecitationSession::getTotalActualPages();
         $cumulativeData = RecitationSession::getTotalTargetPagesPerStudent();
         $cumulativeData1 = RecitationSession::getTotalActualPagesPerStudent();
+
         $sumTotalTargetPages = $cumulativeData->sum('total_target_pages');
         $sumToactualPages = $cumulativeData1->sum('total_actual_pages');
         $timeRange = $request->input('time_range');

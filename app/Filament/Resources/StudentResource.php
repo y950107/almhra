@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\StudentResource\Pages;
 use App\Filament\Resources\StudentResource\RelationManagers;
+use App\Models\Candidate;
 use App\Models\Student;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms;
@@ -48,6 +49,20 @@ class StudentResource extends Resource implements HasShieldPermissions
                     ->label('تاريخ الالتحاق')
                     ->required(),
 
+                Forms\Components\Group::make()
+                    ->relationship('candidate')
+                    ->dehydrated()
+                    ->statePath('candidate')
+                    ->schema([
+                        Forms\Components\Select::make('program_type')
+                            ->label('البرنامج')
+                            ->options(Candidate::getProgramTypes())
+                            ->reactive()
+                            ->live()
+                            ->required(),
+                    ]),
+
+
                 Forms\Components\Section::make('التقدم الدراسي')
                     ->schema([
                         Forms\Components\TextInput::make('current_level')
@@ -76,6 +91,14 @@ class StudentResource extends Resource implements HasShieldPermissions
                     Tables\Columns\TextColumn::make('candidate.email')
                     ->label('البريد الالكتروني')->sortable()->searchable(),
 
+                Tables\Columns\TextColumn::make('candidate.program_type')
+                    ->formatStateUsing(fn ($state) => Candidate::getProgramTypes()[$state] ?? 'غير معروف')
+                    ->label('البرنامج')
+                    ->sortable()
+                    ->searchable()
+                    ->badge()
+                    ->color('info'),
+
                     Tables\Columns\IconColumn::make('candidate.has_ijaza')
                     ->label('لديه إجازة')
                     ->boolean()->sortable()->toggleable(),
@@ -90,6 +113,10 @@ class StudentResource extends Resource implements HasShieldPermissions
 
 
 
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make('edit'),
+                Tables\Actions\DeleteAction::make('delete'),
             ]);
     }
 

@@ -8,7 +8,7 @@ use Illuminate\Notifications\Notifiable;
 class Teacher extends Model{
 
         use Notifiable;
-    
+
     protected $fillable = [
         'name',
         'email',
@@ -16,7 +16,8 @@ class Teacher extends Model{
         'qualifications',
         'expertise',
         'certifications',
-        'user_id',   
+        'user_id',
+        'program_type',
     ];
 
     protected $casts = [

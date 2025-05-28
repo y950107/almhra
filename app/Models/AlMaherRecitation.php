@@ -24,7 +24,7 @@ class AlMaherRecitation extends Model
 
     public function recitationSession()
     {
-        return $this->belongsTo(RecitationSession::class);
+        return $this->belongsTo(RecitationSession::class,'recitation_session_id','id');
     }
 
     public static function getLessonTitles(): array

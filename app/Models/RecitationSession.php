@@ -40,10 +40,21 @@ class RecitationSession extends Model
         return $this->belongsTo(Student::class);
     }
 
-    public function almaqraaRecitations()
+    public function almaqraaRecitation()
     {
-        return $this->hasMany(AlmaqraaRecitation::class);
+        return $this->hasOne(AlmaqraaRecitation::class);
     }
+
+    public function almutqinRecitation()
+    {
+        return $this->hasOne(AlmutqinRecitation::class);
+    }
+
+    public function almaherRecitation()
+    {
+        return $this->hasOne(AlmaherRecitation::class);
+    }
+
 
 
     /********** */

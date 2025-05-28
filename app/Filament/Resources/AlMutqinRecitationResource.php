@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Filament\Teacher\Resources;
+namespace App\Filament\Resources;
 
-use App\Filament\Teacher\Resources\AlMaherRecitationResource\Pages;
-use App\Filament\Teacher\Resources\AlMaherRecitationResource\RelationManagers;
-use App\Models\AlMaherRecitation;
+use App\Filament\Resources\AlMutqinRecitationResource\Pages;
+use App\Filament\Resources\AlMutqinRecitationResource\RelationManagers;
+use App\Models\AlMutqinRecitation;
 use App\Models\Halaka;
 use App\Models\RecitationSession;
 use App\Services\Moshaf_madina_Service;
@@ -25,38 +25,33 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
-class AlMaherRecitationResource extends Resource implements HasShieldPermissions
+class AlMutqinRecitationResource extends Resource implements HasShieldPermissions
 {
     public static function getPermissionPrefixes(): array
     {
         return ['view', 'view_any', 'create', 'update', 'delete', 'delete_any'];
     }
 
-    protected static ?string $slug = "al-maher";
+    protected static ?string $slug = "al-mutqin";
 
-    protected static ?string $model = AlMaherRecitation::class;
+    protected static ?string $model = AlMutqinRecitation::class;
 
     protected static ?string $navigationIcon = 'icon-recitations';
 
-    protected static ?int $navigationSort = 5;
-
-    public static function shouldRegisterNavigation(): bool
-    {
-        return auth()->user()->teacher->program_type === 'maher';
-    }
+    protected static ?int $navigationSort = 4;
 
     public static function getNavigationLabel(): string
     {
-        return __('filament.almaher-recitation.navigation_label');
+        return __('filament.almutqin-recitation.navigation_label');
     }
     public static function getModelLabel(): string
     {
-        return __('filament.almaher-recitation.model_label');
+        return __('filament.almutqin-recitation.model_label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('filament.almaher-recitation.plural_model_label');
+        return __('filament.almutqin-recitation.plural_model_label');
     }
 
     public static function form(Form $form): Form
@@ -82,7 +77,7 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                                                 modifyQueryUsing: function (Builder $query) {
                                                     $maxStudents = app(GeneralSettings::class)->students_per_group;
 
-                                                    return $query->where('teacher_id',auth()->user()?->teacher?->id)
+                                                    return $query
                                                         ->where(function ($q) use ($maxStudents) {
                                                             $q->whereHas('students', function ($q) use ($maxStudents) {
                                                                 $q->groupBy('halaka_id')
@@ -120,7 +115,7 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                                                 name: 'student',
                                                 titleAttribute: 'id',
                                                 modifyQueryUsing: fn($query) => $query->whereHas('candidate', function ($q) {
-                                                    $q->where('program_type', 'maher');
+                                                    $q->where('program_type', 'mutqin');
                                                 }),
                                             )
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->candidate->full_name}")
@@ -128,10 +123,10 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                                             ->afterStateHydrated(function(Forms\Get $get, Forms\Set $set, ?RecitationSession $record) use ($quranService) {
 
                                                 $student_id = $get('student_id');
-                                                $almaher =  $record ? AlMaherRecitation::where('recitation_session_id', $record->id)->first() : null;
-                                                if ($student_id && $almaher && $almaher->start_surah_id == null && $almaher->start_ayah_id == null) {
-                                                    $last_recitation = AlMaherRecitation::query()
-                                                        ->where('end_ayah_id','!=',null)
+                                                $almutqin =  $record ? AlMutqinRecitation::where('recitation_session_id', $record->id)->first() : null;
+                                                if ($student_id && $almutqin ) {
+                                                    $last_recitation = AlMutqinRecitation::query()
+                                                        ->where('mem_end_ayah_id','!=',null)
                                                         ->whereHas('recitationSession.student', function ($query) use($student_id) {
                                                             $query->where('id', $student_id);
                                                         })->whereHas('recitationSession', function ($query) {
@@ -139,15 +134,27 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                                                         })->latest()->first();
 
 
-                                                    if ($last_recitation) {
+                                                    if ($last_recitation && $almutqin->mem_start_surah_id == null && $almutqin->mem_start_ayah_id == null) {
                                                         // set last time end surah as this time start
-                                                        $set('../start_surah_id', $last_recitation->end_surah_id);
-                                                        $set('../start_ayah_id', $last_recitation->end_ayah_id);
+                                                        $set('../mem_start_surah_id', $last_recitation->mem_end_surah_id);
+                                                        $set('../mem_start_ayah_id', $last_recitation->mem_end_ayah_id);
 
 
-                                                        if ($last_recitation->end_surah_id && $last_recitation->end_ayah_id)  {
-                                                            $startPage = $quranService->getStartPageByAyah($last_recitation->end_surah_id, $last_recitation->end_ayah_id);
-                                                            $set('../start_page', $startPage);
+                                                        if ($last_recitation->mem_end_surah_id && $last_recitation->mem_end_ayah_id)  {
+                                                            $startPage = $quranService->getStartPageByAyah($last_recitation->mem_end_surah_id, $last_recitation->mem_end_ayah_id);
+                                                            $set('../mem_start_page', $startPage);
+                                                        }
+                                                    }
+
+                                                    if ($last_recitation && $almutqin->rev_start_surah_id == null && $almutqin->rev_start_ayah_id == null) {
+                                                        // set last time end surah as this time start
+                                                        $set('../rev_start_surah_id', $last_recitation->rev_end_surah_id);
+                                                        $set('../rev_start_ayah_id', $last_recitation->rev_end_ayah_id);
+
+
+                                                        if ($last_recitation->rev_end_surah_id && $last_recitation->rev_end_ayah_id)  {
+                                                            $startPage = $quranService->getStartPageByAyah($last_recitation->rev_end_surah_id, $last_recitation->rev_end_ayah_id);
+                                                            $set('../rev_start_page', $startPage);
                                                         }
                                                     }
                                                 }
@@ -155,7 +162,7 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                                             ->afterStateUpdated(function(Forms\Get $get, Forms\Set $set) use ($quranService) {
 
                                                 $student_id = $get('student_id');
-                                                $last_recitation = AlMaherRecitation::query()->whereHas('recitationSession.student', function ($query) use($student_id) {
+                                                $last_recitation = AlMutqinRecitation::query()->whereHas('recitationSession.student', function ($query) use($student_id) {
                                                     $query->where('id', $student_id);
                                                 })->whereHas('recitationSession', function ($query) {
                                                     $query->where('present', 'present');
@@ -164,13 +171,21 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
 
                                                 if ($last_recitation) {
                                                     // set last time end surah as this time start
-                                                    $set('../start_surah_id', $last_recitation->end_surah_id);
-                                                    $set('../start_ayah_id', $last_recitation->end_ayah_id);
+                                                    $set('../mem_start_surah_id', $last_recitation->mem_end_surah_id);
+                                                    $set('../mem_start_ayah_id', $last_recitation->mem_end_ayah_id);
+
+                                                    $set('../rev_start_surah_id', $last_recitation->rev_end_surah_id);
+                                                    $set('../rev_start_ayah_id', $last_recitation->rev_end_ayah_id);
 
 
-                                                    if ($last_recitation->end_surah_id && $last_recitation->end_ayah_id)  {
-                                                        $startPage = $quranService->getStartPageByAyah($last_recitation->end_surah_id, $last_recitation->end_ayah_id);
-                                                        $set('../start_page', $startPage);
+                                                    if ($last_recitation->mem_end_surah_id && $last_recitation->mem_end_ayah_id)  {
+                                                        $startPage = $quranService->getStartPageByAyah($last_recitation->mem_end_surah_id, $last_recitation->mem_end_ayah_id);
+                                                        $set('../mem_start_page', $startPage);
+                                                    }
+
+                                                    if ($last_recitation->rev_end_surah_id && $last_recitation->rev_end_ayah_id)  {
+                                                        $startPage = $quranService->getStartPageByAyah($last_recitation->rev_end_surah_id, $last_recitation->rev_end_ayah_id);
+                                                        $set('../rev_start_page', $startPage);
                                                     }
                                                 }
 
@@ -209,21 +224,21 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                                 ]),
 
                             //  الأهداف القرآنية
-                            Tabs\Tab::make('نتائج الحصة')
+                            Tabs\Tab::make('نتائج الحفظ')->id("actual-results")
                                 ->visible(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                 ->schema([
-                                    Select::make('start_surah_id')
+                                    Select::make('mem_start_surah_id')
                                         ->label('سورة البداية (اخر حصة)')
                                         ->options(fn() => collect($quranService->getSurahs())->pluck('name', 'id'))
                                         ->reactive()
                                         ->live()
-                                        ->afterStateUpdated(fn($get, $set) => $set('start_ayah_id', null)),
+                                        ->afterStateUpdated(fn($get, $set) => $set('mem_start_ayah_id', null)),
 
-                                    Select::make('start_ayah_id')
+                                    Select::make('mem_start_ayah_id')
                                         ->label('آية البداية (اخر حصة)')
                                         ->options(
-                                            fn($get) => $get('start_surah_id')
-                                                ? collect($quranService->getAyahs($get('start_surah_id')))
+                                            fn($get) => $get('mem_start_surah_id')
+                                                ? collect($quranService->getAyahs($get('mem_start_surah_id')))
                                                     ->mapWithKeys(function ($ayah) {
                                                         return [
                                                             $ayah['number'] => "{$ayah['number']} - "  . Str::limit($ayah['text'], 120)
@@ -235,32 +250,32 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                                         ->live()
                                         ->afterStateHydrated(function ($get, $set) use ($quranService) {
 
-                                            if ($get('start_surah_id') && $get('start_ayah_id')) {
-                                                $startPage = $quranService->getStartPageByAyah($get('start_surah_id'), $get('start_ayah_id'));
-                                                $set('start_page', $startPage);
+                                            if ($get('mem_start_surah_id') && $get('mem_start_ayah_id')) {
+                                                $startPage = $quranService->getStartPageByAyah($get('mem_start_surah_id'), $get('mem_start_ayah_id'));
+                                                $set('mem_start_page', $startPage);
                                             }
                                         })
                                         ->afterStateUpdated(function ($get, $set) use ($quranService) {
 
-                                            if ($get('start_surah_id') && $get('start_ayah_id')) {
-                                                $startPage = $quranService->getStartPageByAyah($get('start_surah_id'), $get('start_ayah_id'));
-                                                $set('start_page', $startPage);
+                                            if ($get('mem_start_surah_id') && $get('mem_start_ayah_id')) {
+                                                $startPage = $quranService->getStartPageByAyah($get('mem_start_surah_id'), $get('mem_start_ayah_id'));
+                                                $set('mem_start_page', $startPage);
                                             }
                                         }),
 
 
-                                    Select::make('end_surah_id')
+                                    Select::make('mem_end_surah_id')
                                         ->label('سورة النهاية')
                                         ->options(fn() => collect($quranService->getSurahs())->pluck('name', 'id'))
                                         ->reactive()
                                         ->live()
-                                        ->afterStateUpdated(fn($get, $set) => $set('end_ayah_id', null)),
+                                        ->afterStateUpdated(fn($get, $set) => $set('mem_end_ayah_id', null)),
 
-                                    Select::make('end_ayah_id')
+                                    Select::make('mem_end_ayah_id')
                                         ->label('آية النهاية')
                                         ->options(
-                                            fn($get) => $get('end_surah_id')
-                                                ? collect($quranService->getAyahs($get('end_surah_id')))
+                                            fn($get) => $get('mem_end_surah_id')
+                                                ? collect($quranService->getAyahs($get('mem_end_surah_id')))
                                                     ->mapWithKeys(function ($ayah) {
                                                         return [
                                                             $ayah['number'] => "{$ayah['number']} - "  . Str::limit($ayah['text'], 120)
@@ -273,9 +288,9 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                                         ->afterStateHydrated(function ($get, $set,string $operation) use ($quranService) {
                                             // حساب عدد الأسطر
                                             if ($operation === 'edit') {
-                                                if ($get('end_surah_id') && $get('end_ayah_id')) {
-                                                    $startPage = $quranService->getStartPageByAyah($get('end_surah_id'), $get('end_ayah_id'));
-                                                    $set('end_page', $startPage);
+                                                if ($get('mem_end_surah_id') && $get('mem_end_ayah_id')) {
+                                                    $startPage = $quranService->getStartPageByAyah($get('mem_end_surah_id'), $get('mem_end_ayah_id'));
+                                                    $set('mem_end_page', $startPage);
                                                 }
                                             }
 
@@ -283,17 +298,17 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                                         ->afterStateUpdated(function ($get, $set) use ($quranService) {
                                             // حساب عدد الأسطر
                                             $targetLines = $quranService->calculateLines(
-                                                $get('start_surah_id'),
-                                                $get('start_ayah_id'),
-                                                $get('end_surah_id'),
-                                                $get('end_ayah_id')
+                                                $get('mem_start_surah_id'),
+                                                $get('mem_start_ayah_id'),
+                                                $get('mem_end_surah_id'),
+                                                $get('mem_end_ayah_id')
                                             );
-                                            if ($get('end_surah_id') && $get('end_ayah_id')) {
-                                                $startPage = $quranService->getStartPageByAyah($get('end_surah_id'), $get('end_ayah_id'));
-                                                $set('end_page', $startPage);
+                                            if ($get('mem_end_surah_id') && $get('mem_end_ayah_id')) {
+                                                $startPage = $quranService->getStartPageByAyah($get('mem_end_surah_id'), $get('mem_end_ayah_id'));
+                                                $set('mem_end_page', $startPage);
                                             };
                                             // حساب عدد الصفحات
-                                            $startSurahId = $get('start_surah_id');
+                                            $startSurahId = $get('mem_start_surah_id');
 
 
                                             if ($startSurahId == 1) {
@@ -303,38 +318,153 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                                                 $targetPages = ceil($targetLines / 15);
                                             }
                                             $targetPages = number_format($targetPages, 2);
-                                            $set('pages', $targetPages);
+                                            $set('mem_pages', $targetPages);
                                         }),
 
-                                    TextInput::make('start_page')
+                                    TextInput::make('mem_start_page')
                                         ->label('صفحة البداية')
                                         ->numeric()
                                         ->disabled(),
 
-                                    TextInput::make('end_page')
+                                    TextInput::make('mem_end_page')
                                         ->label('صفحة النهاية')
                                         ->numeric()
                                         ->disabled(),
 
 
-                                    TextInput::make('pages')
+                                    TextInput::make('mem_pages')
                                         ->label('عدد الاوجه')
                                         ->numeric()
                                         ->disabled()
                                         ->dehydrated(),
                                 ]),
 
-                            Tabs\Tab::make('المتن المصاحب')
+                            Tabs\Tab::make('نتائج المراجعة')
                                 ->visible(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                 ->schema([
-                                    Select::make('lesson_title')
-                                        ->label('حفظ المتون')
-                                        ->options(AlMaherRecitation::getLessonTitles())
+                                    Select::make('rev_start_surah_id')
+                                        ->label('سورة البداية (اخر حصة)')
+                                        ->options(fn() => collect($quranService->getSurahs())->pluck('name', 'id'))
+                                        ->reactive()
+                                        ->live()
+                                        ->afterStateUpdated(fn($get, $set) => $set('rev_start_ayah_id', null)),
+
+                                    Select::make('rev_start_ayah_id')
+                                        ->label('آية البداية (اخر حصة)')
+                                        ->options(
+                                            fn($get) => $get('rev_start_surah_id')
+                                                ? collect($quranService->getAyahs($get('rev_start_surah_id')))
+                                                    ->mapWithKeys(function ($ayah) {
+                                                        return [
+                                                            $ayah['number'] => "{$ayah['number']} - "  . Str::limit($ayah['text'], 120)
+                                                        ];
+                                                    })
+                                                : []
+                                        )
+                                        ->reactive()
+                                        ->live()
+                                        ->afterStateHydrated(function ($get, $set) use ($quranService) {
+
+                                            if ($get('rev_start_surah_id') && $get('rev_start_ayah_id')) {
+                                                $startPage = $quranService->getStartPageByAyah($get('rev_start_surah_id'), $get('rev_start_ayah_id'));
+                                                $set('rev_start_page', $startPage);
+                                            }
+                                        })
+                                        ->afterStateUpdated(function ($get, $set) use ($quranService) {
+
+                                            if ($get('rev_start_surah_id') && $get('rev_start_ayah_id')) {
+                                                $startPage = $quranService->getStartPageByAyah($get('rev_start_surah_id'), $get('rev_start_ayah_id'));
+                                                $set('rev_start_page', $startPage);
+                                            }
+                                        }),
+
+
+                                    Select::make('rev_end_surah_id')
+                                        ->label('سورة النهاية')
+                                        ->options(fn() => collect($quranService->getSurahs())->pluck('name', 'id'))
+                                        ->reactive()
+                                        ->live()
+                                        ->afterStateUpdated(fn($get, $set) => $set('rev_end_ayah_id', null)),
+
+                                    Select::make('rev_end_ayah_id')
+                                        ->label('آية النهاية')
+                                        ->options(
+                                            fn($get) => $get('rev_end_surah_id')
+                                                ? collect($quranService->getAyahs($get('rev_end_surah_id')))
+                                                    ->mapWithKeys(function ($ayah) {
+                                                        return [
+                                                            $ayah['number'] => "{$ayah['number']} - " . Str::limit($ayah['text'], 120)
+                                                        ];
+                                                    })
+                                                : []
+                                        )
+                                        ->reactive()
+                                        ->live()
+                                        ->afterStateHydrated(function ($get, $set,string $operation) use ($quranService) {
+                                            // حساب عدد الأسطر
+                                            if ($operation === 'edit') {
+                                                if ($get('rev_end_surah_id') && $get('rev_end_ayah_id')) {
+                                                    $startPage = $quranService->getStartPageByAyah($get('rev_end_surah_id'), $get('rev_end_ayah_id'));
+                                                    $set('rev_end_page', $startPage);
+                                                }
+                                            }
+
+                                        })
+                                        ->afterStateUpdated(function ($get, $set) use ($quranService) {
+                                            // حساب عدد الأسطر
+                                            $targetLines = $quranService->calculateLines(
+                                                $get('rev_start_surah_id'),
+                                                $get('rev_start_ayah_id'),
+                                                $get('rev_end_surah_id'),
+                                                $get('rev_end_ayah_id')
+                                            );
+                                            if ($get('rev_end_surah_id') && $get('rev_end_ayah_id')) {
+                                                $startPage = $quranService->getStartPageByAyah($get('rev_end_surah_id'), $get('rev_end_ayah_id'));
+                                                $set('rev_end_page', $startPage);
+                                            };
+                                            // حساب عدد الصفحات
+                                            $startSurahId = $get('rev_start_surah_id');
+
+
+                                            if ($startSurahId == 1) {
+                                                $targetLines -= 7;
+                                                $targetPages = ceil($targetLines / 15) + 1;
+                                            } else {
+                                                $targetPages = ceil($targetLines / 15);
+                                            }
+                                            $targetPages = number_format($targetPages, 2);
+                                            $set('rev_pages', $targetPages);
+                                        }),
+
+                                    TextInput::make('rev_start_page')
+                                        ->label('صفحة البداية')
+                                        ->numeric()
+                                        ->disabled(),
+
+                                    TextInput::make('rev_end_page')
+                                        ->label('صفحة النهاية')
+                                        ->numeric()
+                                        ->disabled(),
+
+
+                                    TextInput::make('rev_pages')
+                                        ->label('عدد الاوجه')
+                                        ->numeric()
+                                        ->disabled()
+                                        ->dehydrated(),
+                                ]),
+
+                            Tabs\Tab::make('الدرس المصاحب')
+                                ->visible(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
+                                ->schema([
+                                    Select::make('lesson_type')
+                                        ->label('الدرس المصاحب ')
+                                        ->options(AlMutqinRecitation::getLessonTypes())
                                         ->columnSpanFull(),
 
-                                    TextInput::make('mem_lines')
-                                        ->label('عدد الأبيات المحفوظة')
-                                        ->required(fn($get) => $get('lesson_title') !== null)
+                                    TextInput::make('lesson_title')
+                                        ->label('عنوان الدرس المصاحب')
+                                        ->required(fn($get) => $get('lesson_type') !== null)
                                         ->columnSpanFull(),
 
                                 ]),
@@ -387,11 +517,6 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
     {
 
         return $table
-            ->query(
-                AlMaherRecitation::query()->whereHas('recitationSession.halaka.teacher.user', function ($query) {
-                    return $query->where('user_id', auth()->id());
-                })
-            )
             ->columns([
                 TextColumn::make('recitationSession.session_date')
                     ->label('تاريخ الجلسة')
@@ -425,17 +550,21 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                     }),
 
 
-                TextColumn::make('surah_name')
-                    ->label('سورة النهاية')
+                TextColumn::make('mem_surah_name')
+                    ->label('سورة النهاية (الحفظ)')
                     ->toggleable(),
 
-                TextColumn::make('ayah_text')
-                    ->label('آية النهاية')
+                TextColumn::make('mem_pages')
+                    ->label('عدد اوجه الحفظ')
                     ->limit(30)
                     ->toggleable(),
 
-                TextColumn::make('pages')
-                    ->label('عدد الاوجه')
+                TextColumn::make('rev_surah_name')
+                    ->label('سورة النهاية (المراجعة)')
+                    ->toggleable(),
+
+                TextColumn::make('rev_pages')
+                    ->label('عدد اوجه المراجعة')
                     ->limit(30)
                     ->toggleable(),
 
@@ -443,13 +572,13 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
             ->actions([
                 Action::make('تعديل')
                     ->icon('heroicon-o-pencil')
-                    ->url(fn($record) => AlMaherRecitationResource::getUrl('edit', ['record' => $record])),
+                    ->url(fn($record) => AlMutqinRecitationResource::getUrl('edit', ['record' => $record])),
 
                 Action::make('نتائج-الجلسة')
-                    ->visible(fn(AlMaherRecitation $record) => $record->recitationSession->present === 'present')
+                    ->visible(fn(AlMutqinRecitation $record) => $record->recitationSession->present === 'present')
                     ->icon('heroicon-o-document-text')
                     ->color('success')
-                    ->url(fn($record) => AlMaherRecitationResource::getUrl('edit', ['record' => $record]) . '?tab=-actual-results-tab'),
+                    ->url(fn($record) => AlMutqinRecitationResource::getUrl('edit', ['record' => $record]) . '?tab=-actual-results-tab'),
             ]);
     }
 

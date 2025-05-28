@@ -16,7 +16,7 @@ class IsTeacher
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if(auth()->check() && !auth()->user()?->hasRole('teacher'))
+        if(auth()->check() && !auth()->user()?->hasRole('Teacher'))
         {
           Filament::auth()->logout();
           if(auth()->user()?->hasRole('super_admin'))
