@@ -42,7 +42,7 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->teacher->program_type === 'maher';
+        return auth()->user()->teacher->program_type === 'mahir';
     }
 
     public static function getNavigationLabel(): string
@@ -120,7 +120,7 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                                                 name: 'student',
                                                 titleAttribute: 'id',
                                                 modifyQueryUsing: fn($query) => $query->whereHas('candidate', function ($q) {
-                                                    $q->where('program_type', 'maher');
+                                                    $q->where('program_type', 'mahir');
                                                 }),
                                             )
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->candidate->full_name}")
