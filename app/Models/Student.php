@@ -15,7 +15,8 @@ class Student extends Model
         'evaluator_id',
         'candidate_id',
         'start_date',
-        'current_level'
+        'current_level',
+        'monthly_target_pages'
     ];
     protected $appends = ['full_name'];
 

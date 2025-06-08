@@ -21,6 +21,9 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
@@ -579,7 +582,78 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                     ->icon('heroicon-o-document-text')
                     ->color('success')
                     ->url(fn($record) => AlMutqinRecitationResource::getUrl('edit', ['record' => $record]) . '?tab=-actual-results-tab'),
-            ]);
+            ])
+            ->headerActions([
+                Action::make('generate_pdf')
+                    ->label('تصدير تقرير PDF')
+                    ->icon('icon-halaka')
+                    ->color('success')
+                    ->form([
+                        Select::make('time_range')
+                            ->label('الفترة الزمنية')
+                            ->options([
+                                'monthly' => 'التقرير الشهري',
+                                'yearly' => 'التقرير السنوي',
+                                'custom' => 'تحديد نطاق زمني',
+                            ])
+                            ->required()
+                            ->live(),
+
+                        DatePicker::make('start_date')
+                            ->label('من تاريخ')
+                            ->visible(fn($get) => $get('time_range') === 'custom')
+                            ->required(fn($get) => $get('time_range') === 'custom'),
+
+                        DatePicker::make('end_date')
+                            ->label('إلى تاريخ')
+                            ->visible(fn($get) => $get('time_range') === 'custom')
+                            ->required(fn($get) => $get('time_range') === 'custom'),
+                    ])
+                    ->action(function (array $data) {
+                        return redirect()->route('recitations.pdf-download-almutqin-report', [
+                            'time_range' => $data['time_range'],
+                            'start_date' => $data['start_date'] ?? null,
+                            'end_date' => $data['end_date'] ?? null,
+                        ]);
+                    })
+            ])->filters([
+                // Filter by student
+                SelectFilter::make('student_id')
+                    ->label('الطالب')
+                    ->relationship('recitationSession.student.candidate', 'full_name'),
+
+                // Filter by date from
+                Filter::make('from_date')
+                    ->label('من تاريخ')
+                    ->form([
+                        DatePicker::make('from')->label('من تاريخ'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        if ($data['from']) {
+                            $query->whereHas('recitationSession', fn ($q) =>
+                            $q->whereDate('session_date', '>=', $data['from'])
+                            );
+                        }
+                    })    ->indicateUsing(function (array $data): ?string {
+                        return $data['from'] ? 'من: ' . \Carbon\Carbon::parse($data['from'])->format('Y-m-d') : null;
+                    }),
+
+                // Filter by date to
+                Filter::make('to_date')
+                    ->label('إلى تاريخ')
+                    ->form([
+                        DatePicker::make('to')->label('إلى تاريخ'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        if ($data['to']) {
+                            $query->whereHas('recitationSession', fn ($q) =>
+                            $q->whereDate('session_date', '<=', $data['to'])
+                            );
+                        }
+                    })   ->indicateUsing(function (array $data): ?string {
+                        return $data['to'] ? 'إلى: ' . \Carbon\Carbon::parse($data['to'])->format('Y-m-d') : null;
+                    }),
+            ])->filtersLayout(FiltersLayout::AboveContent);
     }
 
     public static function getRelations(): array

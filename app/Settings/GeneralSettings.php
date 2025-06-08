@@ -6,6 +6,17 @@ use Spatie\LaravelSettings\Settings;
 
 class GeneralSettings extends Settings
 {
+    public int $maqraa_monthly_target = 40;
+    public int $mutqin_monthly_target = 20;
+    public int $mahir_monthly_target = 20;
+
+    public string $maqraa_start_date = '2024-09-01';
+    public string $maqraa_end_date = '2025-06-30';
+    public string $mutqin_start_date = '2024-09-01';
+    public string $mutqin_end_date = '2025-06-30';
+    public string $mahir_start_date = '2024-09-01';
+    public string $mahir_end_date = '2025-06-30';
+
     public int $min_age;
     public int $max_age;
 

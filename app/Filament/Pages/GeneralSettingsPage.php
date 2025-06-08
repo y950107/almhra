@@ -4,13 +4,17 @@ namespace App\Filament\Pages;
 
 
 
+use App\Models\Settings;
 use App\Settings\GeneralSettings;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Form;
 use Filament\Pages\SettingsPage;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TextInput;
 use Tabs\Tab;
 
 
@@ -88,6 +92,8 @@ class GeneralSettingsPage extends SettingsPage
                                                     ->required()
                                                     ->numeric(),
 
+
+
                                             ])->columns(2),
 
                                         Forms\Components\Section::make('إعدادات نوع القراءة')
@@ -147,6 +153,55 @@ class GeneralSettingsPage extends SettingsPage
                                                     ->label('قبول الطلاب تلقائياً'),
                                             ]),
                                     ]),
+                                Tabs\Tab::make('اعدادات البرامج')
+                                    ->icon('icon-recitations')
+                                    ->schema([
+                                        Forms\Components\Group::make()->columnSpanFull()
+                                            ->schema([
+
+                                                Forms\Components\TextInput::make('maqraa_monthly_target')
+                                                    ->label('عدد الاوجه الشهري لبرنامج المقراة')
+                                                    ->required()
+                                                    ->numeric(),
+
+
+                                                DatePicker::make('maqraa_start_date')
+                                                    ->label('تاريخ بداية برنامج المقرأة')
+                                                    ->required(),
+
+                                                DatePicker::make('maqraa_end_date')
+                                                    ->label('تاريخ نهاية برنامج المقرأة')
+                                                    ->required(),
+
+                                                TextInput::make('mutqin_monthly_target')
+                                                    ->label('عدد الاوجه الشهري لبرنامج المتقن')
+                                                    ->required()
+                                                    ->numeric(),
+
+                                                DatePicker::make('mutqin_start_date')
+                                                    ->label('تاريخ بداية برنامج المتقن')
+                                                    ->required(),
+
+                                                DatePicker::make('mutqin_end_date')
+                                                    ->label('تاريخ نهاية برنامج المتقن')
+                                                    ->required(),
+
+                                                TextInput::make('mahir_monthly_target')
+                                                    ->label('عدد الاوجه الشهري لبرنامج الماهر')
+                                                    ->required()
+                                                    ->numeric(),
+
+                                                DatePicker::make('mahir_start_date')
+                                                    ->label('تاريخ بداية برنامج الماهر')
+                                                    ->required(),
+
+                                                DatePicker::make('mahir_end_date')
+                                                    ->label('تاريخ نهاية برنامج الماهر')
+                                                    ->required(),
+
+
+                                            ])->columns(3)
+                                        ]),
                                 Tabs\Tab::make('اعدادات الموقع')
                                     ->icon('icon-landing_page')
                                     ->schema([

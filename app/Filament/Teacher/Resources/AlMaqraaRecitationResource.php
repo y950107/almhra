@@ -21,6 +21,9 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
@@ -437,7 +440,45 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                     ->icon('heroicon-o-document-text')
                     ->color('success')
                     ->url(fn($record) => AlMaqraaRecitationResource::getUrl('edit', ['record' => $record]) . '?tab=-actual-results-tab'),
-            ]);
+            ])
+            ->filters([
+                // Filter by student
+                SelectFilter::make('student_id')
+                    ->label('الطالب')
+                    ->relationship('recitationSession.student.candidate', 'full_name'),
+
+                // Filter by date from
+                Filter::make('from_date')
+                    ->label('من تاريخ')
+                    ->form([
+                        DatePicker::make('from')->label('من تاريخ'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        if ($data['from']) {
+                            $query->whereHas('recitationSession', fn ($q) =>
+                            $q->whereDate('session_date', '>=', $data['from'])
+                            );
+                        }
+                    })    ->indicateUsing(function (array $data): ?string {
+                        return $data['from'] ? 'من: ' . \Carbon\Carbon::parse($data['from'])->format('Y-m-d') : null;
+                    }),
+
+                // Filter by date to
+                Filter::make('to_date')
+                    ->label('إلى تاريخ')
+                    ->form([
+                        DatePicker::make('to')->label('إلى تاريخ'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        if ($data['to']) {
+                            $query->whereHas('recitationSession', fn ($q) =>
+                            $q->whereDate('session_date', '<=', $data['to'])
+                            );
+                        }
+                    })   ->indicateUsing(function (array $data): ?string {
+                        return $data['to'] ? 'إلى: ' . \Carbon\Carbon::parse($data['to'])->format('Y-m-d') : null;
+                    }),
+            ])->filtersLayout(FiltersLayout::AboveContent);
     }
 
     public static function getRelations(): array

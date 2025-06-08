@@ -72,7 +72,7 @@ Route::post('/candidate', [CandidateController::class, 'store'])->name('candidat
 /* Route::get('/reports/preview', [ReportsController::class, 'preview'])->name('reports.preview');
 Route::get('/reports/download-pdf', [ReportsController::class, 'downloadPdf'])->name('reports.download-pdf');
 Route::get('/reports/download-excel', [ReportsController::class, 'downloadExcel'])->name('reports.download-excel'); */
- 
+
 Route::get('/test-prayer-times', function () {
     dd(PrayerTimeService::getPrayerTimes(24.7136, 46.6753)); // 🔥 اختبار جلب أوقات الصلاة
 });
@@ -87,11 +87,14 @@ Route::get('/quran/verses/{surah_id}', function ($surah_id) {
 
 Route::get('/teachers/pdf-preview', [PDFController::class, 'preview'])->name('teachers.pdf-preview');
 Route::get('/teachers/pdf-download', [PDFController::class, 'download'])->name('teachers.pdf-download');
-Route::get('/teachers/pdf-download', [PDFController::class, 'download'])->name('teachers.pdf-download');
+Route::get('/students/pdf-download', [PDFController::class, 'downloadStudentsPresence'])->name('students.pdf-download');
 //***** هذي خاصة ب تقرير الطلاب */
 
 Route::get('/recitations/pdf-preview', [RecitationSessionControler::class, 'preview'])->name('recitations.pdf-preview');
-Route::get('/recitations/pdf-download', [RecitationSessionControler::class, 'download'])->name('recitations.pdf-download');
+//Route::get('/recitations/pdf-download', [RecitationSessionControler::class, 'download'])->name('recitations.pdf-download');
+Route::get('/recitations/pdf-download-almaqraa-report', [RecitationSessionControler::class, 'downloadMaqraaReport'])->name('recitations.pdf-download-almaqraa-report');
+Route::get('/recitations/pdf-download-almahir-report', [RecitationSessionControler::class, 'downloadMahirReport'])->name('recitations.pdf-download-almahir-report');
+Route::get('/recitations/pdf-download-almahir-report', [RecitationSessionControler::class, 'downloadMutqinReport'])->name('recitations.pdf-download-almutqin-report');
 
 
 
@@ -99,11 +102,11 @@ Route::get('/recitations/pdf-download', [RecitationSessionControler::class, 'dow
 //     if (! in_array($locale, ['en', 'ar'])) {
 //         abort(400);
 //     }
- 
+
 //     app()->setLocale($locale);
 //     session()->put('locale', $locale);
 
-    
+
 //     //\Artisan::call("config:clear");
 //     Config::set('app.locale',session()->get("locale"));
 //     //\Artisan::call("config:cache");

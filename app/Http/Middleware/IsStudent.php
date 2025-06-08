@@ -16,6 +16,7 @@ class IsStudent
      */
     public function handle(Request $request, Closure $next): Response
     {
+
         if(auth()->check() && !auth()->user()?->hasRole('Student'))
         {
           Filament::auth()->logout();

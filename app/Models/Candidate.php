@@ -19,7 +19,7 @@ class Candidate extends Model
         'quran_level',
         'has_ijaza',
         'ijaza_types',
-        'desired_recitations',
+        'desired_recitation',
         'self_evaluation',
         'user_id',
         'program_type',
@@ -35,7 +35,6 @@ class Candidate extends Model
 
     protected $casts = [
         'ijaza_types' => 'array',
-        'desired_recitations' => 'array',
         'birthdate' => 'date',
         'interview_date' => 'date',
         'has_ijaza' => 'boolean',
@@ -49,6 +48,11 @@ class Candidate extends Model
     public function teacher()
     {
         return $this->belongsTo(Teacher::class, 'teacher_id', 'id');
+    }
+
+    public function student()
+    {
+        return $this->hasOne(Student::class, 'candidate_id', 'id');
     }
 
 

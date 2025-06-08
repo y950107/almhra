@@ -11,21 +11,18 @@ class StatStudent extends BaseWidget
     protected static ?int $sort = 1;
     protected static bool $isLazy = false;
     protected ?string $heading = 'احصائيات خاصة  بحصص التسميع ';
-    protected function getDescription(): ?string
-{
-    return 'An overview of some analytics.';
-}
+
     protected function getStats(): array
     {
         $recitationStats = RecitationSession::whereHas('student', function ($query) {
             $query->where('user_id', auth()->id());
         });
 
-        $totalActualPages = $recitationStats->sum('actual_end_page');
-        $totalTargetPages = $recitationStats->sum('target_pages');
-        $totalActuel_lines = $recitationStats->sum('actuel_lines');
-        $averageTargetPercentage = $totalTargetPages != 0 ? ($totalActualPages / $totalTargetPages) * 100 : 0;
-        $totalRecitation = $recitationStats->count('id');
+     //   $totalActualPages = $recitationStats->sum('actual_end_page');
+     //   $totalTargetPages = $recitationStats->sum('target_pages');
+      //Z  $totalActuel_lines = $recitationStats->sum('actuel_lines');
+      //  $averageTargetPercentage = $totalTargetPages != 0 ? ($totalActualPages / $totalTargetPages) * 100 : 0;
+      //  $totalRecitation = $recitationStats->count('id');
 
 
 

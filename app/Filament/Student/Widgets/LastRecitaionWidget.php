@@ -13,7 +13,7 @@ class LastRecitaionWidget extends BaseWidget
     protected static bool $isLazy = false;
 
     protected int|string|array $columnSpan = 2;
-    protected static ?string $heading = 'آخر جلست التسميع';
+    protected static ?string $heading = 'آخر جلسة تسميع';
 
     public function table(Table $table): Table
     {
@@ -41,7 +41,7 @@ class LastRecitaionWidget extends BaseWidget
             ->label('المعلم')
             ->formatStateUsing(fn($state) => $state ?? 'غير معروف')
             ->toggleable(),
-
+/*
         TextColumn::make('start_surah_name')
             ->label('سورة البداية')
             ->formatStateUsing(fn($state) => $state ?? '---')
@@ -75,7 +75,7 @@ class LastRecitaionWidget extends BaseWidget
             ->formatStateUsing(fn($state) => ($state ?? 0) . '%')
             ->badge()
             ->colors(['success'])
-            ->toggleable(),
+            ->toggleable(),*/
     ])->emptyStateHeading('لا توجد جلسات حالياً')
     ->emptyStateDescription('لم يتم تسجيل أي جلسة تابعة لك بعد.');
 

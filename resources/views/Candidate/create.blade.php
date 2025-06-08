@@ -136,6 +136,13 @@
                 minimumResultsForSearch: Infinity // Hides the search box
             });
 
+            $('#desired_recitations').select2({
+                placeholder: "اختر القراءات المراد قراءتها",
+                allowClear: true,
+                width: '100%',
+                minimumResultsForSearch: Infinity // Hides the search box
+            });
+
 
                 // Toggle password visibility for the first password field
                 $('#toggle-password').on('click', function () {
@@ -309,6 +316,21 @@
         document.addEventListener('DOMContentLoaded', () => {
             showStep(1);
         });
+    </script>
+
+
+    <script>
+        function toggleIjazaTypes() {
+            console.log('test')
+            const hasIjaza = document.getElementById('has_ijaza').value;
+            const container = document.getElementById('ijaza_types_container');
+            container.style.display = (hasIjaza === '1') ? 'block' : 'none';
+        }
+
+        document.getElementById('has_ijaza').addEventListener('change', toggleIjazaTypes);
+
+        // Run on page load in case of old() data
+        window.addEventListener('DOMContentLoaded', toggleIjazaTypes);
     </script>
 
 @endsection

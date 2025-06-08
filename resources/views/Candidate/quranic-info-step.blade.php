@@ -19,7 +19,7 @@
             <div class="mb-4">
                 <label for="has_ijaza" class="block text-sm font-medium text-gray-700">هل لديك إجازة؟*</label>
                 <select name="has_ijaza" id="has_ijaza"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" onchange="toggleIjazaTypes()">
                     <option value="">اختر</option>
                     <option value="1" {{ old('has_ijaza') == '1' ? 'selected' : '' }}>نعم</option>
                     <option value="0" {{ old('has_ijaza') === '0' ? 'selected' : '' }}>لا</option>
@@ -27,7 +27,7 @@
             </div>
 
             <!-- أنواع الإجازة -->
-            <div class="mb-4">
+            <div class="mb-4" id="ijaza_types_container" style="display: none;">
                 <label for="ijaza_types" class="block text-sm font-medium text-gray-700">أنواع الإجازة</label>
                 <div class="mt-4 flex flex-col gap-2">
                     @foreach ($ijazas as $key => $label)
@@ -45,19 +45,16 @@
 
             <!-- القراءات المراد قراءتها -->
             <div class="mb-4">
-                <label for="desired_recitations" class="block text-sm font-medium text-gray-700">القراءات المراد قراءتها</label>
-                <div class="mt-4 flex flex-col gap-2">
-                    @forelse($recitations as $recitation)
-                        <label class="inline-flex items-center gap-x-1">
-                            <input type="checkbox" name="desired_recitations[]" value="{{ $recitation }}"
-                                   {{ in_array($recitation, old('desired_recitations', [])) ? 'checked' : '' }}
-                                   class="rounded border-gray-300 text-indigo-600 shadow-sm focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0">
-                            <span class="ml-2 text-gray-700">{{ $recitation }}</span>
-                        </label>
-                    @empty
-                        <p class="text-gray-500">لايوجد أي قراءات</p>
-                    @endforelse
-                </div>
+                <label for="desired_recitation" class="block text-sm font-medium text-gray-700">القراءات المراد قراءتها</label>
+
+
+                <select name="desired_recitation" id="desired_recitation" class="select2 w-full">
+                    <option value="">اختر القرائات</option>
+                    @foreach ($recitations as $key => $value)
+                        <option value="{{ $key }}" {{ old('desired_recitation') == $key ? 'selected' : '' }}>
+                            {{ $value }}</option>
+                    @endforeach
+                </select>
 
             </div>
         </div>
@@ -146,3 +143,5 @@
         </button>
     </div>
 </div>
+
+

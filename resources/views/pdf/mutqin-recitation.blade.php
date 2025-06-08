@@ -163,16 +163,21 @@
                 <th>الطالب</th>
                 <th>معلم الحلقة</th>
                 <th>التسجيل</th>
+                <th>الغياب</th>
                 <th>من سورة</th>
                 <th>آية</th>
                 <th>إلى سورة</th>
                 <th>آية</th>
-                <th>الغياب</th>
                 <th>المحقق</th>
                 <th>المستهدف</th>
                 <th>نسبة الإنجاز</th>
-                <th>المحقق التراكمي</th>
-                <th>المستهدف التراكمي</th>
+
+                <th>من سورة</th>
+                <th>آية</th>
+                <th>إلى سورة</th>
+                <th>آية</th>
+                <th>المحقق</th>
+                <th>المستهدف</th>
                 <th>نسبة الإنجاز</th>
             </tr>
         </thead>
@@ -183,17 +188,24 @@
                     <td>{{ $stat['student_name'] }}</td>
                     <td>{{ $stat['teacher_name'] }}</td>
                     <td>{{ $stat['registration_month'] }}</td>
-                    <td>{{ $stat['start_surah_name'] }}</td>
-                    <td>{{ $stat['start_ayah_id'] }}</td>
-                    <td>{{ $stat['end_surah_name'] }}</td>
-                    <td>{{ $stat['end_ayah_id'] }}</td>
                     <td>{{ $stat['absences'] }}</td>
-                    <td>{{ $stat['pages_read'] }}</td>
-                    <td>{{ $stat['monthly_target'] }}</td>
-                    <td>{{ $stat['monthly_percentage'] }}%</td>
-                    <td>{{ $stat['cumulative_pages'] }}</td>
-                    <td>{{ $stat['cumulative_target'] }}</td>
-                    <td>{{ $stat['cumulative_percentage'] }}%</td>
+
+
+                    <td>{{ $stat['mem_start_surah_name'] }}</td>
+                    <td>{{ $stat['mem_start_ayah_id'] }}</td>
+                    <td>{{ $stat['mem_end_surah_name'] }}</td>
+                    <td>{{ $stat['mem_end_ayah_id'] }}</td>
+                    <td>{{ $stat['mem_pages_read'] }}</td>
+                    <td>{{ $stat['mem_monthly_target'] }}</td>
+                    <td>{{ $stat['mem_monthly_percentage'] }}%</td>
+
+                    <td>{{ $stat['rev_start_surah_name'] }}</td>
+                    <td>{{ $stat['rev_start_ayah_id'] }}</td>
+                    <td>{{ $stat['rev_end_surah_name'] }}</td>
+                    <td>{{ $stat['rev_end_ayah_id'] }}</td>
+                    <td>{{ $stat['rev_pages_read'] }}</td>
+                    <td>{{ $stat['rev_monthly_target'] }}</td>
+                    <td>{{ $stat['rev_monthly_percentage'] }}%</td>
                 </tr>
             @endforeach
 
@@ -202,22 +214,26 @@
         <tfoot class="tfoot" style="background-color: rgb(28, 22, 35)">
 
             <tr>
-                <th colspan="8" rowspan="2">مؤشر الأداء لجميع الحلقات</th>
+                <th colspan="4" rowspan="2">مؤشر الأداء لجميع الحلقات</th>
                 <th>{{ $overallStats['total_absences_percentage'] }}%</th>
-                <th>{{ $overallStats['total_pages'] }}</th>
-                <th>{{ $overallStats['total_monthly_target'] }}</th>
-                <th>{{ $overallStats['total_monthly_percentage'] }}%</th>
-                <th>{{ $overallStats['total_cumulative_pages'] }}</th>
-                <th>{{ $overallStats['total_cumulative_target'] }}</th>
-                <th>{{ $overallStats['total_cumulative_percentage'] }}%</th>
+                <th colspan="4" rowspan="2">الحفظ</th>
+                <th>{{ $overallStats['mem_total_pages'] }}</th>
+                <th>{{ $overallStats['mem_total_monthly_target'] }}</th>
+                <th>{{ $overallStats['mem_total_monthly_percentage'] }}%</th>
+                <th colspan="4" rowspan="2">المراجعة</th>
+                <th>{{ $overallStats['rev_total_pages'] }}</th>
+                <th>{{ $overallStats['rev_total_monthly_target'] }}</th>
+                <th>{{ $overallStats['rev_total_monthly_percentage'] }}%</th>
 
             </tr>
             <tr>
 
                 <th>الغياب</th>
+
                 <th colspan="2">عدد الاوجه</th>
 
                 <th>نسبة الانجاز</th>
+
                 <th colspan="2">عدد الاوجه</th>
 
                 <th>المؤشر العام</th>

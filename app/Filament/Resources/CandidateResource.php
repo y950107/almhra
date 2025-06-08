@@ -101,9 +101,10 @@ class CandidateResource extends Resource implements HasShieldPermissions
                                                 Forms\Components\Select::make('self_evaluation')
                                                     ->options([60, 70, 80, 90, 100])
                                                     ->label(__('filament.candidate.fields.self_evaluation')),
-                                                Forms\Components\Select::make('desired_recitations')
+
+
+                                                Forms\Components\Select::make('desired_recitation')
                                                     ->options(settings("reading_types"))
-                                                    ->multiple()
                                                     ->label(__('filament.candidate.fields.desired_recitations'))
                                                     ->columnSpanFull(),
 
@@ -131,7 +132,6 @@ class CandidateResource extends Resource implements HasShieldPermissions
                                                     ->visibility('public')
                                                     ->downloadable()
                                                     ->openable()
-                                                    ->required()
                                                     ->label(__('filament.candidate.fields.qualification_file')),
 
                                                 Forms\Components\FileUpload::make('audio_recitation')

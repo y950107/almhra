@@ -74,7 +74,6 @@ class SessionsResource extends Resource implements HasShieldPermissions
     public static function table(Tables\Table $table): Tables\Table
     {
         return $table->columns([
-            TextColumn::make('id')->label('المعرف')->sortable(),
 
             TextColumn::make('name')->label('اسم الحلقة')->sortable()->searchable(),
 
@@ -82,10 +81,9 @@ class SessionsResource extends Resource implements HasShieldPermissions
 
             TextColumn::make('start_date')
                 ->label('تاريخ البداية')
-                ->date('Y-M-D')
+                ->date('d-m-Y')
                 ->sortable(),
 
-            TextColumn::make('max_students')->label('الحد الأقصى')->sortable(),
 
             TextColumn::make('students_count')
                 ->label('عدد الطلاب')

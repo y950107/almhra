@@ -9,6 +9,7 @@ use App\Notifications\CandidateEvaluationNotification;
 use App\Notifications\EvaluationNotif;
 use App\Notifications\StudentAccountCreated;
 use App\Notifications\TeacherAccountCreated;
+use App\Services\Moshaf_madina_Service;
 use App\Settings\GeneralSettings;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +26,15 @@ if (! function_exists('settings')) {
 }
 /**end settings */
 
+if (! function_exists('getSurahName')) {
+    function getSurahName($surahId)
+    {
+
+        $quranService = app(Moshaf_madina_Service::class);
+        $surahs = $quranService->getSurahs();
+        return collect($surahs)->where('id', $surahId)->first()['name'] ?? null;
+    }
+}
 
 //// manage teacher
 if (!function_exists('TeacherToUser')) {
@@ -40,7 +50,7 @@ if (!function_exists('TeacherToUser')) {
                 return;
             }
 
-            // Generate random password
+
             $password = "password"; // default password
 
             // Create user
@@ -67,13 +77,11 @@ if (!function_exists('TeacherToUser')) {
         } catch (\Illuminate\Database\QueryException $e) {
             Notification::make()
                 ->title('خطأ في قاعدة البيانات')
-                ->body($e->getMessage()) // Or log this and display a more user-friendly message
                 ->danger()
                 ->send();
         } catch (\Exception $e) {
             Notification::make()
                 ->title('حدث خطأ غير متوقع')
-                ->body($e->getMessage()) // Same here—be careful with exposing internal errors
                 ->danger()
                 ->send();
         }
@@ -90,16 +98,12 @@ if (!function_exists('sendToInterview')) {
     function sendToInterview($candidate)
     {
         try {
-            DB::beginTransaction();
 
             if (Evaluation::where('candidate_id', $candidate->id)->exists()) {
-                DB::rollBack();
-
                 Notification::make()
                     ->title('المترشح لديه تقييم بالفعل!')
                     ->warning()
                     ->send();
-
                 return;
             }
 
@@ -109,8 +113,9 @@ if (!function_exists('sendToInterview')) {
                     ->title('المترشح ليس لديه معلم!')
                     ->danger()
                     ->send();
+                return;
             }
-
+            DB::beginTransaction();
             Evaluation::create([
                 'candidate_id' => $candidate->id,
                 'evaluator_id' => $candidate->teacher->user_id,
@@ -149,19 +154,40 @@ if (!function_exists('sendToInterview')) {
 if (!function_exists('acceptedStudent')) {
     function acceptedStudent($candidate)
     {
-        $password = Str::random(8);
+        $password = "password";
 
         try {
+
+            if (is_null($candidate->teacher_id))  {
+
+                Notification::make()
+                    ->title('المترشح ليس لديه معلم!')
+                    ->danger()
+                    ->send();
+                return;
+            }
+
             DB::beginTransaction();
 
 
-            $user = User::create([
-                'name' => $candidate->full_name,
-                'email' => $candidate->email,
-                'password' => Hash::make($password),
-                'type' => 'student',
-                'phone' => $candidate->phone
-            ]);
+
+            if (!$candidate->user_id) {
+                $user = User::create([
+                    'name' => $candidate->full_name,
+                    'email' => $candidate->email,
+                    'password' => Hash::make($password),
+                    'type' => 'student',
+                    'phone' => $candidate->phone,
+                    'acount_status' => true
+                ]);
+                $user->assignRole('Student');
+            }
+            else {
+                $user = User::findOrFail($candidate->user_id);
+                $user->acount_status = true;
+            }
+
+            $user->save();
 
             // إنشاء سجل طالب
             Student::create([
@@ -170,7 +196,7 @@ if (!function_exists('acceptedStudent')) {
                 'candidate_id' => $candidate->id,
                 'start_date' => now(),
             ]);
-            $user->assignRole('Student');
+
             $candidate->update(['status' => 'accepted'], ['evaluated' => true]);
 
             DB::commit();
@@ -197,20 +223,40 @@ if (!function_exists('acceptedStudent')) {
 if (!function_exists('acceptedCandidate')) {
     function acceptedCandidate($candidate)
     {
-        $password = Str::random(8);
+        $password = 'password';
 
         try {
+
+            if (is_null($candidate->teacher_id))  {
+
+                Notification::make()
+                    ->title('المترشح ليس لديه معلم!')
+                    ->danger()
+                    ->send();
+                return;
+            }
+
             DB::beginTransaction();
 
 
-            $user = User::create([
-                'name' => $candidate->full_name,
-                'email' => $candidate->email,
-                'password' => Hash::make($password),
-                'type' => 'student',
-                'phone' => $candidate->phone
-            ]);
 
+            if (!$candidate->user_id) {
+                $user = User::create([
+                    'name' => $candidate->full_name,
+                    'email' => $candidate->email,
+                    'password' => Hash::make($password),
+                    'type' => 'student',
+                    'phone' => $candidate->phone,
+                    'acount_status' => true
+                ]);
+                $user->assignRole('Student');
+            }
+            else {
+                $user = User::findOrFail($candidate->user_id);
+                $user->acount_status = true;
+            }
+
+            $user->save();
             // إنشاء سجل طالب
             Student::create([
                 'user_id' => $user->id,
@@ -218,7 +264,7 @@ if (!function_exists('acceptedCandidate')) {
                 'candidate_id' => $candidate->id,
                 'start_date' => now(),
             ]);
-            $user->assignRole('Student');
+
             $candidate->update(['status' => 'accepted'], ['evaluated' => true]);
 
             DB::commit();
@@ -227,8 +273,9 @@ if (!function_exists('acceptedCandidate')) {
 
             Notification::make()
                 ->title(' تم ارسال شعار للطالب!')
-                ->danger()
+                ->info()
                 ->send();
+
         } catch (\Exception $ex) {
             Db::rollBack();
 
@@ -253,10 +300,14 @@ if (!function_exists('evaluateCandidate')) {
             $evaluation = Evaluation::find($evaluations->id);
 
             if (!$evaluation) {
-                throw new \Exception('التقييم غير موجود');
+                Notification::make()
+                    ->title('التقييم غير موجود')
+                    ->danger()
+                    ->send();
+                return;
             }
 
-            $password = Str::random(8);
+            $password = "password";
             $passing_percentage = settings('passing_percentage',80);
 
             if ($evaluation->total_score >= $passing_percentage) {
@@ -276,9 +327,9 @@ if (!function_exists('evaluateCandidate')) {
                 else {
                     $user = User::findOrFail($evaluation->candidate->user_id);
                     $user->acount_status = true;
-                    $user->save();
-                }
 
+                }
+                $user->save();
                 Student::create([
                     'user_id' => $user->id,
                     'evaluator_id' => $evaluation->candidate->teacher_id,
@@ -321,6 +372,8 @@ if (!function_exists('evaluateCandidate')) {
                     ->warning()
                     ->send();
 
+
+
             }
         } catch (\Exception $ex) {
             DB::rollBack();
@@ -328,7 +381,6 @@ if (!function_exists('evaluateCandidate')) {
 
             Notification::make()
                 ->title('حدث خطأ ما! الرجاء المحاولة لاحقًا.')
-                ->body($ex->getMessage())
                 ->danger()
                 ->send();
         }

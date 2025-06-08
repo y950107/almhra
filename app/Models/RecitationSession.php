@@ -135,7 +135,7 @@ class RecitationSession extends Model
     }
 
     public static function getPresentationPercent(){
-        $countP = self::where('present_status', false)->count() ?? 0;
+        $countP = self::where('present','!=', 'present')->count() ?? 0;
         $totalP = self::select(DB::raw('actual_pages'))->count() ?? 0;
         $result = ($countP/$totalP)*100;
         return $result;

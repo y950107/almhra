@@ -7,6 +7,7 @@ use App\Filament\Teacher\Resources\EvaluationsResource\Pages;
 use App\Filament\Teacher\Resources\EvaluationsResource\RelationManagers;
 use App\Models\Evaluation;
 use App\Models\Evaluations;
+use App\Models\Teacher;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
@@ -14,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class EvaluationsResource extends Resource
 {
@@ -36,10 +38,11 @@ class EvaluationsResource extends Resource
     {
         return __('filament.evaluations.plural_model_label');
     }
+
     public static function getNavigationBadge(): ?string
     {
         return cache()->remember('pending_evaluations_count', 60, function () {
-            return (string) Evaluation::where('status', 'pending')->count();
+            return (string)Evaluation::where('status', 'pending')->count();
         });
     }
 
@@ -55,53 +58,54 @@ class EvaluationsResource extends Resource
                 Section::make()
                     ->schema([
                         Forms\Components\Select::make('candidate_id')
-                    ->label('المترشح')
-                    ->relationship('candidate', 'full_name')
-                    ->required(),
+                            ->label('المترشح')
+                            ->relationship('candidate', 'full_name', function (Builder $query) {
+                                $query->whereDoesntHave('student');
+                            })
+                            ->required(),
 
-                Forms\Components\Select::make('evaluator_id') //لازم تخدم على الاستاذ كانه مستخدم و ليس  idv الاستلذ
+                        Forms\Components\Select::make('evaluator_id')
+                            ->label('المقيّم')
+                            ->relationship('evaluator', 'id')
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record?->name ?? '')
+                            ->default(fn () => auth()->user()?->id)
+                            ->disabled()
+                            ->required(),
 
-                    ->label('المقيّم')
-                    ->relationship('evaluator', 'name')
-                    //->getOptionLabelFromRecordUsing(fn($record) => "{$record->name}")
-                    ->required()
-                    ->searchable()
-                    ->preload()
-                    ->required(),
 
-                Forms\Components\Section::make('درجات التقييم')
-                    ->schema([
-                        Forms\Components\TextInput::make('tajweed_score')
-                            ->label('التجويد')
-                            ->numeric()
-                            ->minValue(0)
-                            ->maxValue(100), //   لازم تخدم على الاستاذ كانه مستخدم و ليس  idv الاستلذ
+                        Forms\Components\Section::make('درجات التقييم')
+                            ->schema([
+                                Forms\Components\TextInput::make('tajweed_score')
+                                    ->label('التجويد')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->maxValue(100), //   لازم تخدم على الاستاذ كانه مستخدم و ليس  idv الاستلذ
 
-                        Forms\Components\TextInput::make('voice_score')
-                            ->label('جودة الصوت')
-                            ->numeric()
-                            ->minValue(0)
-                            ->maxValue(100),
+                                Forms\Components\TextInput::make('voice_score')
+                                    ->label('جودة الصوت')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->maxValue(100),
 
-                        Forms\Components\TextInput::make('memorization_score')
-                            ->label('الحفظ')
-                            ->numeric()
-                            ->minValue(0)
-                            ->maxValue(100)
-                    ])
-                    ->columns(3),
+                                Forms\Components\TextInput::make('memorization_score')
+                                    ->label('الحفظ')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->maxValue(100)
+                            ])
+                            ->columns(3),
 
-                Forms\Components\Textarea::make('notes')
-                    ->label('ملاحظات')
-                    ->nullable(),
+                        Forms\Components\Textarea::make('notes')
+                            ->label('ملاحظات')
+                            ->nullable(),
 
-                Forms\Components\Hidden::make('total_score')
-                    ->label('المعدل')
-                    ->default(fn($get) => ($get('tajweed_score') + $get('voice_score') + $get('memorization_score')) / 3),
+                        Forms\Components\Hidden::make('total_score')
+                            ->label('المعدل')
+                            ->default(fn($get) => ($get('tajweed_score') + $get('voice_score') + $get('memorization_score')) / 3),
 
-                Forms\Components\Hidden::make('status')
-                    ->label('الحالة')
-                    ->default(fn($get) => ($get('total_score') >= 80 ? 'passed' : 'pending')),
+                        Forms\Components\Hidden::make('status')
+                            ->label('الحالة')
+                            ->default(fn($get) => ($get('total_score') >= 80 ? 'passed' : 'pending')),
                     ])
             ]);
     }
@@ -109,7 +113,7 @@ class EvaluationsResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->query(Evaluation::whereHas('candidate.teacher.user', function ($query) {
+            ->query(Evaluation::query()->whereHas('candidate.teacher.user', function ($query) {
                 $query->where('id', auth()->id());
             }))
             ->columns([
@@ -132,7 +136,7 @@ class EvaluationsResource extends Resource
                     ->colors([
                         'success' => fn($state) => $state >= 80,
                         'warning' => fn($state) => $state < 80 && $state >= 50,
-                        'danger'  => fn($state) => $state < 50
+                        'danger' => fn($state) => $state < 50
                     ])
                     ->toggleable(),
 

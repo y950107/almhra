@@ -44,8 +44,8 @@ class CandidateController extends Controller
 
         $validated = $request->validate([
             'full_name'          => 'required|string|max:255',
-            'phone'              => 'required|unique:candidates|string|max:20',
-            'email'              => 'required|email|unique:candidates,email',
+            'phone'              => 'required|unique:candidates|unique:users|string|max:20',
+            'email'              => 'required|email|unique:candidates,email|unique:users,email',
             'password'           => ['required', 'confirmed',  Password::defaults()],
             'birthdate'          => ['required', 'date','before_or_equal:'.Carbon::now()->subYears(settings('min_age',10))->toDateString(),
                                     'after_or_equal:'.Carbon::now()->subYears(settings('max_age',70))->toDateString()],
@@ -60,9 +60,7 @@ class CandidateController extends Controller
             'ijaza_types'  => 'required_if:has_ijaza,1|array',
             'ijaza_types.*'      => 'in:' . implode(',', array_keys(settings("ijaza_types"))),
 
-
-            'desired_recitations'     => 'required_if:program_type,maqraa|array',
-            'desired_recitations.*'   => 'string',
+            'desired_recitation'     => 'required_if:program_type,maqraa|string',
 
             'self_evaluation'    => 'required|integer',
 

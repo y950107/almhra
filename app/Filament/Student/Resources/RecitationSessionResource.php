@@ -22,6 +22,10 @@ class RecitationSessionResource extends Resource implements HasShieldPermissions
 
     protected static ?string $navigationIcon = 'icon-recitations';
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
     public static function getNavigationLabel(): string
     {
         return __('filament.recitationsesion.navigation_label');
