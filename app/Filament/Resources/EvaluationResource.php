@@ -12,7 +12,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Tables\Columns\BadgeColumn;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\Rules;
+
 
 class EvaluationResource extends Resource implements HasShieldPermissions
 {
@@ -34,10 +36,11 @@ class EvaluationResource extends Resource implements HasShieldPermissions
     {
         return __('filament.evaluations.plural_model_label');
     }
+
     public static function getNavigationBadge(): ?string
     {
         return cache()->remember('pending_evaluations_count', 60, function () {
-            return (string) Evaluation::where('status', 'pending')->count();
+            return (string)Evaluation::where('status', 'pending')->count();
         });
     }
 
@@ -47,25 +50,25 @@ class EvaluationResource extends Resource implements HasShieldPermissions
     }
 
 
-
-
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Select::make('candidate_id')
                     ->label('المترشح')
-                    ->relationship('candidate', 'full_name')
+                    ->relationship('candidate', 'full_name', function (Builder $query) {
+                        $query->whereDoesntHave('student');
+                    })
                     ->required(),
 
-                Forms\Components\Select::make('evaluator_id') //لازم تخدم على الاستاذ كانه مستخدم و ليس  idv الاستلذ
 
+                Forms\Components\Select::make('evaluator_id')
                     ->label('المقيّم')
-                    ->relationship('evaluator', 'name')
-                    //->getOptionLabelFromRecordUsing(fn($record) => "{$record->name}")
-                    ->required()
-                    ->searchable()
-                    ->preload()
+                    ->relationship('evaluator', 'id')
+                    ->getOptionLabelFromRecordUsing(fn($record) => $record?->name ?? '')
+                    ->default(fn() => auth()->user()?->id)
+                    ->disabled()
+                    ->dehydrated()
                     ->required(),
 
                 Forms\Components\Section::make('درجات التقييم')
@@ -73,18 +76,21 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                         Forms\Components\TextInput::make('tajweed_score')
                             ->label('التجويد')
                             ->numeric()
+                            ->required()
                             ->minValue(0)
                             ->maxValue(100), //   لازم تخدم على الاستاذ كانه مستخدم و ليس  idv الاستلذ
 
                         Forms\Components\TextInput::make('voice_score')
                             ->label('جودة الصوت')
                             ->numeric()
+                            ->required()
                             ->minValue(0)
                             ->maxValue(100),
 
                         Forms\Components\TextInput::make('memorization_score')
                             ->label('الحفظ')
                             ->numeric()
+                            ->required()
                             ->minValue(0)
                             ->maxValue(100)
                     ])
@@ -135,7 +141,7 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                     ->colors([
                         'success' => fn($state) => $state >= 80,
                         'warning' => fn($state) => $state < 80 && $state >= 50,
-                        'danger'  => fn($state) => $state < 50
+                        'danger' => fn($state) => $state < 50
                     ])
                     ->toggleable(),
 
@@ -155,7 +161,7 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                 Tables\Filters\SelectFilter::make('status')
                     ->label('فلترة حسب الحالة')
                     ->options(
-                        collect(EvaluationStatus::cases())->mapWithKeys(fn ($status) => [
+                        collect(EvaluationStatus::cases())->mapWithKeys(fn($status) => [
                             $status->value => $status->label(),
                         ])->toArray()
                     ),
@@ -164,7 +170,29 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                 Tables\Actions\Action::make('convert_to_student')
                     ->label('تحويل إلى طالب')
                     ->icon('heroicon-o-users')
-                    ->action(fn(Evaluation $evaluation) => evaluateCandidate($evaluation))
+                    ->color('success')
+                    ->form([
+                        Forms\Components\TextInput::make('password')
+                            ->label('كلمة المرور')
+                            ->password()
+                            ->revealable()
+                            ->dehydrated()
+                            ->confirmed()
+                            ->required()
+                            ->rules([
+                                'required',
+                                'confirmed',
+                                Rules\Password::defaults(),
+                            ])
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('password_confirmation')
+                            ->label('تاكيد كلمة المرور')
+                            ->password()
+                            ->revealable()
+                            ->required()
+                            ->maxLength(255),
+                    ])
+                    ->action(fn(Evaluation $evaluation,$data) => evaluateCandidate($evaluation,$data))
                     ->requiresConfirmation()
                     ->visible(fn(Evaluation $evaluation) => auth()?->user()?->hasPermissionTo('accept_candidate') && in_array($evaluation?->status?->value, ['pending', 'failed'])),
 

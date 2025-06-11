@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Validation\Rules;
 
 class TeacherResource extends Resource
 {
@@ -82,7 +83,9 @@ class TeacherResource extends Resource
                         Forms\Components\Select::make('program_type')
                             ->label('البرنامج')
                         ->options(Candidate::getProgramTypes())
-                        ->required()
+                        ->required(),
+
+
                     ])
                     ->columns(2),
 
@@ -161,15 +164,37 @@ class TeacherResource extends Resource
 
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
                 Action::make('createAccount')
                     ->label('إنشاء حساب')
                     ->icon('heroicon-o-user-plus')
+                    ->color('success')
                     ->requiresConfirmation()
-                    ->action(fn(Teacher $record) => TeacherToUser($record))
+                    ->form([
+                        Forms\Components\TextInput::make('password')
+                            ->label('كلمة المرور')
+                            ->password()
+                            ->revealable()
+                            ->dehydrated()
+                            ->confirmed()
+                            ->required()
+                            ->rules([
+                                'required',
+                                'confirmed',
+                                Rules\Password::defaults(),
+                            ])
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('password_confirmation')
+                            ->label('تاكيد كلمة المرور')
+                            ->password()
+                            ->revealable()
+                            ->required()
+                            ->maxLength(255),
+                    ])
+                    ->action(fn(Teacher $record,array $data) => TeacherToUser($record,$data))
 
                     ->hidden(fn(Teacher $record) => $record->user_id !== null), //
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
 
             ])
             ->headerActions([

@@ -205,8 +205,13 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
 
                                         Select::make('recitation_narration')
                                             ->label('القراءة / الرواية')
-                                            ->options(settings('reading_types',[]))
-                                            ->visible(fn (Forms\Get $get): bool => $get('present') === 'present'),
+                                            ->options(
+                                                collect(settings('reading_types', []))
+                                                    ->mapWithKeys(function ($value) {
+                                                        return [$value => $value];
+                                                    })
+                                                    ->toArray()
+                                            )                                            ->visible(fn (Forms\Get $get): bool => $get('present') === 'present'),
                                     ])->relationship('recitationSession')->columns()->statePath('recitationSession')->dehydrated(),
 
                                 ]),
@@ -348,12 +353,7 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                                 ->schema([
 
 
-                                    TextInput::make('target_percentage')
-                                        ->numeric()
-                                        ->minValue(0)
-                                        ->maxValue(100)
-                                        ->suffix('%')
-                                        ->label('المعدل المستهدف'),
+
 
                                     TextInput::make('tajweed_score')
                                         ->numeric()
@@ -428,19 +428,24 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                     }),
 
 
+
                 TextColumn::make('surah_name')
                     ->label('سورة النهاية')
                     ->toggleable(),
 
-                TextColumn::make('ayah_text')
-                    ->label('آية النهاية')
-                    ->limit(30)
-                    ->toggleable(),
+                TextColumn::make('end_ayah_id')
+                    ->label('آية النهاية'),
 
                 TextColumn::make('pages')
-                    ->label('عدد الاوجه')
-                    ->limit(30)
+                    ->label('عدد الاوجه'),
+
+                TextColumn::make('lesson_title')
+                    ->label('المتن')
+                    ->formatStateUsing(fn($state) => AlMaherRecitation::getLessonTitles()[$state])
                     ->toggleable(),
+
+                TextColumn::make('mem_lines')
+                    ->label('حفظ المتن'),
 
             ])
             ->actions([

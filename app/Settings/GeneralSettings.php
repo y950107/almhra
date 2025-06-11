@@ -7,8 +7,20 @@ use Spatie\LaravelSettings\Settings;
 class GeneralSettings extends Settings
 {
     public int $maqraa_monthly_target = 40;
-    public int $mutqin_monthly_target = 20;
     public int $mahir_monthly_target = 20;
+    public int $mutqin_mem_monthly_target = 20;
+
+    public int $maqraa_target_percentage = 70;
+    public int $mahir_target_percentage = 70;
+
+    public int $mutqin_target_percentage = 70;
+
+    public array $maqraa_study_days = [];
+    public array $mahir_study_days = [];
+    public array $mutqin_study_days = [];
+
+
+    public int $mutqin_rev_monthly_target = 20;
 
     public string $maqraa_start_date = '2024-09-01';
     public string $maqraa_end_date = '2025-06-30';

@@ -106,19 +106,24 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                     }),
 
 
+
                 TextColumn::make('surah_name')
                     ->label('سورة النهاية')
                     ->toggleable(),
 
-                TextColumn::make('ayah_text')
-                    ->label('آية النهاية')
-                    ->limit(30)
-                    ->toggleable(),
+                TextColumn::make('end_ayah_id')
+                    ->label('آية النهاية'),
 
                 TextColumn::make('pages')
-                    ->label('عدد الاوجه')
-                    ->limit(30)
+                    ->label('عدد الاوجه'),
+
+                TextColumn::make('lesson_title')
+                    ->label('المتن')
+                    ->formatStateUsing(fn($state) => AlMaherRecitation::getLessonTitles()[$state])
                     ->toggleable(),
+
+                TextColumn::make('mem_lines')
+                    ->label('حفظ المتن'),
 
             ]);
     }

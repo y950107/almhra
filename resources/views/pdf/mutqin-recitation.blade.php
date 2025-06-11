@@ -134,7 +134,7 @@
                         <br>
                         <div>
                             <h2 style="margin-top: 12%;">
-                                {{ $timeRange === 'monthly' ? 'التقرير الشهري' : ($timeRange === 'yearly' ? 'التقرير السنوي' : 'تقرير مخصص من ' . $startDate . ' إلى ' . $endDate) }}
+                                {{ $timeRange === 'monthly' ? 'التقرير الشهري' : ($timeRange === 'yearly' ? 'التقرير السنوي' : 'تقرير مخصص من ' . $startDate . ' إلى ' . $endDate) }} - {{ $program_name ?? '' }}
                             </h2>
                         </div>
                         <br>

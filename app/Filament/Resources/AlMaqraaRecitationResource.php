@@ -201,7 +201,13 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
 
                                     Select::make('recitation_narration')
                                         ->label('القراءة / الرواية')
-                                        ->options(settings('reading_types',[]))
+                                        ->options(
+                                            collect(settings('reading_types', []))
+                                                ->mapWithKeys(function ($value) {
+                                                    return [$value => $value];
+                                                })
+                                                ->toArray()
+                                        )
                                         ->visible(fn (Forms\Get $get): bool => $get('present') === 'present'),
                                 ])->relationship('recitationSession')->columns()->statePath('recitationSession')->dehydrated(),
 
@@ -330,13 +336,6 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                             ->visible(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                         ->schema([
 
-
-                            TextInput::make('target_percentage')
-                                ->numeric()
-                                ->minValue(0)
-                                ->maxValue(100)
-                                ->suffix('%')
-                                ->label('المعدل المستهدف'),
 
                             TextInput::make('tajweed_score')
                                 ->numeric()

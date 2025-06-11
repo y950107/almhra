@@ -38,11 +38,11 @@ if (! function_exists('getSurahName')) {
 
 //// manage teacher
 if (!function_exists('TeacherToUser')) {
-    function TeacherToUser($teacher)
+    function TeacherToUser($teacher,$data)
     {
         try {
             // Check if a user account was already created for this teacher
-            if (Teacher::where('id', $teacher->user_id)->whereNull('user_id')->exists()) {
+            if ($teacher->user_id !== null) {
                 Notification::make()
                     ->title('لقد تم انشاء حساب مسبقا !!')
                     ->warning()
@@ -51,7 +51,7 @@ if (!function_exists('TeacherToUser')) {
             }
 
 
-            $password = "password"; // default password
+            $password = $data['password'] ;
 
             // Create user
             $user = User::create([
@@ -292,7 +292,7 @@ if (!function_exists('acceptedCandidate')) {
 
 
 if (!function_exists('evaluateCandidate')) {
-    function evaluateCandidate($evaluations)
+    function evaluateCandidate($evaluations,$data)
     {
 
         try {
@@ -307,8 +307,27 @@ if (!function_exists('evaluateCandidate')) {
                 return;
             }
 
-            $password = "password";
-            $passing_percentage = settings('passing_percentage',80);
+            $password = $data['password'];
+
+            $program = $evaluation->candidate->program_type;
+
+            switch ($program) {
+                case 'maqraa':
+                    $passing_field = 'maqraa_target_percentage';
+                    break;
+                case 'mahir':
+                    $passing_field = 'mahir_target_percentage';
+                    break;
+                case 'mutqin':
+                    $passing_field = 'mutqin_target_percentage';
+                    break;
+                default:
+                    $passing_field = 'passing_percentage';
+                    break;
+            }
+
+            $passing_percentage = settings($passing_field, 80);
+
 
             if ($evaluation->total_score >= $passing_percentage) {
                 DB::beginTransaction();

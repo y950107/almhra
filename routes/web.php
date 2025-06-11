@@ -94,7 +94,7 @@ Route::get('/recitations/pdf-preview', [RecitationSessionControler::class, 'prev
 //Route::get('/recitations/pdf-download', [RecitationSessionControler::class, 'download'])->name('recitations.pdf-download');
 Route::get('/recitations/pdf-download-almaqraa-report', [RecitationSessionControler::class, 'downloadMaqraaReport'])->name('recitations.pdf-download-almaqraa-report');
 Route::get('/recitations/pdf-download-almahir-report', [RecitationSessionControler::class, 'downloadMahirReport'])->name('recitations.pdf-download-almahir-report');
-Route::get('/recitations/pdf-download-almahir-report', [RecitationSessionControler::class, 'downloadMutqinReport'])->name('recitations.pdf-download-almutqin-report');
+Route::get('/recitations/pdf-download-almutqin-report', [RecitationSessionControler::class, 'downloadMutqinReport'])->name('recitations.pdf-download-almutqin-report');
 
 
 

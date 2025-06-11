@@ -70,6 +70,7 @@ class EvaluationsResource extends Resource
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record?->name ?? '')
                             ->default(fn () => auth()->user()?->id)
                             ->disabled()
+                            ->dehydrated()
                             ->required(),
 
 

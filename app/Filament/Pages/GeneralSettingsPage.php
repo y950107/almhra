@@ -156,53 +156,123 @@ class GeneralSettingsPage extends SettingsPage
                                 Tabs\Tab::make('اعدادات البرامج')
                                     ->icon('icon-recitations')
                                     ->schema([
-                                        Forms\Components\Group::make()->columnSpanFull()
+                                        Forms\Components\Section::make('برنامج المقرأة')
+                                            ->description('اعدادات برنامج المقرأة')
                                             ->schema([
-
                                                 Forms\Components\TextInput::make('maqraa_monthly_target')
-                                                    ->label('عدد الاوجه الشهري لبرنامج المقراة')
+                                                    ->label('عدد الاوجه الشهري')
+                                                    ->required()
+                                                    ->numeric(),
+
+                                                Forms\Components\TextInput::make('maqraa_target_percentage')
+                                                    ->label('نسبة النجاح')
+                                                    ->required()
+                                                    ->numeric(),
+
+                                                Forms\Components\DatePicker::make('maqraa_start_date')
+                                                    ->label('تاريخ البداية')
+                                                    ->required(),
+
+                                                Forms\Components\DatePicker::make('maqraa_end_date')
+                                                    ->label('تاريخ النهاية')
+                                                    ->required(),
+
+                                                Forms\Components\CheckboxList::make('maqraa_study_days')
+                                                    ->label('أيام العمل')
+                                                    ->columnSpanFull()
+                                                    ->columns(7)
+                                                    ->options([
+                                                        'saturday' => 'السبت',
+                                                        'sunday' => 'الأحد',
+                                                        'monday' => 'الإثنين',
+                                                        'tuesday' => 'الثلاثاء',
+                                                        'wednesday' => 'الأربعاء',
+                                                        'thursday' => 'الخميس',
+                                                    ]),
+
+                                            ])
+                                            ->columns(),
+
+                                        Forms\Components\Section::make('برنامج الماهر')
+                                            ->description('اعدادات برنامج الماهر')
+                                            ->schema([
+                                                Forms\Components\TextInput::make('mahir_monthly_target')
+                                                    ->label('عدد الاوجه الشهري')
+                                                    ->required()
+                                                    ->numeric(),
+
+                                                Forms\Components\TextInput::make('mahir_target_percentage')
+                                                    ->label('نسبة النجاح')
+                                                    ->required()
+                                                    ->numeric(),
+
+                                                Forms\Components\DatePicker::make('mahir_start_date')
+                                                    ->label('تاريخ البداية')
+                                                    ->required(),
+
+                                                Forms\Components\DatePicker::make('mahir_end_date')
+                                                    ->label('تاريخ النهاية')
+                                                    ->required(),
+
+                                                Forms\Components\CheckboxList::make('mahir_study_days')
+                                                    ->label('أيام العمل')
+                                                    ->columnSpanFull()
+                                                    ->columns(7)
+                                                    ->options([
+                                                        'saturday' => 'السبت',
+                                                        'sunday' => 'الأحد',
+                                                        'monday' => 'الإثنين',
+                                                        'tuesday' => 'الثلاثاء',
+                                                        'wednesday' => 'الأربعاء',
+                                                        'thursday' => 'الخميس',
+                                                    ]),
+                                            ])
+                                            ->columns(),
+                                        Forms\Components\Section::make('برنامج المتقن')
+                                            ->description('اعدادات برنامج المتقن')
+                                            ->schema([
+                                                Forms\Components\TextInput::make('mutqin_mem_monthly_target')
+                                                    ->label('عدد الاوجه الشهري - الحفظ')
                                                     ->required()
                                                     ->numeric(),
 
 
-                                                DatePicker::make('maqraa_start_date')
-                                                    ->label('تاريخ بداية برنامج المقرأة')
-                                                    ->required(),
 
-                                                DatePicker::make('maqraa_end_date')
-                                                    ->label('تاريخ نهاية برنامج المقرأة')
-                                                    ->required(),
-
-                                                TextInput::make('mutqin_monthly_target')
-                                                    ->label('عدد الاوجه الشهري لبرنامج المتقن')
+                                                Forms\Components\TextInput::make('mutqin_rev_monthly_target')
+                                                    ->label('عدد الاوجه الشهري - المراجعة')
                                                     ->required()
                                                     ->numeric(),
 
-                                                DatePicker::make('mutqin_start_date')
-                                                    ->label('تاريخ بداية برنامج المتقن')
-                                                    ->required(),
-
-                                                DatePicker::make('mutqin_end_date')
-                                                    ->label('تاريخ نهاية برنامج المتقن')
-                                                    ->required(),
-
-                                                TextInput::make('mahir_monthly_target')
-                                                    ->label('عدد الاوجه الشهري لبرنامج الماهر')
+                                                Forms\Components\TextInput::make('mutqin_target_percentage')
+                                                    ->label('نسبة النجاح')
                                                     ->required()
                                                     ->numeric(),
 
-                                                DatePicker::make('mahir_start_date')
-                                                    ->label('تاريخ بداية برنامج الماهر')
+                                                Forms\Components\DatePicker::make('mutqin_start_date')
+                                                    ->label('تاريخ البداية')
                                                     ->required(),
 
-                                                DatePicker::make('mahir_end_date')
-                                                    ->label('تاريخ نهاية برنامج الماهر')
+                                                Forms\Components\DatePicker::make('mutqin_end_date')
+                                                    ->label('تاريخ النهاية')
                                                     ->required(),
 
+                                                Forms\Components\CheckboxList::make('mutqin_study_days')
+                                                    ->label('أيام العمل')
+                                                    ->columnSpanFull()
+                                                    ->columns(7)
+                                                    ->options([
+                                                        'saturday' => 'السبت',
+                                                        'sunday' => 'الأحد',
+                                                        'monday' => 'الإثنين',
+                                                        'tuesday' => 'الثلاثاء',
+                                                        'wednesday' => 'الأربعاء',
+                                                        'thursday' => 'الخميس',
+                                                    ]),
+                                            ])
+                                            ->columns(3),
 
-                                            ])->columns(3)
-                                        ]),
-                                Tabs\Tab::make('اعدادات الموقع')
+                                    ]),
+        Tabs\Tab::make('اعدادات الموقع')
                                     ->icon('icon-landing_page')
                                     ->schema([
                                         Forms\Components\Section::make('إعدادات البريد الإلكتروني')

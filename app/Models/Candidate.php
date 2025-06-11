@@ -66,4 +66,7 @@ class Candidate extends Model
         return ['beginner' => 'مبتدئ', 'intermediate' => 'متوسط', 'advanced' => 'متقدم'];
     }
 
+
+
+
 }
