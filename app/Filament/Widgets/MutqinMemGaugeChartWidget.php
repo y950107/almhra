@@ -15,10 +15,7 @@ class MutqinMemGaugeChartWidget extends Widget
     protected static ?int $sort = 3;
     protected static bool $isLazy = false;
 
-    public static function canView(): bool
-    {
-        return false;
-    }
+
 
     protected function getViewData(): array
     {

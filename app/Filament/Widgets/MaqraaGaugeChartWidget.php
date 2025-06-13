@@ -11,13 +11,10 @@ class MaqraaGaugeChartWidget extends Widget
 {
     protected static string $view = 'filament.widgets.custom-chart-widget';
 
-    protected static ?int $sort = 3;
+    protected static ?int $sort = 2;
     protected static bool $isLazy = false;
 
-    public static function canView(): bool
-    {
-        return false;
-    }
+
 
     protected function getViewData(): array
     {
