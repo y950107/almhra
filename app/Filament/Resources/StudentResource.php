@@ -18,6 +18,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
+use IbrahimBougaoua\FilaProgress\Tables\Columns\CircleProgress;
 use Illuminate\Database\Eloquent\Builder;
 
 class StudentResource extends Resource implements HasShieldPermissions
@@ -98,12 +99,8 @@ class StudentResource extends Resource implements HasShieldPermissions
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('الاسم')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('candidate.birthdate')
-                    ->label('تاريخ الميلاد')
-                    ->date('Y-m-d'),
 
-                Tables\Columns\TextColumn::make('candidate.email')
-                    ->label('البريد الالكتروني')->sortable()->searchable(),
+
 
                 Tables\Columns\TextColumn::make('candidate.program_type')
                     ->formatStateUsing(fn($state) => Candidate::getProgramTypes()[$state] ?? 'غير معروف')
@@ -113,9 +110,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                     ->badge()
                     ->color('info'),
 
-                Tables\Columns\IconColumn::make('candidate.has_ijaza')
-                    ->label('لديه إجازة')
-                    ->boolean()->sortable()->toggleable(),
+
 
 
                 Tables\Columns\TextColumn::make('present_percentage')
@@ -203,10 +198,17 @@ class StudentResource extends Resource implements HasShieldPermissions
                 Tables\Columns\TextColumn::make('teacher.name')
                     ->label('الشيح')->sortable()->searchable()->badge()->color('success'),
 
-                Tables\Columns\TextColumn::make('start_date')
-                    ->label('تاريخ الالتحاق')
-                    ->date('Y-m-d'),
 
+
+                CircleProgress::make('progress_percentage')->label('نسبة الإنجاز')
+                    ->getStateUsing(function ($record) {
+                        $total = 100;
+                        $progress = $record->getProgressPercentageAttribute();
+                        return [
+                            'total' => $total,
+                            'progress' => $progress,
+                        ];
+                    }),
 
             ])
             ->actions([

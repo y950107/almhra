@@ -10,6 +10,7 @@ use App\Models\Students;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use IbrahimBougaoua\FilaProgress\Tables\Columns\CircleProgress;
 use Illuminate\Database\Eloquent\Builder;
 
 class StudentsResource extends Resource
@@ -75,6 +76,17 @@ class StudentsResource extends Resource
                 Tables\Columns\TextColumn::make('start_date')
                     ->label('تاريخ الالتحاق')
                     ->date('Y-m-d'),
+
+
+            CircleProgress::make('progress_percentage')->label('نسبة الإنجاز')
+                ->getStateUsing(function ($record) {
+                    $total = 100;
+                    $progress = $record->getProgressPercentageAttribute();
+                    return [
+                        'total' => $total,
+                        'progress' => $progress,
+                    ];
+                }),
         ]);
     }
 

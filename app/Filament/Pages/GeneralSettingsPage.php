@@ -188,6 +188,7 @@ class GeneralSettingsPage extends SettingsPage
                                                         'tuesday' => 'الثلاثاء',
                                                         'wednesday' => 'الأربعاء',
                                                         'thursday' => 'الخميس',
+                                                        'friday' => 'الجمعة'
                                                     ]),
 
                                             ])
@@ -225,6 +226,7 @@ class GeneralSettingsPage extends SettingsPage
                                                         'tuesday' => 'الثلاثاء',
                                                         'wednesday' => 'الأربعاء',
                                                         'thursday' => 'الخميس',
+                                                        'friday' => 'الجمعة'
                                                     ]),
                                             ])
                                             ->columns(),
@@ -267,6 +269,7 @@ class GeneralSettingsPage extends SettingsPage
                                                         'tuesday' => 'الثلاثاء',
                                                         'wednesday' => 'الأربعاء',
                                                         'thursday' => 'الخميس',
+                                                        'friday' => 'الجمعة'
                                                     ]),
                                             ])
                                             ->columns(3),

@@ -18,6 +18,7 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use IbrahimBougaoua\FilaProgress\Tables\Columns\CircleProgress;
 
 class SessionsResource extends Resource implements HasShieldPermissions
 {
@@ -36,7 +37,7 @@ class SessionsResource extends Resource implements HasShieldPermissions
 
     public static function getPluralModelLabel(): string
     {
-        return __('filament.evaluations.plural_model_label');
+        return __('filament.sessions.plural_model_label');
     }
     public static function getPermissionPrefixes(): array
     {
@@ -74,16 +75,26 @@ class SessionsResource extends Resource implements HasShieldPermissions
     public static function table(Tables\Table $table): Tables\Table
     {
         return $table->columns([
+            TextColumn::make('start_date')
+                ->label('تاريخ البداية')
+                ->date('d-m-Y')
+                ->badge()
+                ->sortable(),
 
             TextColumn::make('name')->label('اسم الحلقة')->sortable()->searchable(),
 
             TextColumn::make('teacher.name')->label('المعلم')->sortable(),
 
-            TextColumn::make('start_date')
-                ->label('تاريخ البداية')
-                ->date('d-m-Y')
-                ->sortable(),
 
+            CircleProgress::make('progress_percentage')->label('نسبة الإنجاز')
+                ->getStateUsing(function ($record) {
+                    $total = 100;
+                    $progress = $record->getProgressPercentageAttribute();
+                    return [
+                        'total' => $total,
+                        'progress' => $progress,
+                    ];
+                }),
 
             TextColumn::make('students_count')
                 ->label('عدد الطلاب')

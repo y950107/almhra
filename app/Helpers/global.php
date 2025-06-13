@@ -292,7 +292,7 @@ if (!function_exists('acceptedCandidate')) {
 
 
 if (!function_exists('evaluateCandidate')) {
-    function evaluateCandidate($evaluations,$data)
+    function evaluateCandidate($evaluations)
     {
 
         try {
@@ -307,7 +307,7 @@ if (!function_exists('evaluateCandidate')) {
                 return;
             }
 
-            $password = $data['password'];
+            $password = "password";
 
             $program = $evaluation->candidate->program_type;
 

@@ -185,8 +185,8 @@ class RecitationSessionControler extends Controller
         foreach ($grouped as $studentId => $recitations) {
             $student = $recitations->first()->recitationSession->student;
 
-            $memTarget = (int) ($student->mem_monthly_target_pages ?? $defaultMemTarget);
-            $revTarget = (int) ($student->rev_monthly_target_pages ?? $defaultRevTarget);
+            $memTarget = (int) ($student->monthly_target_pages ?? $defaultMemTarget);
+            $revTarget = (int) ($student->monthly_target_pages ?? $defaultRevTarget);
 
             $present = $recitations->where(fn($r) => $r->recitationSession->present === 'present');
             $absent = $recitations->where(fn($r) => $r->recitationSession->present !== 'present');

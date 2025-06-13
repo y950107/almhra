@@ -3,6 +3,8 @@
 namespace App\Filament\Student\Widgets;
 
 use App\Models\RecitationSession;
+use App\Models\Student;
+use Carbon\Carbon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -14,39 +16,74 @@ class StatStudent extends BaseWidget
 
     protected function getStats(): array
     {
-        $recitationStats = RecitationSession::whereHas('student', function ($query) {
-            $query->where('user_id', auth()->id());
-        });
+        $student = Student::where('user_id', auth()->id())->with('candidate')->firstOrFail();
+        $program = $student->candidate->program_type;
 
-     //   $totalActualPages = $recitationStats->sum('actual_end_page');
-     //   $totalTargetPages = $recitationStats->sum('target_pages');
-      //Z  $totalActuel_lines = $recitationStats->sum('actuel_lines');
-      //  $averageTargetPercentage = $totalTargetPages != 0 ? ($totalActualPages / $totalTargetPages) * 100 : 0;
-      //  $totalRecitation = $recitationStats->count('id');
+        // Program settings
+        $progStart = Carbon::parse(settings("{$program}_start_date", '2024-09-01'));
+        $progEnd = Carbon::parse(settings("{$program}_end_date", '2025-06-01'));
+
+        $modelMap = [
+            'maqraa' => [
+                'model' => \App\Models\AlMaqraaRecitation::class,
+                'pageField' => 'pages',
+            ],
+            'mahir' => [
+                'model' => \App\Models\AlMaherRecitation::class,
+                'pageField' => 'pages',
+            ],
+            'mutqin' => [
+                'model' => \App\Models\AlMutqinRecitation::class,
+                'pageField' => ['mem_pages', 'rev_pages'],
+            ],
+        ];
+
+        if (!isset($modelMap[$program])) {
+            return [];
+        }
+
+        $modelClass = $modelMap[$program]['model'];
+        $pageField = $modelMap[$program]['pageField'];
+        $monthlyTarget = (int) ($student->monthly_target_pages ?? settings("{$program}_monthly_target", 40));
+
+        // Track between student's entry and program end
+        $trackingStart = max(Carbon::parse($student->start_date), $progStart);
+        $trackingEnd = $progEnd;
+
+        // Fetch recitations during the full program duration for the student
+        $recitations = $modelClass::whereHas('recitationSession', fn($q) =>
+        $q->whereBetween('session_date', [$trackingStart, $trackingEnd])
+            ->where('student_id', $student->id)
+            ->where('present', 'present')
+        )->with('recitationSession')->get();
+
+        // Page sum logic
+        $cumulativePages = is_array($pageField)
+            ? round($recitations->sum('mem_pages') + $recitations->sum('rev_pages'))
+            : $recitations->sum($pageField);
 
 
+        // Total months student has participated in the program
+        $months = round( $trackingStart->startOfMonth()->diffInMonths($trackingEnd->endOfMonth())) + 1;
+
+        $cumulativeTarget = $months * $monthlyTarget;
+
+        $percentage = $cumulativeTarget > 0
+            ? round(($cumulativePages / $cumulativeTarget) * 100)
+            : 0;
 
         return [
-            Stat::make('عدد الأوجه المحققة', $totalActualPages ?? 0)
-                ->description('نسبة % ')
+            Stat::make('إجمالي الأوجه المحققة', $cumulativePages)
+                ->description("نسبة الإنجاز {$percentage}%")
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
-                ->color('success')
-                ->chart([7, 2, 10, 3, 15, 4, 17]),
-
-            Stat::make('مجموع الأوجه المستهدفة', $totalTargetPages ?? 0)
-                ->description('إجمالي الأوجه المستهدفة')
-                ->descriptionIcon('heroicon-m-clipboard-document')
-                ->color('info')
-                ->extraAttributes([
-                    'class' => 'cursor-pointer',
-                    'wire:click' => "\$dispatch('setStatusFilter', { filter: 'processed' })",
-                ]),
-
-            Stat::make('نسبة الإنجاز', ($averageTargetPercentage ?? 0) . '%')
-                ->chart([7, 50, 70, 90, 50, 30, 20])
                 ->color('success'),
 
-            Stat::make('عدد حصص التسميع  ', $totalRecitation ?? 0),
+            Stat::make('إجمالي الأوجه المستهدفة', $cumulativeTarget)
+                ->description('منذ بداية البرنامج')
+                ->color('info'),
+
+            Stat::make('عدد الحصص', $recitations->count()),
         ];
     }
+
 }

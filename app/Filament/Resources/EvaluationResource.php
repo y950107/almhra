@@ -171,28 +171,7 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                     ->label('تحويل إلى طالب')
                     ->icon('heroicon-o-users')
                     ->color('success')
-                    ->form([
-                        Forms\Components\TextInput::make('password')
-                            ->label('كلمة المرور')
-                            ->password()
-                            ->revealable()
-                            ->dehydrated()
-                            ->confirmed()
-                            ->required()
-                            ->rules([
-                                'required',
-                                'confirmed',
-                                Rules\Password::defaults(),
-                            ])
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('password_confirmation')
-                            ->label('تاكيد كلمة المرور')
-                            ->password()
-                            ->revealable()
-                            ->required()
-                            ->maxLength(255),
-                    ])
-                    ->action(fn(Evaluation $evaluation,$data) => evaluateCandidate($evaluation,$data))
+                    ->action(fn(Evaluation $evaluation) => evaluateCandidate($evaluation))
                     ->requiresConfirmation()
                     ->visible(fn(Evaluation $evaluation) => auth()?->user()?->hasPermissionTo('accept_candidate') && in_array($evaluation?->status?->value, ['pending', 'failed'])),
 

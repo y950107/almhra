@@ -11,7 +11,7 @@ use Saade\FilamentFullCalendar\Widgets\FullCalendarWidget;
 
 class CalendarWidget extends FullCalendarWidget
 {
-    protected static ?int $sort =2;
+    protected static ?int $sort =3;
    // protected static string $view = 'filament.widgets.calendar-widget';
 
   /* public static function canView(): bool
