@@ -129,7 +129,12 @@ if (!function_exists('sendToInterview')) {
 
             DB::commit();
 
-            $candidate->notify((new EvaluationNotif($candidate))->afterCommit());
+            try {
+                $candidate->notify((new EvaluationNotif($candidate))->afterCommit());
+            } catch (\Exception $notifEx) {
+                // This is where you handle a notification-specific failure
+                Log::error('Notification failed: ' . $notifEx->getMessage());
+            }
 
             Notification::make()
                 ->title('تم إرسال المترشح إلى المقابلة بنجاح!')
@@ -140,7 +145,6 @@ if (!function_exists('sendToInterview')) {
 
             Notification::make()
                 ->title('حدث خطأ أثناء إرسال المترشح للمقابلة!')
-                ->body($ex->getMessage())
                 ->danger()
                 ->send();
         }
@@ -343,13 +347,14 @@ if (!function_exists('evaluateCandidate')) {
                         'phone' => $evaluation->candidate->phone,
                         'acount_status' => true
                     ]);
-                    $user->assignRole('Student');
+
                 }
                 else {
                     $user = User::findOrFail($evaluation->candidate->user_id);
                     $user->acount_status = true;
 
                 }
+                $user->assignRole('Student');
                 $user->save();
 
                 Student::create([
@@ -366,12 +371,17 @@ if (!function_exists('evaluateCandidate')) {
 
                 DB::commit();
 
+                try {
+                    $user->notify(new CandidateEvaluationNotification(
+                        $evaluation->candidate->status->value,
+                        $user->email,
+                        $password
+                    ));
+                }
+                catch (\Exception $notifEx) {
+                    Log::error('Notification failed: ' . $notifEx->getMessage());
+                }
 
-                $user->notify(new CandidateEvaluationNotification(
-                    $evaluation->candidate->status->value,
-                    $user->email,
-                    $password
-                ));
 
                 Notification::make()
                     ->title('تهانينا! لقد تم قبوله كالطالب.')
@@ -393,8 +403,6 @@ if (!function_exists('evaluateCandidate')) {
                     ->title('لم يتم القبول. سيتم إدراجه ضمن قائمة الاحتياط!')
                     ->warning()
                     ->send();
-
-
 
             }
         } catch (\Exception $ex) {

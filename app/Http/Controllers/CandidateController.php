@@ -85,6 +85,8 @@ class CandidateController extends Controller
             'acount_status' => false,
         ]);
 
+
+
         $validated['user_id'] = $user->id;
         $validated['has_ijaza'] = $validated['has_ijaza'] ?? false;
         Candidate::create($validated);
