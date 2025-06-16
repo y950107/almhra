@@ -56,17 +56,22 @@ class EvaluationResource extends Resource implements HasShieldPermissions
             ->schema([
                 Forms\Components\Select::make('candidate_id')
                     ->label('المترشح')
-                    ->relationship('candidate', 'full_name', function (Builder $query) {
-                        $query->whereDoesntHave('student');
-                    })
+                    ->relationship('candidate', 'full_name')
+                    ->disabledOn('edit')
                     ->required(),
 
 
                 Forms\Components\Select::make('evaluator_id')
                     ->label('المقيّم')
-                    ->relationship('evaluator', 'id')
-                    ->getOptionLabelFromRecordUsing(fn($record) => $record?->name ?? '')
-                    ->default(fn() => auth()->user()?->id)
+                    ->relationship('evaluator', 'name',function (Builder $query) {
+                        $query->where('type','!=','student');
+                    })
+                    ->default(auth()->id())
+                    ->afterStateHydrated(function (Forms\Components\Select $component, ?string $state) {
+                        if ($state === null) {
+                            $component->state(auth()->id());
+                        }
+                    })
                     ->disabled()
                     ->dehydrated()
                     ->required(),
@@ -98,6 +103,8 @@ class EvaluationResource extends Resource implements HasShieldPermissions
 
                 Forms\Components\Textarea::make('notes')
                     ->label('ملاحظات')
+                    ->columnSpanFull()
+                    ->rows(6)
                     ->nullable(),
 
                 Forms\Components\Hidden::make('total_score')
@@ -120,7 +127,12 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('evaluator.name')
+                Tables\Columns\TextColumn::make('candidate.email')
+                    ->label('البريد الالكتروني')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('teacher.name')
                     ->label('المشرف')
                     ->searchable()
                     ->sortable(),
@@ -173,7 +185,7 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                     ->color('success')
                     ->action(fn(Evaluation $evaluation) => evaluateCandidate($evaluation))
                     ->requiresConfirmation()
-                    ->visible(fn(Evaluation $evaluation) => auth()?->user()?->hasPermissionTo('accept_candidate') && in_array($evaluation?->status?->value, ['pending', 'failed'])),
+                    ->visible(fn(Evaluation $evaluation) => auth()?->user()?->hasPermissionTo('accept_candidate') && $evaluation->candidate?->student === null),
 
 
                 Tables\Actions\EditAction::make()

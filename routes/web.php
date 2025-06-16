@@ -1,26 +1,18 @@
 <?php
 
 
-use App\Models\User;
+use App\Http\Controllers\CandidateController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PDFController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RecitationSessionControler;
+use App\Http\Controllers\ReportsController;
+use App\Livewire\Recitations\ListRecitations;
 use App\Models\Surah;
 use App\Models\Verse;
-use Illuminate\Http\Request;
-use App\Services\QuranService;
 use App\Services\PrayerTimeService;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
+use App\Services\QuranService;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PDFController;
-use Illuminate\Support\Facades\Session;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ReportsController;
-use App\Http\Controllers\CandidateController;
-use App\Http\Controllers\RecitationSessionControler;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Livewire\Recitations\ListRecitations;
-use Illuminate\Support\Facades\Config;
 
 // Route::get('/', function () {
 //     return view('welcome');

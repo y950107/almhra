@@ -118,7 +118,7 @@ class PDFController extends Controller
         $mpdf->WriteHTML($html);
 
         return response()->streamDownload(
-            fn () => print($mpdf->Output('', 'S')),
+            fn () => print($mpdf->Output('', 'I')),
             'تقرير-الحضور-للطلاب.pdf'
         );
     }

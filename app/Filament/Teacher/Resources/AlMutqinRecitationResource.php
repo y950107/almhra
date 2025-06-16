@@ -9,7 +9,6 @@ use App\Models\Halaka;
 use App\Models\RecitationSession;
 use App\Services\Moshaf_madina_Service;
 use App\Settings\GeneralSettings;
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Section;
@@ -18,29 +17,16 @@ use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables\Actions\Action;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Enums\FiltersLayout;
-use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
-class AlMutqinRecitationResource extends Resource implements HasShieldPermissions
+class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitationResource
 {
-    public static function getPermissionPrefixes(): array
-    {
-        return ['view', 'view_any', 'create', 'update', 'delete', 'delete_any'];
-    }
-
-    protected static ?string $slug = "al-mutqin";
 
     protected static ?string $model = AlMutqinRecitation::class;
 
     protected static ?string $navigationIcon = 'icon-recitations';
-
 
     public static function shouldRegisterNavigation(): bool
     {
@@ -483,34 +469,36 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
 
                                 ]),
 
+
                             // تقييمات المعلم
                             Tabs\Tab::make('تقييمات المعلم')
                                 ->visible(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                 ->schema([
 
+                                    Forms\Components\Group::make([
+                                        TextInput::make('tajweed_score')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->maxValue(100)
+                                            ->suffix('من 100')
+                                            ->label('درجة التجويد'),
+
+                                        TextInput::make('fluency_score')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->maxValue(100)
+                                            ->suffix('من 100')
+                                            ->label('درجة الطلاقة'),
+
+                                        TextInput::make('memory_score')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->maxValue(100)
+                                            ->suffix('من 100')
+                                            ->label('درجة الحفظ'),
+                                    ])->relationship('recitationSession')->statePath('recitationSession')->dehydrated()
 
 
-
-                                    TextInput::make('tajweed_score')
-                                        ->numeric()
-                                        ->minValue(0)
-                                        ->maxValue(100)
-                                        ->suffix('من 100')
-                                        ->label('درجة التجويد'),
-
-                                    TextInput::make('fluency_score')
-                                        ->numeric()
-                                        ->minValue(0)
-                                        ->maxValue(100)
-                                        ->suffix('من 100')
-                                        ->label('درجة الطلاقة'),
-
-                                    TextInput::make('memory_score')
-                                        ->numeric()
-                                        ->minValue(0)
-                                        ->maxValue(100)
-                                        ->suffix('من 100')
-                                        ->label('درجة الحفظ'),
                                 ]),
                             //  الملاحظات العامة
                             Tabs\Tab::make('الملاحظات العامة')->schema([
@@ -525,119 +513,15 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
     public static function table(Table $table): Table
     {
 
+        $table = parent::table($table);
+
         return $table
             ->query(
                 AlMutqinRecitation::query()->whereHas('recitationSession.halaka.teacher.user', function ($query) {
                     return $query->where('user_id', auth()->id());
                 })
             )
-            ->columns([
-                TextColumn::make('recitationSession.session_date')
-                    ->label('تاريخ الجلسة')
-                    ->date('Y-m-d')
-                    ->badge()
-                    ->color('info')
-                    ->toggleable(),
-
-                TextColumn::make('recitationSession.halaka.name')
-                    ->label('الحلقة')
-                    ->toggleable(),
-
-                TextColumn::make('recitationSession.student.candidate.full_name')
-                    ->label('الطالب')
-                    ->toggleable(),
-
-                TextColumn::make('recitationSession.present')
-                    ->label('الحضور')
-                    ->badge()
-                    ->formatStateUsing(fn ($state): string => match ($state) {
-                        'present' => 'حاضر',
-                        'absent_with_excuse' => 'غائب بعذر',
-                        'absent_without_excuse' => 'غائب بدون عذر',
-                        default => 'غير معروف',
-                    })
-                    ->color(fn ($state): string => match ($state) {
-                        'present' => 'success',
-                        'absent_with_excuse' => 'warning',
-                        'absent_without_excuse' => 'danger',
-                        default => 'secondary',
-                    }),
-
-
-                TextColumn::make('mem_surah_name')
-                    ->label('سورة النهاية (الحفظ)')
-                    ->toggleable(),
-
-                TextColumn::make('mem_pages')
-                    ->label('عدد اوجه الحفظ')
-                    ->limit(30)
-                    ->toggleable(),
-
-                TextColumn::make('rev_surah_name')
-                    ->label('سورة النهاية (المراجعة)')
-                    ->toggleable(),
-
-                TextColumn::make('rev_pages')
-                    ->label('عدد اوجه المراجعة')
-                    ->limit(30)
-                    ->toggleable(),
-
-            ])
-            ->actions([
-                Action::make('تعديل')
-                    ->icon('heroicon-o-pencil')
-                    ->url(fn($record) => AlMutqinRecitationResource::getUrl('edit', ['record' => $record])),
-
-                Action::make('نتائج-الجلسة')
-                    ->visible(fn(AlMutqinRecitation $record) => $record->recitationSession->present === 'present')
-                    ->icon('heroicon-o-document-text')
-                    ->color('success')
-                    ->url(fn($record) => AlMutqinRecitationResource::getUrl('edit', ['record' => $record]) . '?tab=-actual-results-tab'),
-            ])->filters([
-                // Filter by student
-                SelectFilter::make('student_id')
-                    ->label('الطالب')
-                    ->relationship('recitationSession.student.candidate', 'full_name'),
-
-                // Filter by date from
-                Filter::make('from_date')
-                    ->label('من تاريخ')
-                    ->form([
-                        DatePicker::make('from')->label('من تاريخ'),
-                    ])
-                    ->query(function ($query, array $data) {
-                        if ($data['from']) {
-                            $query->whereHas('recitationSession', fn ($q) =>
-                            $q->whereDate('session_date', '>=', $data['from'])
-                            );
-                        }
-                    })    ->indicateUsing(function (array $data): ?string {
-                        return $data['from'] ? 'من: ' . \Carbon\Carbon::parse($data['from'])->format('Y-m-d') : null;
-                    }),
-
-                // Filter by date to
-                Filter::make('to_date')
-                    ->label('إلى تاريخ')
-                    ->form([
-                        DatePicker::make('to')->label('إلى تاريخ'),
-                    ])
-                    ->query(function ($query, array $data) {
-                        if ($data['to']) {
-                            $query->whereHas('recitationSession', fn ($q) =>
-                            $q->whereDate('session_date', '<=', $data['to'])
-                            );
-                        }
-                    })   ->indicateUsing(function (array $data): ?string {
-                        return $data['to'] ? 'إلى: ' . \Carbon\Carbon::parse($data['to'])->format('Y-m-d') : null;
-                    }),
-            ])->filtersLayout(FiltersLayout::AboveContent);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
+            ->headerActions([]);
     }
 
     public static function getPages(): array

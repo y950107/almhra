@@ -2,10 +2,7 @@
 
 namespace App\Filament\Teacher\Widgets;
 
-use App\Models\AlMaherRecitation;
-use App\Models\AlMaqraaRecitation;
 use App\Models\Halaka;
-use Carbon\Carbon;
 use Filament\Widgets\Widget;
 
 class TeacherHalakaWidget extends Widget

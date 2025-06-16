@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AlMaherRecitation;
+use App\Models\AlMaqraaRecitation;
+use App\Models\AlMutqinRecitation;
 use App\Models\RecitationSession;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
-use Mpdf\Mpdf;
 
 class RecitationSessionControler extends Controller
 {
@@ -28,26 +30,29 @@ class RecitationSessionControler extends Controller
         return response($html);
     }
 
+
     public function downloadMaqraaReport(Request $request)
     {
         $program = 'maqraa';
-        $model = \App\Models\AlMaqraaRecitation::class;
 
-        $settings = $this->getProgramSettings($program);
-        $dateRange = $this->getDateRange($request, $settings['start'], $settings['end']);
+        $timeRange = $request->input('time_range');
 
-        $sessions = $this->getFilteredSessions($model, $dateRange);
+        $dateRange = $this->getDateRange($request, $program);
+
+        $sessions = AlMaqraaRecitation::filterByDateRange($dateRange);
         $grouped = $sessions->groupBy(fn($item) => $item->recitationSession->student_id);
 
-        $summary = $this->calculateStudentStats($grouped, $model, $dateRange, $settings['start'], $settings['end'], $program);
+        $stats = AlMaqraaRecitation::getStatsForGroupedSessions($grouped, $dateRange[0], $dateRange[1]);
+        $summary = AlMaqraaRecitation::summarizeStats($stats);
+
 
         $html = View::make('pdf.recitation', [
             'currentMonth' => now()->locale('ar')->translatedFormat('F Y'),
-            'timeRange' => $request->input('time_range'),
-            'startDate' => $request->input('start_date'),
-            'endDate' => $request->input('end_date'),
-            'overallStats' => $summary['overall'],
-            'statsPerStudent' => $summary['students'],
+            'timeRange' => $timeRange,
+            'startDate' => $dateRange[0],
+            'endDate' =>  $dateRange[1],
+            'overallStats' => $summary,
+            'statsPerStudent' => $stats,
             'program_name' => "برنامج المقراة"
         ])->render();
 
@@ -78,25 +83,28 @@ class RecitationSessionControler extends Controller
     public function downloadMahirReport(Request $request)
     {
         $program = 'mahir';
-        $model = \App\Models\AlMaherRecitation::class;
 
-        $settings = $this->getProgramSettings($program);
-        $dateRange = $this->getDateRange($request, $settings['start'], $settings['end']);
+        $timeRange = $request->input('time_range');
 
-        $sessions = $this->getFilteredSessions($model, $dateRange);
+        $dateRange = $this->getDateRange($request, $program);
+
+        $sessions = AlMaherRecitation::filterByDateRange($dateRange);
         $grouped = $sessions->groupBy(fn($item) => $item->recitationSession->student_id);
 
-        $summary = $this->calculateStudentStats($grouped, $model, $dateRange, $settings['start'], $settings['end'], $program);
+        $stats = AlMaherRecitation::getStatsForGroupedSessions($grouped, $dateRange[0], $dateRange[1]);
+        $summary = AlMaherRecitation::summarizeStats($stats);
+
 
         $html = View::make('pdf.recitation', [
             'currentMonth' => now()->locale('ar')->translatedFormat('F Y'),
-            'timeRange' => $request->input('time_range'),
-            'startDate' => $request->input('start_date'),
-            'endDate' => $request->input('end_date'),
-            'overallStats' => $summary['overall'],
-            'statsPerStudent' => $summary['students'],
+            'timeRange' => $timeRange,
+            'startDate' => $dateRange[0],
+            'endDate' =>  $dateRange[1],
+            'overallStats' => $summary,
+            'statsPerStudent' => $stats,
             'program_name' => "برنامج الماهر"
         ])->render();
+
 
         $pdf = new \Mpdf\Mpdf([
             'tempDir' => storage_path('tempdir'),
@@ -124,24 +132,16 @@ class RecitationSessionControler extends Controller
 
     public function downloadMutqinReport(Request $request)
     {
+
         $program = 'mutqin';
-        $model = \App\Models\AlMutqinRecitation::class;
-
-        $settings = $this->getProgramSettings($program);
-        $settings['mem_monthly_target'] =  (int) settings("mutqin_mem_monthly_target", 40);
-        $settings['rev_monthly_target'] =  (int) settings("mutqin_rev_monthly_target", 40);
 
 
-        $dateRange = $this->getDateRange($request, $settings['start'], $settings['end']);
+        $dateRange = $this->getDateRange($request, $program);
 
-        $sessions = $this->getFilteredSessions($model, $dateRange);
+        $sessions = AlMutqinRecitation::filterByDateRange($dateRange);
         $grouped = $sessions->groupBy(fn($item) => $item->recitationSession->student_id);
 
-        $summary = $this->calculateMutqinStats(
-            $grouped,
-            $settings['mem_monthly_target'],
-            $settings['rev_monthly_target']
-        );
+        $summary = $this->calculateMutqinStats($grouped,$dateRange[0],$dateRange[1]);
 
         $html = View::make('pdf.mutqin-recitation', [
             'currentMonth' => now()->locale('ar')->translatedFormat('F Y'),
@@ -176,21 +176,21 @@ class RecitationSessionControler extends Controller
         );
     }
 
-    private function calculateMutqinStats($grouped, int $defaultMemTarget, int $defaultRevTarget): array
+    private function calculateMutqinStats($grouped , $progStart , $progEnd): array
     {
         $stats = [];
-        $memPages = $revPages = $memTargets = $revTargets = $absences = 0;
+        $memPages = $revPages = $memTargets = $revTargets = $absences = $totalScores = 0;
         $totalSessions = $grouped->flatten(1)->count();
 
         foreach ($grouped as $studentId => $recitations) {
             $student = $recitations->first()->recitationSession->student;
 
-            $memTarget = (int) ($student->monthly_target_pages ?? $defaultMemTarget);
-            $revTarget = (int) ($student->monthly_target_pages ?? $defaultRevTarget);
 
             $present = $recitations->where(fn($r) => $r->recitationSession->present === 'present');
             $absent = $recitations->where(fn($r) => $r->recitationSession->present !== 'present');
-
+            $avgScore = $present
+                ->map(fn($recitation) => $recitation->recitationSession->evaluation_score)
+                ->average();
             $sorted = $present->sortBy('recitationSession.session_date');
 
             $firstMem = $sorted->first(fn($r) => $r->mem_pages !== null);
@@ -199,8 +199,13 @@ class RecitationSessionControler extends Controller
             $firstRev = $sorted->first(fn($r) => $r->rev_pages !== null);
             $lastRev  = $sorted->reverse()->first(fn($r) => $r->rev_pages !== null);
 
-            $memRead = $present->sum('mem_pages');
-            $revRead = $present->sum('rev_pages');
+
+            $progStart = max(Carbon::parse($student->start_date), $progStart);
+
+            $mem_progress = $student->calculateProgress($progStart,$progEnd , 'mem_pages', true);
+            $rev_progress = $student->calculateProgress($progStart,$progEnd ,'rev_pages', false);
+
+
 
             $stats[] = [
                 'student_id' => $studentId,
@@ -208,30 +213,31 @@ class RecitationSessionControler extends Controller
                 'teacher_name' => $recitations->first()->recitationSession->halaka->teacher->name ?? '-',
                 'absences' => $absent->count(),
                 'registration_month' => Carbon::parse($student->start_date)->getTranslatedMonthName(),
-
                 'mem_start_surah_name' => $firstMem ? getSurahName($firstMem->mem_start_surah_id) : '-',
                 'mem_start_ayah_id' => $firstMem?->mem_start_ayah_id ?? '-',
                 'mem_end_surah_name' => $lastMem ? getSurahName($lastMem->mem_end_surah_id) : '-',
                 'mem_end_ayah_id' => $lastMem?->mem_end_ayah_id ?? '-',
-                'mem_pages_read' => $memRead,
-                'mem_monthly_target' => $memTarget,
-                'mem_monthly_percentage' => $memTarget > 0 ? (int) round($memRead / $memTarget * 100) : 0,
-
+                'mem_pages_read' => $mem_progress['cumulative_pages'],
+                'mem_monthly_target' => $mem_progress['cumulative_target'],
+                'mem_monthly_percentage' =>$mem_progress['cumulative_percentage'],
+                'avg_evaluation_score' => $avgScore,
                 'rev_start_surah_name' => $firstRev ? getSurahName($firstRev->rev_start_surah_id) : '-',
                 'rev_start_ayah_id' => $firstRev?->rev_start_ayah_id ?? '-',
                 'rev_end_surah_name' => $lastRev ? getSurahName($lastRev->rev_end_surah_id) : '-',
                 'rev_end_ayah_id' => $lastRev?->rev_end_ayah_id ?? '-',
-                'rev_pages_read' => $revRead,
-
-                'rev_monthly_target' => $revTarget,
-                'rev_monthly_percentage' => $revTarget > 0 ? (int) round($revRead / $revTarget * 100) : 0,
+                'rev_pages_read' => $rev_progress['cumulative_pages'],
+                'rev_monthly_target' => $rev_progress['cumulative_target'],
+                'rev_monthly_percentage' => $rev_progress['cumulative_percentage'],
             ];
 
-            $memPages += $memRead;
-            $revPages += $revRead;
-            $memTargets += $memTarget;
-            $revTargets += $revTarget;
+            $memPages += $mem_progress['cumulative_pages'];
+            $memTargets += $mem_progress['cumulative_target'];
+
+            $revPages += $rev_progress['cumulative_pages'];
+            $revTargets += $rev_progress['cumulative_target'];
+
             $absences += $absent->count();
+            $totalScores += $avgScore;
         }
 
         return [
@@ -242,7 +248,7 @@ class RecitationSessionControler extends Controller
                 'mem_total_pages' => $memPages,
                 'mem_total_monthly_target' => $memTargets,
                 'mem_total_monthly_percentage' => $memTargets > 0 ? round($memPages / $memTargets * 100) : 0,
-
+                'total_score' => $totalSessions > 0 ? round($totalScores / $totalSessions) : 0,
                 'rev_total_pages' => $revPages,
                 'rev_total_monthly_target' => $revTargets,
                 'rev_total_monthly_percentage' => $revTargets > 0 ? round($revPages / $revTargets * 100) : 0,
@@ -252,114 +258,24 @@ class RecitationSessionControler extends Controller
     }
 
 
-    private function getProgramSettings(string $program): array
-    {
-        return [
-            'start' => Carbon::parse(settings("{$program}_start_date", '2024-09-01')),
-            'end' => Carbon::parse(settings("{$program}_end_date", '2025-06-01')),
-            'monthly_target' => (int) settings("{$program}_monthly_target", 40),
-        ];
-    }
-
-    private function getDateRange(Request $request, Carbon $defaultStart, Carbon $defaultEnd): array
+    private function getDateRange(Request $request, string $program): array
     {
         return match ($request->input('time_range')) {
             'monthly' => [
                 now()->startOfMonth(),
                 now()->endOfMonth(),
             ],
-            'yearly' => [$defaultStart, $defaultEnd],
+            'yearly' => [
+                Carbon::parse(settings("{$program}_start_date", '2024-09-01')),
+                Carbon::parse(settings("{$program}_end_date", '2025-06-01'))
+            ],
             'custom' => [
                 Carbon::parse($request->input('start_date')),
                 Carbon::parse($request->input('end_date')),
-            ],
-            default => [$defaultStart, $defaultEnd],
+            ]
         };
     }
 
-    private function getFilteredSessions(string $model, array $range)
-    {
-        return $model::query()
-            ->with(['recitationSession.student'])
-            ->whereHas('recitationSession', fn($q) => $q->whereBetween('session_date', [
-                $range[0]->toDateString(), $range[1]->toDateString(),
-            ]))
-            ->get();
-    }
 
-    private function calculateStudentStats($grouped, string $model, array $range, Carbon $progStart, Carbon $progEnd, string $program): array
-    {
-        $stats = [];
-        $totalPages = $totalTarget = $totalCumulativePages = $totalCumulativeTarget = $totalAbsences = 0;
-
-        foreach ($grouped as $studentId => $recitations) {
-            $student = $recitations->first()->recitationSession->student;
-            $monthlyTarget = (int) ($student->monthly_target_pages ?? settings("{$program}_monthly_target", 40));
-            $absences = $recitations->where(fn($r) => $r->recitationSession->present !== 'present')->count();
-            $present = $recitations->where(fn($r) => $r->recitationSession->present === 'present');
-            $pagesRead = $present->sum('pages');
-
-            $first = $present->sortBy('recitationSession.session_date')->first();
-            $last = $present->sortByDesc('recitationSession.session_date')->first();
-
-            $trackingStart = max(Carbon::parse($student->start_date), $progStart);
-            $trackingEnd = match (true) {
-                request('time_range') === 'yearly' => $progEnd,
-                request('time_range') === 'custom' => Carbon::parse(request('end_date')),
-                default => min(now(), $progEnd),
-            };
-
-            $cumulativeSessions = $model::whereHas('recitationSession', fn($q) => $q
-                ->whereBetween('session_date', [$trackingStart, $trackingEnd])
-                ->where('student_id', $student->id)
-                ->where('present', '=', 'present')
-            )->get();
-
-            $months = (int) ($trackingStart->startOfMonth()->diffInMonths($trackingEnd->endOfMonth())) + 1;
-            $cumulativeTarget = $months * $monthlyTarget;
-            $cumulativePages = $cumulativeSessions->sum('pages');
-
-            $stats[] = [
-                'student_id' => $studentId,
-                'student_name' => $student->full_name ?? '-',
-                'teacher_name' => $recitations->first()->recitationSession->halaka->teacher->name ?? '-',
-                'absences' => $absences,
-                'registration_month' => Carbon::parse($student->start_date)->getTranslatedMonthName(),
-                'start_surah_id' => $first->start_surah_id ?? null,
-                'start_surah_name' => getSurahName($first->start_surah_id ?? 0),
-                'start_ayah_id' => $first->start_ayah_id ?? null,
-                'end_surah_id' => $last->end_surah_id ?? null,
-                'end_surah_name' => getSurahName($last->end_surah_id ?? 0),
-                'end_ayah_id' => $last->end_ayah_id ?? null,
-                'pages_read' => $pagesRead,
-                'monthly_target' =>  $monthlyTarget,
-                'monthly_percentage' => $monthlyTarget > 0 ? (int) round($pagesRead / $monthlyTarget * 100) : 0,
-                'cumulative_pages' => $cumulativePages,
-                'cumulative_target' =>  $cumulativeTarget,
-                'cumulative_percentage' => $cumulativeTarget > 0 ? (int) round($cumulativePages / $cumulativeTarget * 100) : 0,
-            ];
-
-            $totalPages += $pagesRead;
-            $totalTarget += $monthlyTarget;
-            $totalCumulativePages += $cumulativePages;
-            $totalCumulativeTarget += $cumulativeTarget;
-            $totalAbsences += $absences;
-        }
-
-        return [
-            'students' => $stats,
-            'overall' => [
-                'total_absences_percentage' => $grouped->flatten(1)->count() > 0
-                    ? round($totalAbsences / $grouped->flatten(1)->count() * 100)
-                    : 0,
-                'total_pages' => $totalPages,
-                'total_monthly_target' => $totalTarget,
-                'total_monthly_percentage' => $totalTarget > 0 ? (int) round($totalPages / $totalTarget * 100) : 0,
-                'total_cumulative_pages' => $totalCumulativePages,
-                'total_cumulative_target' => $totalCumulativeTarget,
-                'total_cumulative_percentage' => $totalCumulativeTarget > 0 ? (int) round($totalCumulativePages / $totalCumulativeTarget * 100) : 0,
-            ]
-        ];
-    }
 
 }

@@ -37,7 +37,7 @@ class ConvertToInterviw implements ShouldQueue
         // إنشاء التقييم
         Evaluation::create([
             'candidate_id' => $this->candidate->id,
-            'evaluator_id' => $this->candidate->evaluator_id,
+            'evaluator_id' => $this->candidate?->teacher?->user->id,
             'tajweed_score' => 0,
             'voice_score' => 0,
             'memorization_score' => 0,

@@ -2,7 +2,6 @@
 
 use App\Models\Evaluation;
 use App\Models\Student;
-use App\Models\Teacher;
 use App\Models\User;
 use App\Notifications\CandidateAccepted;
 use App\Notifications\CandidateEvaluationNotification;
@@ -14,7 +13,6 @@ use App\Settings\GeneralSettings;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 
 /**  define settings  */
@@ -118,7 +116,7 @@ if (!function_exists('sendToInterview')) {
             DB::beginTransaction();
             Evaluation::create([
                 'candidate_id' => $candidate->id,
-                'evaluator_id' => $candidate->teacher->user_id,
+                'evaluator_id' => $candidate?->teacher?->user->id,
                 'tajweed_score' => 0,
                 'voice_score' => 0,
                 'memorization_score' => 0,
@@ -142,6 +140,7 @@ if (!function_exists('sendToInterview')) {
 
             Notification::make()
                 ->title('حدث خطأ أثناء إرسال المترشح للمقابلة!')
+                ->body($ex->getMessage())
                 ->danger()
                 ->send();
         }
@@ -192,7 +191,7 @@ if (!function_exists('acceptedStudent')) {
             // إنشاء سجل طالب
             Student::create([
                 'user_id' => $user->id,
-                'evaluator_id' => $candidate->teacher->id,
+                'teacher_id' => $candidate->teacher_id,
                 'candidate_id' => $candidate->id,
                 'start_date' => now(),
             ]);
@@ -260,7 +259,7 @@ if (!function_exists('acceptedCandidate')) {
             // إنشاء سجل طالب
             Student::create([
                 'user_id' => $user->id,
-                'teacher_id' => $candidate->teacher->id,
+                'teacher_id' => $candidate->teacher_id,
                 'candidate_id' => $candidate->id,
                 'start_date' => now(),
             ]);
@@ -272,7 +271,7 @@ if (!function_exists('acceptedCandidate')) {
             $user->notify((new CandidateAccepted($password))->afterCommit());
 
             Notification::make()
-                ->title(' تم ارسال شعار للطالب!')
+                ->title(' تم ارسال اشعار للطالب!')
                 ->info()
                 ->send();
 
@@ -306,6 +305,9 @@ if (!function_exists('evaluateCandidate')) {
                     ->send();
                 return;
             }
+
+
+
 
             $password = "password";
 
@@ -349,9 +351,10 @@ if (!function_exists('evaluateCandidate')) {
 
                 }
                 $user->save();
+
                 Student::create([
                     'user_id' => $user->id,
-                    'evaluator_id' => $evaluation->candidate->teacher_id,
+                    'teacher_id' => $evaluation->candidate->teacher_id,
                     'candidate_id' => $evaluation->candidate->id,
                     'start_date' => now(),
                 ]);

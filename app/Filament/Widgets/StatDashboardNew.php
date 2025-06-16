@@ -2,15 +2,9 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\AlMaherRecitation;
-use App\Models\AlMaqraaRecitation;
-use App\Models\AlMutqinRecitation;
 use App\Models\Candidate;
-use App\Models\Halaka;
-use App\Models\RecitationSession;
 use App\Models\Student;
 use App\Models\Teacher;
-use Carbon\Carbon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 

@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\CandidateStatus;
 use App\Filament\Resources\CandidateResource\Pages;
 use App\Models\Candidate;
+use App\Models\Student;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Carbon\Carbon;
 use Filament\Forms;
@@ -16,6 +17,7 @@ use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class CandidateResource extends Resource implements HasShieldPermissions
 {
@@ -61,6 +63,12 @@ class CandidateResource extends Resource implements HasShieldPermissions
                                                     ->maxLength(255)
                                                     ->label(__('filament.candidate.fields.full_name')),
 
+                                                Forms\Components\DatePicker::make('birthdate')
+                                                    ->required()
+                                                    ->maxDate(Carbon::now()->subYears(settings("min_age", 10)))
+                                                    ->minDate(Carbon::now()->subYears(settings("max_age", 70)))
+                                                    ->label(__('filament.candidate.fields.birthdate')),
+
                                                 Forms\Components\TextInput::make('phone')
                                                     ->tel()
                                                     ->live()
@@ -75,17 +83,58 @@ class CandidateResource extends Resource implements HasShieldPermissions
                                                     ->unique(ignoreRecord: true)
                                                     ->label(__('filament.candidate.fields.email')),
 
-                                                Forms\Components\DatePicker::make('birthdate')
-                                                    ->required()
-                                                    ->maxDate(Carbon::now()->subYears(settings("min_age",10)))
-                                                    ->minDate(Carbon::now()->subYears(settings("max_age",70)))
-                                                    ->label(__('filament.candidate.fields.birthdate')),
+
+                                                Forms\Components\TextInput::make('password')
+                                                    ->password()
+                                                    ->revealable()
+                                                    ->dehydrated(fn ($state) => filled($state))
+                                                    ->confirmed()
+                                                    ->required(fn(string $context) => $context !== 'edit')
+                                                    ->maxLength(255)
+                                                    ->label('كلمة السر'),
+
+                                                Forms\Components\TextInput::make('password_confirmation')
+                                                    ->password()
+                                                    ->revealable()
+                                                    ->required(fn(string $context) => $context !== 'edit')
+                                                    ->maxLength(255)
+                                                    ->label('تاكيد كلمة السر'),
+
 
                                                 Forms\Components\Select::make('qualification')
                                                     ->options(settings('qualifications'))
                                                     ->required()
                                                     ->label(__('filament.candidate.fields.qualification')),
                                             ]),
+                                    ]),
+
+                                Tabs\Tab::make(__('filament.candidate.tabs.administrative'))
+                                    ->icon('heroicon-o-cog')
+                                    ->schema([
+
+                                            Forms\Components\Select::make('program_type')
+                                            ->label('البرنامج')
+                                            ->required()
+                                            ->live()
+                                            ->reactive()
+                                            ->options(Candidate::getProgramTypes()),
+                                            Forms\Components\Select::make('teacher_id')
+                                                ->relationship('teacher', 'name')
+                                                ->required()
+                                                ->searchable()
+                                                ->preload()
+                                                ->label(__('filament.candidate.fields.teacher')),
+
+                                            Forms\Components\Select::make('status')
+                                                ->options([
+                                                    'pending' => __('filament.candidate.status.pending'),
+                                                    'interview' => __('filament.candidate.status.interview'),
+                                                    'accepted' => __('filament.candidate.status.accepted'),
+                                                    'rejected' => __('filament.candidate.status.rejected'),
+                                                ])
+                                                ->visibleOn('edit')
+                                                ->default('pending')
+                                                ->label(__('filament.candidate.fields.status')),
                                     ]),
 
                                 Tabs\Tab::make(__('filament.candidate.tabs.quranic_information'))
@@ -98,26 +147,28 @@ class CandidateResource extends Resource implements HasShieldPermissions
                                                     ->options(Candidate::getQuranLevels())
                                                     ->required()
                                                     ->label(__('filament.candidate.fields.quran_level')),
-                                                Forms\Components\Select::make('self_evaluation')
-                                                    ->options([60, 70, 80, 90, 100])
-                                                    ->label(__('filament.candidate.fields.self_evaluation')),
-
-
-                                                Forms\Components\Select::make('desired_recitation')
-                                                    ->options(settings("reading_types"))
-                                                    ->label(__('filament.candidate.fields.desired_recitations'))
-                                                    ->columnSpanFull(),
-
-
 
                                                 Forms\Components\Toggle::make('has_ijaza')
                                                     ->label(__('filament.candidate.fields.has_ijaza'))
+                                                    ->visible(fn(Forms\Get $get) => $get('program_type') === 'maqraa')
                                                     ->live(),
 
                                                 Forms\Components\CheckboxList::make('ijaza_types')
                                                     ->options(settings('ijaza_types'))
                                                     ->visible(fn(Forms\Get $get) => $get('has_ijaza'))
                                                     ->label(__('filament.candidate.fields.ijaza_types')),
+
+                                                Forms\Components\Select::make('desired_recitation')
+                                                    ->options(settings("reading_types"))
+                                                    ->visible(fn(Forms\Get $get) => $get('program_type') === 'maqraa')
+                                                    ->label(__('filament.candidate.fields.desired_recitations'))
+                                                    ->columnSpanFull(),
+
+                                                Forms\Components\Select::make('self_evaluation')
+                                                    ->options([60, 70, 80, 90, 100])
+                                                    ->label(__('filament.candidate.fields.self_evaluation')),
+
+
                                             ]),
                                     ]),
 
@@ -135,35 +186,15 @@ class CandidateResource extends Resource implements HasShieldPermissions
                                                     ->label(__('filament.candidate.fields.qualification_file')),
 
                                                 Forms\Components\FileUpload::make('audio_recitation')
+                                                    ->visible(fn(Forms\Get $get) => $get('program_type') === 'maqraa')
                                                     ->acceptedFileTypes(['audio/mpeg', 'audio/wav'])
                                                     ->directory('candidates/recitations')
                                                     ->maxSize(10240)
-                                                    ->label(__('filament.candidate.fields.audio_recitation')),
+                                                    ->label('🔊 الرجاء إرفاق مقطع صوتي من حفظك للوجه رقم 107 من سورة المائدة. من {حرمت عليكم الميتة} إلى نهاية الوجه.'),
                                             ]),
                                     ]),
 
-                                Tabs\Tab::make(__('filament.candidate.tabs.administrative'))
-                                    ->icon('heroicon-o-cog')
-                                    ->schema([
-                                        Section::make(__('filament.candidate.sections.administrative_details'))
-                                            ->schema([
-                                                Forms\Components\Select::make('teacher_id')
-                                                    ->relationship('teacher', 'name')
-                                                    ->searchable()
-                                                    ->preload()
-                                                    ->label(__('filament.candidate.fields.teacher')),
 
-                                                Forms\Components\Select::make('status')
-                                                    ->options([
-                                                        'pending' => __('filament.candidate.status.pending'),
-                                                        'interview' => __('filament.candidate.status.interview'),
-                                                        'accepted' => __('filament.candidate.status.accepted'),
-                                                        'rejected' => __('filament.candidate.status.rejected'),
-                                                    ])
-                                                    ->default('pending')
-                                                    ->label(__('filament.candidate.fields.status')),
-                                            ]),
-                                    ]),
                             ])
                             ->columnSpanFull()
                             ->persistTabInQueryString(),
@@ -174,6 +205,7 @@ class CandidateResource extends Resource implements HasShieldPermissions
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at','desc')
             ->columns([
                 Tables\Columns\TextColumn::make('full_name')->label(__('filament.candidate.fields.full_name'))->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('email')->label(__('filament.candidate.fields.email'))->searchable()->sortable(),
@@ -195,12 +227,13 @@ class CandidateResource extends Resource implements HasShieldPermissions
                     ->label(__('filament.candidate.fields.status'))
                     ->sortable()
                     ->toggleable()
-                    ->formatStateUsing(fn($state) => $state instanceof CandidateStatus ? __('filament.candidate.status.'.$state->value) : __('filament.candidate.status.unknown'))
+                    ->formatStateUsing(fn($state) => $state instanceof CandidateStatus ? __('filament.candidate.status.' . $state->value) : __('filament.candidate.status.unknown'))
                     ->badge(),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('filament.candidate.fields.created_at'))
-                    ->date()
+                    ->date("d M Y")
+                    ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\ViewColumn::make('qualification_file')

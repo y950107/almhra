@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
-use App\Services\Moshaf_madina_Service;
+use App\Models\Traits\HandlesRecitations;
 use Illuminate\Database\Eloquent\Model;
 
 class AlMutqinRecitation extends Model
 {
+
+    use HandlesRecitations;
 
     protected $table = "almutqin_recitations";
 
@@ -42,19 +44,27 @@ class AlMutqinRecitation extends Model
             'tajweed' => 'التجويد'];
     }
 
+
+    public function getMemAyahTextAttribute()
+    {
+        return self::getAyahText($this->mem_end_surah_id,$this->mem_end_ayah_id);
+    }
+
     public function getMemSurahNameAttribute()
     {
-        $quranService = app(Moshaf_madina_Service::class);
-        $surahs = $quranService->getSurahs();
-        return collect($surahs)->where('id', $this->mem_end_surah_id)->first()['name'] ?? null;
+        return self::getSurahName($this->mem_end_surah_id);
+    }
+
+    public function getRevAyahTextAttribute()
+    {
+        return self::getAyahText($this->rev_end_surah_id,$this->rev_end_ayah_id);
     }
 
     public function getRevSurahNameAttribute()
     {
-        $quranService = app(Moshaf_madina_Service::class);
-        $surahs = $quranService->getSurahs();
-        return collect($surahs)->where('id', $this->rev_end_surah_id)->first()['name'] ?? null;
+        return self::getSurahName($this->rev_end_surah_id);
     }
+
 
 }
 

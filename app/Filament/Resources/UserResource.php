@@ -63,7 +63,7 @@ class UserResource extends Resource
                             'student' => 'طالب',
                         ])
                         ->required(),
-                    Toggle::make('account_status')
+                    Toggle::make('acount_status')
                         ->label('حالة الحساب')
                         ->default(true)
                         ->reactive(),
@@ -89,14 +89,15 @@ class UserResource extends Resource
                 ->label('الدور')
                 ->badge()
                 ->color('primary'),
-            TextColumn::make('account_status')
+            TextColumn::make('acount_status')
                 ->label('حالة الحساب')
                 ->formatStateUsing(fn($state) => $state ? 'مفعل' : 'غير مفعل')
                 ->badge()
                 ->colors([
                     'success' => fn($state) => $state ? 'green' : 'red',
                 ]),
-            TextColumn::make('created_at')->label('تاريخ الإنشاء')->date('Y-m-d'),
+            TextColumn::make('created_at')->label('تاريخ الإنشاء')->date('Y-m-d')
+            ->badge()->color('info'),
         ]);
     }
 

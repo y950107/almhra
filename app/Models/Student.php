@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -13,7 +14,7 @@ class Student extends Model
 
     protected $fillable = [
         'user_id',
-        'evaluator_id',
+        'teacher_id',
         'candidate_id',
         'start_date',
         'current_level',
@@ -29,9 +30,14 @@ class Student extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function recitationSessions()
+    {
+        return $this->hasMany(RecitationSession::class);
+    }
+
     public function teacher()
     {
-        return $this->belongsTo(Teacher::class,'evaluator_id',"id");
+        return $this->belongsTo(Teacher::class,'teacher_id',"id");
     }
     public function candidate()
     {
@@ -46,50 +52,37 @@ class Student extends Model
     {
         return $this->candidate ? $this->candidate->full_name : ' اسم';
     }
-    public function recitationSessions()
+
+
+    public function getActualMonthlyTargetAttribute(bool $mem = true)
     {
-        return $this->hasMany(RecitationSession::class);
+        $program = $this->candidate->program_type; // e.g., 'maqraa', 'mutqin', 'mahir'
+        if ($program === 'mutqin') {
+            $program = $mem ? "mutqin_mem" : "mutqin_rev";
+        }
+
+        return (int) ($student->monthly_target_pages ?? settings("{$program}_monthly_target", 40));
+
     }
 
-    public function getProgressPercentageAttribute()
+    public function getProgramSettings(bool $mem = true): array
     {
-        $program = $this->teacher->program_type; // e.g., 'maqraa', 'mutqin', 'mahir'
-        $settings = $this->getProgramSettings($program);
+        $program = $this->candidate->program_type; // e.g., 'maqraa', 'mutqin', 'mahir'
 
-        $start = max(Carbon::parse($this->start_date), $settings['start']);
-        $end = $settings['end'];
-        $monthlyTarget =  $this->monthly_target_pages ?? $settings['monthly_target'];
+        if ($program === 'mutqin') {
+            $monthly_target = $mem ? "mutqin_mem" : "mutqin_rev";
+            $pages = $mem ? "mem_pages" : "rev_pages";
+        }
+        else {
+            $monthly_target = "{$program}_monthly_target";
+            $pages = "pages";
+        }
 
-        $monthsBetween =  round( $start->startOfMonth()->diffInMonths($end->endOfMonth())) + 1;
-
-        // Dynamically resolve model class
-        $modelClass = $this->getRecitationModelClass($program);
-
-        $cumulativeRecitations = $modelClass::whereHas('recitationSession', function ($query) use ($start, $end) {
-            $query->whereBetween('session_date', [
-                $start->toDateString(),
-                $end->toDateString(),
-            ])
-                ->where('present', '=', 'present')
-                ->where('student_id', $this->id);
-        })->get();
-
-        $cumulativePages = $cumulativeRecitations->sum('pages');
-
-        $cumulativeTarget = $monthsBetween * $monthlyTarget;
-
-        return $cumulativeTarget > 0
-            ? (int) round(($cumulativePages / $cumulativeTarget) * 100)
-            : 0;
-    }
-
-
-    private function getProgramSettings(string $program): array
-    {
         return [
             'start' => Carbon::parse(settings("{$program}_start_date", '2024-09-01')),
             'end' => Carbon::parse(settings("{$program}_end_date", '2025-06-01')),
-            'monthly_target' => (int) settings("{$program}_monthly_target", 40),
+            'monthly_target' => (int) ($student->monthly_target_pages ?? settings($monthly_target, 40)),
+            'pages' => $pages
         ];
     }
     private function getRecitationModelClass(string $program): string
@@ -101,5 +94,76 @@ class Student extends Model
             default => throw new \InvalidArgumentException("Unknown program type: $program"),
         };
     }
+
+    public function calculateProgress( $start , $end , $pages_att , bool $mem = true )
+    {
+        $program = $this->candidate->program_type;// e.g., 'maqraa', 'mutqin', 'mahir'
+
+        $monthlyTarget =  $this->getActualMonthlyTargetAttribute($mem);
+
+        $monthsBetween =  round( $start->diffInMonths($end),2) ;
+
+        // Dynamically resolve model class
+        $modelClass = $this->getRecitationModelClass($program);
+
+        $cumulativeRecitations = $modelClass::forStudentWithin([$start->toDateString(), $end->toDateString()] , $this->id);
+
+        $cumulativePages = $cumulativeRecitations->sum($pages_att);
+
+        $cumulativeTarget = round($monthsBetween * $monthlyTarget);
+
+        $percentage = $cumulativeTarget > 0
+            ?  round(($cumulativePages / $cumulativeTarget) * 100)
+            : 0;
+
+        return [
+            'cumulative_pages' => round($cumulativePages),
+            'cumulative_target' => round($cumulativeTarget),
+            'cumulative_percentage' => $percentage,
+            'recitations_count' => $cumulativeRecitations->count()
+        ];
+    }
+
+    public function getProgressPercentageAttribute()
+    {
+        $settings = $this->getProgramSettings();
+
+        $start = max(Carbon::parse($this->start_date), $settings['start']);
+        $end = $settings['end'];
+        return $this->calculateProgress($start,$end,$settings['pages'])['cumulative_percentage'];
+    }
+
+    public function getOnlineSessionsPercentageAttribute()
+    {
+        return $this->calculateRecitationPercentage('in_person');
+    }
+
+    public function getPresentSessionsPercentageAttribute()
+    {
+        return $this->calculateRecitationPercentage('remote');
+    }
+
+    protected function calculateRecitationPercentage(string $type): int
+    {
+        $model = $this->getRecitationModelClass($this->candidate->program_type);
+
+        $data = $model::whereHas('recitationSession', function (Builder $query) {
+            $query->where('student_id', $this->id)
+                ->where('present', 'present');
+        })
+            ->with(['recitationSession' => function ($query) {
+                $query->select('id', 'student_id', 'present', 'recitation_type');
+            }])
+            ->get()
+            ->pluck('recitationSession.recitation_type');
+
+        $total = $data->count();
+        $present = $data->filter(fn($typeVal) => $typeVal === $type)->count();
+
+        return $total > 0 ? (int) round(($present / $total) * 100) : 0;
+    }
+
+
+
 
 }

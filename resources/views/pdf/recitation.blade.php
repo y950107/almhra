@@ -171,9 +171,12 @@
                 <th>المحقق</th>
                 <th>المستهدف</th>
                 <th>نسبة الإنجاز</th>
-                <th>المحقق التراكمي</th>
-                <th>المستهدف التراكمي</th>
-                <th>نسبة الإنجاز</th>
+                @if($timeRange === 'monthly')
+                    <th>المحقق التراكمي</th>
+                    <th>المستهدف التراكمي</th>
+                    <th>نسبة الإنجاز</th>
+                @endif
+                <th>معدل التقييم</th>
             </tr>
         </thead>
         <tbody>
@@ -191,15 +194,19 @@
                     <td>{{ $stat['pages_read'] }}</td>
                     <td>{{ $stat['monthly_target'] }}</td>
                     <td>{{ $stat['monthly_percentage'] }}%</td>
-                    <td>{{ $stat['cumulative_pages'] }}</td>
-                    <td>{{ $stat['cumulative_target'] }}</td>
-                    <td>{{ $stat['cumulative_percentage'] }}%</td>
+                    @if($timeRange === 'monthly')
+                        <td>{{ $stat['cumulative_pages'] }}</td>
+                        <td>{{ $stat['cumulative_target'] }}</td>
+                        <td>{{ $stat['cumulative_percentage'] }}%</td>
+                    @endif
+                    <td>{{ $stat['avg_evaluation_score'] }}</td>
                 </tr>
             @endforeach
 
 
         </tbody>
-        <tfoot class="tfoot" style="background-color: rgb(28, 22, 35)">
+
+            <tfoot class="tfoot" style="background-color: rgb(28, 22, 35)">
 
             <tr>
                 <th colspan="8" rowspan="2">مؤشر الأداء لجميع الحلقات</th>
@@ -207,10 +214,12 @@
                 <th>{{ $overallStats['total_pages'] }}</th>
                 <th>{{ $overallStats['total_monthly_target'] }}</th>
                 <th>{{ $overallStats['total_monthly_percentage'] }}%</th>
+                @if($timeRange === 'monthly')
                 <th>{{ $overallStats['total_cumulative_pages'] }}</th>
                 <th>{{ $overallStats['total_cumulative_target'] }}</th>
                 <th>{{ $overallStats['total_cumulative_percentage'] }}%</th>
-
+                @endif
+                <th>{{ $overallStats['total_score'] }}</th>
             </tr>
             <tr>
 
@@ -218,12 +227,16 @@
                 <th colspan="2">عدد الاوجه</th>
 
                 <th>نسبة الانجاز</th>
+                <th>معدل التقييم</th>
+                @if($timeRange === 'monthly')
                 <th colspan="2">عدد الاوجه</th>
 
                 <th>المؤشر العام</th>
-
+                @endif
             </tr>
-        </tfoot>
+            </tfoot>
+
+
     </table>
 
     <div class="footer">

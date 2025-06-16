@@ -1,10 +1,9 @@
 <x-filament-widgets::widget>
     <x-filament::section>
-        <div>
-            <div id="canvas-holder" style="width:100%">
-                <canvas id="{{ $chartId }}" height="90"></canvas>
-            </div>
+        <div id="canvas-holder" style="width: 100%; position: relative; aspect-ratio: 2 / 1; max-height: 200px;">
+            <canvas id="{{ $chartId }}"></canvas>
         </div>
+
 
         <script src="https://unpkg.com/chart.js@2.8.0/dist/Chart.bundle.js"></script>
         <script src="https://unpkg.com/chartjs-gauge@0.3.0/dist/chartjs-gauge.js"></script>
@@ -27,14 +26,15 @@
                     },
                     options: {
                         responsive: true,
+                        maintainAspectRatio: false, // Allow CSS to control sizing
                         title: {
                             display: true,
                             text: chartTitle ?? 'Chart',
-                            fontSize: 24,
+                            fontSize: 18,
                             fontStyle: 'bold'
                         },
                         layout: {
-                            padding: { bottom: 30 }
+                            padding: { bottom: 10 }
                         },
                         needle: {
                             radiusPercentage: 2,

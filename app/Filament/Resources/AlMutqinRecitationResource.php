@@ -477,34 +477,34 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
 
                                 ]),
 
+
                             // تقييمات المعلم
                             Tabs\Tab::make('تقييمات المعلم')
                                 ->visible(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                 ->schema([
 
+                                    Forms\Components\Group::make([
+                                        TextInput::make('tajweed_score')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->maxValue(100)
+                                            ->suffix('من 100')
+                                            ->label('درجة التجويد'),
 
+                                        TextInput::make('fluency_score')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->maxValue(100)
+                                            ->suffix('من 100')
+                                            ->label('درجة الطلاقة'),
 
-
-                                    TextInput::make('tajweed_score')
-                                        ->numeric()
-                                        ->minValue(0)
-                                        ->maxValue(100)
-                                        ->suffix('من 100')
-                                        ->label('درجة التجويد'),
-
-                                    TextInput::make('fluency_score')
-                                        ->numeric()
-                                        ->minValue(0)
-                                        ->maxValue(100)
-                                        ->suffix('من 100')
-                                        ->label('درجة الطلاقة'),
-
-                                    TextInput::make('memory_score')
-                                        ->numeric()
-                                        ->minValue(0)
-                                        ->maxValue(100)
-                                        ->suffix('من 100')
-                                        ->label('درجة الحفظ'),
+                                        TextInput::make('memory_score')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->maxValue(100)
+                                            ->suffix('من 100')
+                                            ->label('درجة الحفظ'),
+                                    ])->relationship('recitationSession')->statePath('recitationSession')->dehydrated()
                                 ]),
                             //  الملاحظات العامة
                             Tabs\Tab::make('الملاحظات العامة')->schema([
@@ -570,6 +570,11 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                     ->label('عدد اوجه المراجعة')
                     ->limit(30)
                     ->toggleable(),
+
+                TextColumn::make('recitationSession.evaluationScore')
+                    ->label('التقييم')
+                    ->badge()
+                    ->color('info')
 
             ])
             ->actions([

@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Surah;
+use App\Models\Verse;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Http;
-use App\Models\Verse;
-use App\Models\Surah;
 
 class VerseSeeder extends Seeder
 {

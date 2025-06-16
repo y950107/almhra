@@ -79,6 +79,7 @@ class SessionsResource extends Resource implements HasShieldPermissions
                 ->label('تاريخ البداية')
                 ->date('d-m-Y')
                 ->badge()
+                ->color('info')
                 ->sortable(),
 
             TextColumn::make('name')->label('اسم الحلقة')->sortable()->searchable(),
@@ -86,15 +87,7 @@ class SessionsResource extends Resource implements HasShieldPermissions
             TextColumn::make('teacher.name')->label('المعلم')->sortable(),
 
 
-            CircleProgress::make('progress_percentage')->label('نسبة الإنجاز')
-                ->getStateUsing(function ($record) {
-                    $total = 100;
-                    $progress = $record->getProgressPercentageAttribute();
-                    return [
-                        'total' => $total,
-                        'progress' => $progress,
-                    ];
-                }),
+
 
             TextColumn::make('students_count')
                 ->label('عدد الطلاب')
@@ -107,6 +100,16 @@ class SessionsResource extends Resource implements HasShieldPermissions
                 ->label('حالة الحلقة')
                 ->formatStateUsing(fn($state) => $state === 'العدد مكتمل' ? 'التسجيل متاح' : 'التسجيل مفتوح')
                 ->color(fn($state) => $state === 'العدد مكتمل' ? 'danger' : 'success'),
+
+            CircleProgress::make('progress_percentage')->label('نسبة الإنجاز')
+                ->getStateUsing(function ($record) {
+                    $total = 100;
+                    $progress = $record->getProgressPercentageAttribute();
+                    return [
+                        'total' => $total,
+                        'progress' => $progress,
+                    ];
+                }),
         ])
             ->filters([
                 Tables\Filters\SelectFilter::make('teacher_id')

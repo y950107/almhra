@@ -57,33 +57,22 @@ class Halaka extends Model
 
     public function getProgressPercentageAttribute()
     {
-        $program = $this->teacher->program_type; // e.g., 'maqraa', 'mutqin', 'mahir'
-        $settings = $this->getProgramSettings($program);
+        $students = $this->students;
+        $percentages = $students->map(function ($student) {
+            $settings = $student->getProgramSettings();
+            $start = max(Carbon::parse($student->start_date), $settings['start']);
+            $end = $settings['end'];
+            $pages_att = $settings['pages'];
 
-        $start = $settings['start'];
-        $end = $settings['end'];
-        $monthlyTarget = $settings['monthly_target'];
+            return $student->calculateProgress($start, $end, $pages_att)['cumulative_percentage'];
+        })->filter(fn ($v) => $v !== null)->values();
 
-        $monthsBetween = (int) $start->startOfMonth()->diffInMonths($end->endOfMonth()) + 1;
 
-        // Dynamically resolve model class
-        $modelClass = $this->getRecitationModelClass($program);
-
-        $cumulativeRecitations = $modelClass::whereHas('recitationSession', function ($query) use ($start, $end) {
-            $query->whereBetween('session_date', [
-                $start->toDateString(),
-                $end->toDateString(),
-            ])
-                ->where('present', '=', 'present')
-                ->where('halaka_id', $this->id);
-        })->get();
-
-        $cumulativePages = $cumulativeRecitations->sum('pages');
-        $cumulativeTarget = $monthsBetween * $monthlyTarget;
-
-        return $cumulativeTarget > 0
-            ? (int) round(($cumulativePages / $cumulativeTarget) * 100)
+        return $percentages->count() > 0
+            ? round($percentages->avg(), 2)
             : 0;
+
+
     }
 
 

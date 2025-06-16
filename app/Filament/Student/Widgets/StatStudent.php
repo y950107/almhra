@@ -2,7 +2,6 @@
 
 namespace App\Filament\Student\Widgets;
 
-use App\Models\RecitationSession;
 use App\Models\Student;
 use Carbon\Carbon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
@@ -16,73 +15,23 @@ class StatStudent extends BaseWidget
 
     protected function getStats(): array
     {
-        $student = Student::where('user_id', auth()->id())->with('candidate')->firstOrFail();
-        $program = $student->candidate->program_type;
+        $student = Student::where('user_id', auth()->id())->firstOrFail();
 
-        // Program settings
-        $progStart = Carbon::parse(settings("{$program}_start_date", '2024-09-01'));
-        $progEnd = Carbon::parse(settings("{$program}_end_date", '2025-06-01'));
-
-        $modelMap = [
-            'maqraa' => [
-                'model' => \App\Models\AlMaqraaRecitation::class,
-                'pageField' => 'pages',
-            ],
-            'mahir' => [
-                'model' => \App\Models\AlMaherRecitation::class,
-                'pageField' => 'pages',
-            ],
-            'mutqin' => [
-                'model' => \App\Models\AlMutqinRecitation::class,
-                'pageField' => ['mem_pages', 'rev_pages'],
-            ],
-        ];
-
-        if (!isset($modelMap[$program])) {
-            return [];
-        }
-
-        $modelClass = $modelMap[$program]['model'];
-        $pageField = $modelMap[$program]['pageField'];
-        $monthlyTarget = (int) ($student->monthly_target_pages ?? settings("{$program}_monthly_target", 40));
-
-        // Track between student's entry and program end
-        $trackingStart = max(Carbon::parse($student->start_date), $progStart);
-        $trackingEnd = $progEnd;
-
-        // Fetch recitations during the full program duration for the student
-        $recitations = $modelClass::whereHas('recitationSession', fn($q) =>
-        $q->whereBetween('session_date', [$trackingStart, $trackingEnd])
-            ->where('student_id', $student->id)
-            ->where('present', 'present')
-        )->with('recitationSession')->get();
-
-        // Page sum logic
-        $cumulativePages = is_array($pageField)
-            ? round($recitations->sum('mem_pages') + $recitations->sum('rev_pages'))
-            : $recitations->sum($pageField);
-
-
-        // Total months student has participated in the program
-        $months = round( $trackingStart->startOfMonth()->diffInMonths($trackingEnd->endOfMonth())) + 1;
-
-        $cumulativeTarget = $months * $monthlyTarget;
-
-        $percentage = $cumulativeTarget > 0
-            ? round(($cumulativePages / $cumulativeTarget) * 100)
-            : 0;
+        $settings = $student->getProgramSettings();
+        $start = max(Carbon::parse($student->start_date), $settings['start']);
+        $stats = $student->calculateProgress($start,$settings['end'],$settings['pages']);
 
         return [
-            Stat::make('إجمالي الأوجه المحققة', $cumulativePages)
-                ->description("نسبة الإنجاز {$percentage}%")
+            Stat::make('إجمالي الأوجه المحققة', $stats['cumulative_pages'])
+                ->description("نسبة الإنجاز {$stats['cumulative_percentage']}%")
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('success'),
 
-            Stat::make('إجمالي الأوجه المستهدفة', $cumulativeTarget)
+            Stat::make('إجمالي الأوجه المستهدفة', $stats['cumulative_target'])
                 ->description('منذ بداية البرنامج')
                 ->color('info'),
 
-            Stat::make('عدد الحصص', $recitations->count()),
+            Stat::make('عدد الحصص', $stats['recitations_count']),
         ];
     }
 

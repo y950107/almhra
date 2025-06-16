@@ -5,7 +5,6 @@ namespace App\Filament\Widgets;
 use App\Filament\Resources\AlMaherRecitationResource;
 use App\Filament\Resources\AlMaqraaRecitationResource;
 use App\Filament\Resources\AlMutqinRecitationResource;
-use App\Filament\Resources\RecitationSessionResource;
 use App\Models\RecitationSession;
 use Saade\FilamentFullCalendar\Widgets\FullCalendarWidget;
 
@@ -20,14 +19,13 @@ class CalendarWidget extends FullCalendarWidget
    }*/
     public function fetchEvents(array $fetchInfo): array
     {
+
         return RecitationSession::with(['halaka', 'almaqraaRecitation', 'almutqinRecitation', 'almaherRecitation'])
-            ->where('created_at', '>=', $fetchInfo['start'])
+            ->where('session_date', '>=', $fetchInfo['start'])
             ->where('session_date', '<=', $fetchInfo['end'])
             ->get()
             ->map(function (RecitationSession $event) {
                 // Determine which recitation type it has
-                $resource = null;
-                $color = null;
 
                 if ($event->almaqraaRecitation) {
                     $resource = AlMaqraaRecitationResource::getUrl(name: 'edit', parameters: ['record' => $event->almaqraaRecitation->id]);
@@ -43,7 +41,7 @@ class CalendarWidget extends FullCalendarWidget
 
                 return [
                     'title' => $event->halaka->name,
-                    'start' => $event->created_at,
+                    'start' => $event->session_date,
                     'end' => $event->session_date,
                     'color' => $color,
                     'url' => $resource,

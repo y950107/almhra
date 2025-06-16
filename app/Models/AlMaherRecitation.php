@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
-use App\Services\Moshaf_madina_Service;
+use App\Models\Traits\HandlesRecitations;
 use Illuminate\Database\Eloquent\Model;
 
 class AlMaherRecitation extends Model
 {
+    use HandlesRecitations;
 
     protected $table = "almaher_recitations";
 
@@ -36,18 +37,15 @@ class AlMaherRecitation extends Model
         ];
     }
 
+
     public function getAyahTextAttribute()
     {
-        $quranService = app(Moshaf_madina_Service::class);
-        $ayahs = $quranService->getAyahs($this->end_surah_id);
-        return collect($ayahs)->where('number', $this->end_ayah_id)->first()['text'] ?? null;
+        return self::getAyahText($this->end_surah_id,$this->end_ayah_id);
     }
 
     public function getSurahNameAttribute()
     {
-        $quranService = app(Moshaf_madina_Service::class);
-        $surahs = $quranService->getSurahs();
-        return collect($surahs)->where('id', $this->end_surah_id)->first()['name'] ?? null;
+        return self::getSurahName($this->end_surah_id);
     }
 
 }

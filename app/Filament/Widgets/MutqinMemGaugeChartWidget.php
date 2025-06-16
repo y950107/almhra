@@ -2,9 +2,7 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\AlMaherRecitation;
-use App\Models\AlMaqraaRecitation;
-use App\Models\AlMutqinRecitation;
+use App\Models\Student;
 use Carbon\Carbon;
 use Filament\Widgets\Widget;
 
@@ -19,60 +17,27 @@ class MutqinMemGaugeChartWidget extends Widget
 
     protected function getViewData(): array
     {
-        $mutqinStart = Carbon::parse(settings('mutqin_start_date', '2024-09-01'));
-        $mutqinEnd = Carbon::parse(settings('mutqin_end_date', '2025-06-01'));
-        $defaultMonthlyTarget = (int) settings("mutqin_mem_monthly_target", 40);
 
-        // Load all recitations with student and session in one query
-        $cumulativeRecitations = AlMutqinRecitation::with('recitationSession.student')
-            ->whereHas('recitationSession', function ($query) use ($mutqinStart, $mutqinEnd) {
-                $query->whereBetween('session_date', [$mutqinStart, $mutqinEnd])
-                    ->where('present', 'present');
-            })->get();
+        $students = Student::with('candidate')
+            ->whereHas('candidate', fn ($q) => $q->where('program_type', 'mutqin'))
+            ->get();
 
-        // Group recitations by student
-        $grouped = $cumulativeRecitations->groupBy(fn($item) => $item->recitationSession->student_id);
+        $percentages = $students->map(function ($student) {
+            $settings = $student->getProgramSettings(true);
+            $start = max(Carbon::parse($student->start_date), $settings['start']);
+            $end = $settings['end'];
+            $pages_att = $settings['pages'];
 
-        $cumulativeTarget = $cumulativePages = 0;
+            return $student->calculateProgress($start, $end, $pages_att)['cumulative_percentage'];
+        })->filter(fn ($v) => $v !== null)->values();
 
-        foreach ($grouped as $recitations) {
-            $student = $recitations->first()->recitationSession->student;
-
-            if (!$student) {
-                continue;
-            }
-
-            $monthlyTarget = (int) ($student->monthly_target_pages ?? $defaultMonthlyTarget);
-
-            // Get tracking range per student without querying again
-            $trackingStart = max(Carbon::parse($student->start_date), $mutqinStart);
-            $trackingEnd = $mutqinEnd;
-
-            // Count months between
-            $months = (int) $trackingStart->startOfMonth()->diffInMonths($trackingEnd->endOfMonth()) + 1;
-
-            // Filter recitations per student by tracking range
-            $filteredRecitations = $recitations->filter(function ($item) use ($trackingStart, $trackingEnd) {
-                $sessionDate = Carbon::parse($item->recitationSession->session_date);
-                return $sessionDate->between($trackingStart, $trackingEnd);
-            });
-
-
-            $studentCumulativePages = $filteredRecitations->sum('mem_pages');
-
-            $studentCumulativeTarget = $months * $monthlyTarget;
-
-            $cumulativePages += $studentCumulativePages;
-            $cumulativeTarget += $studentCumulativeTarget;
-        }
-
-        $cumulativePercentage = $cumulativeTarget > 0
-            ? (int) round(($cumulativePages / $cumulativeTarget) * 100)
+        $average = $percentages->count() > 0
+            ? round($percentages->avg(), 2)
             : 0;
 
         return [
             'title' => 'نسبة الإنجاز برنامج المتقن (الحفظ)',
-            'value' => $cumulativePercentage,
+            'value' => $average,
             'chartId' => 'gauge-chart-' . $this->getId(),
         ];
     }

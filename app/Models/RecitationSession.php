@@ -55,6 +55,22 @@ class RecitationSession extends Model
         return $this->hasOne(AlmaherRecitation::class);
     }
 
+    public function getEvaluationScoreAttribute()
+    {
+        $scores = [
+            $this->tajweed_score,
+            $this->fluency_score,
+            $this->memory_score,
+        ];
+
+
+
+        $average = array_sum($scores) / 3;
+
+        return round($average, 2);
+    }
+
+
 
 
     /********** */

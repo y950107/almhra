@@ -11,7 +11,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use IbrahimBougaoua\FilaProgress\Tables\Columns\CircleProgress;
-use Illuminate\Database\Eloquent\Builder;
 
 class StudentsResource extends Resource
 {
@@ -45,36 +44,43 @@ class StudentsResource extends Resource
     {
         return $table
         ->query(
-            Student::query()->whereHas('teacher', function (Builder $query) {
-                $query->where('user_id', auth()->id());
-            })
+            Student::query()->where('teacher_id',auth()->user()->teacher->id)
         )
         ->columns([
-            Tables\Columns\TextColumn::make('user.name')
-                    ->label('الاسم')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('candidate.birthdate')
-                    ->label('تاريخ الميلاد ')
-                    ->date('Y-m-d'),
 
-                    Tables\Columns\TextColumn::make('candidate.email')
-                    ->label('الايمل')->sortable()->searchable(),
+            Tables\Columns\TextColumn::make('user.name')
+                ->label('الاسم')->sortable()->searchable(),
+
+            Tables\Columns\TextColumn::make('user.email')
+                ->label('البريد الالكتروني')->sortable()->searchable(),
+
+            Tables\Columns\TextColumn::make('candidate.program_type')
+                ->formatStateUsing(fn($state) => Candidate::getProgramTypes()[$state] ?? 'غير معروف')
+                ->label('البرنامج')
+                ->sortable()
+                ->searchable()
+                ->badge()
+                ->color('info'),
+
+
+            Tables\Columns\TextColumn::make('present_sessions_percentage')
+                ->label('التسميع الحضوري')
+                ->suffix('%'),
+
+            Tables\Columns\TextColumn::make('online_sessions_percentage')
+                ->label('التسميع عن بعد')
+                ->suffix('%'),
+
 
                     Tables\Columns\IconColumn::make('candidate.has_ijaza')
                     ->label('لديه إجازة')
                     ->boolean()->sortable()->toggleable(),
 
 
-
-
-                  Tables\Columns\TextColumn::make('candidate.program_type')
-                      ->formatStateUsing(fn ($state) => Candidate::getProgramTypes()[$state] ?? 'غير معروف')
-                      ->label('البرنامج')
-                      ->sortable()
-                      ->searchable()
-                      ->badge()
-                      ->color('success'),
                 Tables\Columns\TextColumn::make('start_date')
                     ->label('تاريخ الالتحاق')
+                    ->badge()
+                    ->color('success')
                     ->date('Y-m-d'),
 
 

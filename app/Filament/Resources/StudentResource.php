@@ -97,10 +97,13 @@ class StudentResource extends Resource implements HasShieldPermissions
     {
         return $table
             ->columns([
+
+
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('الاسم')->sortable()->searchable(),
 
-
+                Tables\Columns\TextColumn::make('user.email')
+                    ->label('البريد الالكتروني')->sortable()->searchable(),
 
                 Tables\Columns\TextColumn::make('candidate.program_type')
                     ->formatStateUsing(fn($state) => Candidate::getProgramTypes()[$state] ?? 'غير معروف')
@@ -110,94 +113,28 @@ class StudentResource extends Resource implements HasShieldPermissions
                     ->badge()
                     ->color('info'),
 
-
-
-
-                Tables\Columns\TextColumn::make('present_percentage')
-                    ->label('التسميع الحضوري')
-                    ->getStateUsing(function (Student $record) {
-                        $program_type = $record->candidate->program_type;
-
-                        if ($program_type === 'maqraa') {
-                            $present = AlMaqraaRecitation::whereHas('recitationSession', function (Builder $query) use($record) {
-                                $query->where('student_id',$record->id)->where('present','=','present')
-                                ->where('recitation_type','in_person');
-                            })->count();
-
-                            $total = AlMaqraaRecitation::whereHas('recitationSession', function (Builder $query) use($record) {
-                                $query->where('student_id',$record->id)->where('present','=','present');
-                            })->count();
-
-                        }
-                        else if ($program_type === 'mutqin') {
-                            $present = AlMutqinRecitation::whereHas('recitationSession', function (Builder $query) use($record) {
-                                $query->where('student_id',$record->id)->where('present','=','present')
-                                    ->where('recitation_type','in_person');
-                            })->count();
-
-                            $total = AlMutqinRecitation::whereHas('recitationSession', function (Builder $query) use($record) {
-                                $query->where('student_id',$record->id)->where('present','=','present');
-                            })->count();
-                        }
-                        else {
-                            $present = AlMaherRecitation::whereHas('recitationSession', function (Builder $query) use($record) {
-                                $query->where('student_id',$record->id)->where('present','=','present')
-                                    ->where('recitation_type','in_person');
-                            })->count();
-
-                            $total = AlMaherRecitation::whereHas('recitationSession', function (Builder $query) use($record) {
-                                $query->where('student_id',$record->id)->where('present','=','present');
-                            })->count();
-                        }
-
-
-                        return $total > 0 ? (int) round(($present / $total) * 100, 0) : 0;
-                    })->suffix('%'),
-
-                Tables\Columns\TextColumn::make('online_percentage')
-                    ->label('التسميع عن بعد')
-                    ->getStateUsing(function (Student $record) {
-                        $program_type = $record->candidate->program_type;
-
-                        if ($program_type === 'maqraa') {
-                            $present = AlMaqraaRecitation::whereHas('recitationSession', function (Builder $query) use($record) {
-                                $query->where('student_id',$record->id)->where('present','=','present')
-                                    ->where('recitation_type','remote');
-                            })->count();
-
-                            $total = AlMaqraaRecitation::whereHas('recitationSession', function (Builder $query) use($record) {
-                                $query->where('student_id',$record->id)->where('present','=','present');
-                            })->count();
-
-                        }
-                        else if ($program_type === 'mutqin') {
-                            $present = AlMutqinRecitation::whereHas('recitationSession', function (Builder $query) use($record) {
-                                $query->where('student_id',$record->id)->where('present','=','present')
-                                    ->where('recitation_type','remote');
-                            })->count();
-
-                            $total = AlMutqinRecitation::whereHas('recitationSession', function (Builder $query) use($record) {
-                                $query->where('student_id',$record->id)->where('present','=','present');
-                            })->count();
-                        }
-                        else {
-                            $present = AlMaherRecitation::whereHas('recitationSession', function (Builder $query) use($record) {
-                                $query->where('student_id',$record->id)->where('present','=','present')
-                                    ->where('recitation_type','remote');
-                            })->count();
-
-                            $total = AlMaherRecitation::whereHas('recitationSession', function (Builder $query) use($record) {
-                                $query->where('student_id',$record->id)->where('present','=','present');
-                            })->count();
-                        }
-
-
-                        return $total > 0 ? (int) round(($present / $total) * 100, 0) : 0;
-                    })->suffix('%'),
-
                 Tables\Columns\TextColumn::make('teacher.name')
-                    ->label('الشيح')->sortable()->searchable()->badge()->color('success'),
+                    ->label('الشيح')->sortable()->searchable()->badge()->color('danger'),
 
+                Tables\Columns\TextColumn::make('present_sessions_percentage')
+                    ->label('التسميع الحضوري')
+                    ->suffix('%'),
+
+                Tables\Columns\TextColumn::make('online_sessions_percentage')
+                    ->label('التسميع عن بعد')
+                    ->suffix('%'),
+
+
+                Tables\Columns\IconColumn::make('candidate.has_ijaza')
+                    ->label('لديه إجازة')
+                    ->boolean()->sortable()->toggleable(),
+
+
+                Tables\Columns\TextColumn::make('start_date')
+                    ->label('تاريخ الالتحاق')
+                    ->badge()
+                    ->color('success')
+                    ->date('Y-m-d'),
 
 
                 CircleProgress::make('progress_percentage')->label('نسبة الإنجاز')

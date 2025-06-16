@@ -179,6 +179,7 @@
                 <th>المحقق</th>
                 <th>المستهدف</th>
                 <th>نسبة الإنجاز</th>
+                <th>معدل التقييم</th>
             </tr>
         </thead>
         <tbody>
@@ -206,6 +207,7 @@
                     <td>{{ $stat['rev_pages_read'] }}</td>
                     <td>{{ $stat['rev_monthly_target'] }}</td>
                     <td>{{ $stat['rev_monthly_percentage'] }}%</td>
+                    <td>{{ $stat['avg_evaluation_score'] }}</td>
                 </tr>
             @endforeach
 
@@ -224,7 +226,7 @@
                 <th>{{ $overallStats['rev_total_pages'] }}</th>
                 <th>{{ $overallStats['rev_total_monthly_target'] }}</th>
                 <th>{{ $overallStats['rev_total_monthly_percentage'] }}%</th>
-
+                <th>{{ $overallStats['total_score'] }}</th>
             </tr>
             <tr>
 
@@ -233,7 +235,7 @@
                 <th colspan="2">عدد الاوجه</th>
 
                 <th>نسبة الانجاز</th>
-
+                <th>معدل التقييم</th>
                 <th colspan="2">عدد الاوجه</th>
 
                 <th>المؤشر العام</th>

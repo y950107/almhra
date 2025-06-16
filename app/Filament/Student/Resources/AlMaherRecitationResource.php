@@ -5,28 +5,10 @@ namespace App\Filament\Student\Resources;
 use App\Filament\Student\Resources\AlMaherRecitationResource\Pages;
 use App\Filament\Student\Resources\AlMaherRecitationResource\RelationManagers;
 use App\Models\AlMaherRecitation;
-use App\Models\Halaka;
-use App\Models\RecitationSession;
-use App\Services\Moshaf_madina_Service;
-use App\Settings\GeneralSettings;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
-use Filament\Forms;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Tabs;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Enums\FiltersLayout;
-use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Str;
 
 class AlMaherRecitationResource extends Resource implements HasShieldPermissions
 {
@@ -124,6 +106,11 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
 
                 TextColumn::make('mem_lines')
                     ->label('حفظ المتن'),
+
+                TextColumn::make('recitationSession.evaluationScore')
+                    ->label('التقييم')
+                    ->badge()
+                    ->color('info')
 
             ]);
     }

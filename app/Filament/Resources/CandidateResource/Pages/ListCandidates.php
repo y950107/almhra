@@ -25,11 +25,10 @@ class ListCandidates extends ListRecords
         return [
             'all' => Tab::make('كل المترشحين '),
             'pending' => Tab::make('المترشحين الجدد')
-                ->modifyQueryUsing(fn(Builder $query) => $query->where('status', 'pending')->where('evaluated', false)),
+                ->modifyQueryUsing(fn(Builder $query) => $query->where('status', 'pending')),
             'accepted' => Tab::make(' المترشحين المقبولين')
                 ->modifyQueryUsing(function (Builder $query) {
-                    $query->where('status', 'accepted')
-                        ->where('evaluated', true);
+                    $query->where('status', 'accepted');
                 }),
 
             'waitinglist' => Tab::make('قائمة الاحتياط')

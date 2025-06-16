@@ -334,30 +334,33 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                         // تقييمات المعلم
                         Tabs\Tab::make('تقييمات المعلم')
                             ->visible(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
-                        ->schema([
+                ->schema([
+
+                    Forms\Components\Group::make([
+                        TextInput::make('tajweed_score')
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue(100)
+                            ->suffix('من 100')
+                            ->label('درجة التجويد'),
+
+                        TextInput::make('fluency_score')
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue(100)
+                            ->suffix('من 100')
+                            ->label('درجة الطلاقة'),
+
+                        TextInput::make('memory_score')
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue(100)
+                            ->suffix('من 100')
+                            ->label('درجة الحفظ'),
+                        ])->relationship('recitationSession')->statePath('recitationSession')->dehydrated()
 
 
-                            TextInput::make('tajweed_score')
-                                ->numeric()
-                                ->minValue(0)
-                                ->maxValue(100)
-                                ->suffix('من 100')
-                                ->label('درجة التجويد'),
-
-                            TextInput::make('fluency_score')
-                                ->numeric()
-                                ->minValue(0)
-                                ->maxValue(100)
-                                ->suffix('من 100')
-                                ->label('درجة الطلاقة'),
-
-                            TextInput::make('memory_score')
-                                ->numeric()
-                                ->minValue(0)
-                                ->maxValue(100)
-                                ->suffix('من 100')
-                                ->label('درجة الحفظ'),
-                        ]),
+                ]),
                         //  الملاحظات العامة
                         Tabs\Tab::make('الملاحظات العامة')->schema([
                             Textarea::make('evaluation_notes')->label('ملاحظات المعلم'),
@@ -382,11 +385,12 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
 
                 TextColumn::make('recitationSession.halaka.name')
                     ->label('الحلقة')
-                    ->toggleable(),
+                    ->searchable(),
 
-                TextColumn::make('recitationSession.student.candidate.full_name')
+                TextColumn::make('recitationSession.student.user.name')
                     ->label('الطالب')
-                    ->toggleable(),
+                    ->searchable(),
+
 
                 TextColumn::make('recitationSession.present')
                     ->label('الحضور')
@@ -418,6 +422,11 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                     ->label('عدد الاوجه')
                     ->limit(30)
                     ->toggleable(),
+
+                TextColumn::make('recitationSession.evaluationScore')
+                ->label('التقييم')
+                ->badge()
+                ->color('info')
 
             ])
             ->actions([

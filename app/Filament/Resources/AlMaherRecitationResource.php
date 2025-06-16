@@ -343,34 +343,36 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
 
                                 ]),
 
+
                             // تقييمات المعلم
                             Tabs\Tab::make('تقييمات المعلم')
                                 ->visible(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                 ->schema([
 
+                                    Forms\Components\Group::make([
+                                        TextInput::make('tajweed_score')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->maxValue(100)
+                                            ->suffix('من 100')
+                                            ->label('درجة التجويد'),
+
+                                        TextInput::make('fluency_score')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->maxValue(100)
+                                            ->suffix('من 100')
+                                            ->label('درجة الطلاقة'),
+
+                                        TextInput::make('memory_score')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->maxValue(100)
+                                            ->suffix('من 100')
+                                            ->label('درجة الحفظ'),
+                                    ])->relationship('recitationSession')->statePath('recitationSession')->dehydrated()
 
 
-
-                                    TextInput::make('tajweed_score')
-                                        ->numeric()
-                                        ->minValue(0)
-                                        ->maxValue(100)
-                                        ->suffix('من 100')
-                                        ->label('درجة التجويد'),
-
-                                    TextInput::make('fluency_score')
-                                        ->numeric()
-                                        ->minValue(0)
-                                        ->maxValue(100)
-                                        ->suffix('من 100')
-                                        ->label('درجة الطلاقة'),
-
-                                    TextInput::make('memory_score')
-                                        ->numeric()
-                                        ->minValue(0)
-                                        ->maxValue(100)
-                                        ->suffix('من 100')
-                                        ->label('درجة الحفظ'),
                                 ]),
                             //  الملاحظات العامة
                             Tabs\Tab::make('الملاحظات العامة')->schema([
@@ -437,6 +439,10 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                 TextColumn::make('mem_lines')
                     ->label('حفظ المتن'),
 
+                TextColumn::make('recitationSession.evaluationScore')
+                    ->label('التقييم')
+                    ->badge()
+                    ->color('info')
 
 
             ])
