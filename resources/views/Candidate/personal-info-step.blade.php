@@ -9,6 +9,13 @@
                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
         </div>
 
+        <!-- رقم الهوية -->
+        <div class="mb-4">
+            <label for="national_id" class="block text-sm font-medium text-gray-700">رقم الهوية*</label>
+            <input type="text" name="national_id" id="national_id" value="{{ old('national_id') }}"
+                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+        </div>
+
         <!-- تاريخ الميلاد -->
         <div class="mb-4">
             <label for="birthdate" class="block text-sm font-medium text-gray-700">تاريخ الميلاد*</label>

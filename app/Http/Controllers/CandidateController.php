@@ -44,6 +44,7 @@ class CandidateController extends Controller
 
         $validated = $request->validate([
             'full_name'          => 'required|string|max:255',
+            'national_id'        => 'required|string|max:255',
             'phone'              => 'required|unique:candidates|unique:users|string|max:20',
             'email'              => 'required|email|unique:candidates,email|unique:users,email',
             'password'           => ['required', 'confirmed',  Password::defaults()],

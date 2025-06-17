@@ -61,6 +61,11 @@ class CandidateResource extends Resource implements HasShieldPermissions
                                                     ->maxLength(255)
                                                     ->label(__('filament.candidate.fields.full_name')),
 
+                                                Forms\Components\TextInput::make('national_id')
+                                                    ->required()
+                                                    ->maxLength(255)
+                                                    ->label('رقم الهوية'),
+
                                                 Forms\Components\DatePicker::make('birthdate')
                                                     ->required()
                                                     ->maxDate(Carbon::now()->subYears(settings("min_age", 10)))
@@ -76,6 +81,7 @@ class CandidateResource extends Resource implements HasShieldPermissions
                                                     ->prefix('+966'),
 
                                                 Forms\Components\TextInput::make('email')
+                                                    ->columnStart(1)
                                                     ->email()
                                                     ->required()
                                                     ->unique(ignoreRecord: true)
@@ -83,6 +89,7 @@ class CandidateResource extends Resource implements HasShieldPermissions
 
 
                                                 Forms\Components\TextInput::make('password')
+                                                    ->columnStart(1)
                                                     ->password()
                                                     ->revealable()
                                                     ->dehydrated(fn ($state) => filled($state))
@@ -206,6 +213,7 @@ class CandidateResource extends Resource implements HasShieldPermissions
             ->defaultSort('created_at','desc')
             ->columns([
                 Tables\Columns\TextColumn::make('full_name')->label(__('filament.candidate.fields.full_name'))->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('national_id')->label('رقم الهوية')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('email')->label(__('filament.candidate.fields.email'))->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('phone')->label(__('filament.candidate.fields.phone'))->searchable()->sortable(),
 
