@@ -99,7 +99,7 @@
         <!-- ملف المؤهل -->
         <div class="mb-5" >
             <label for="qualification_file" class="block text-sm font-medium text-gray-700 mb-1">
-                🎓 ملف الاجازة
+                🎓 ملف الاجازة / المؤهلات / الشهادات
             </label>
             <div class="relative">
                 <input type="file" name="qualification_file" id="qualification_file" class="hidden" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="updateFileName('qualification_file', 'qualification_file_name')">

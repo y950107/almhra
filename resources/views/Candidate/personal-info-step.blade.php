@@ -4,7 +4,7 @@
         <legend class="text-lg font-semibold text-blue-600">المعلومات الشخصية</legend>
         <!-- الاسم الكامل -->
         <div class="mb-4">
-            <label for="full_name" class="block text-sm font-medium text-gray-700">الاسم الكامل*</label>
+            <label for="full_name" class="block text-sm font-medium text-gray-700">الاسم الكامل (حسب الهوية)*</label>
             <input type="text" name="full_name" id="full_name" value="{{ old('full_name') }}"
                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
         </div>
@@ -16,9 +16,9 @@
                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
         </div>
 
-        <!-- رقم الهاتف -->
+        <!-- رقم الجوال -->
         <div class="mb-4">
-            <label for="phone" class="block text-sm font-medium text-gray-700">رقم الهاتف*</label>
+            <label for="phone" class="block text-sm font-medium text-gray-700">رقم الجوال*</label>
             <input type="text" name="phone" id="phone" value="{{ old('phone') }}"
                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
         </div>
