@@ -36,19 +36,7 @@ class AlMaqraaRecitationResource extends \App\Filament\Resources\AlMaqraaRecitat
         return auth()->user()->teacher->program_type === 'maqraa';
     }
 
-    public static function getNavigationLabel(): string
-    {
-        return __('filament.almaqraa-recitation.navigation_label');
-    }
-    public static function getModelLabel(): string
-    {
-        return __('filament.almaqraa-recitation.model_label');
-    }
 
-    public static function getPluralModelLabel(): string
-    {
-        return __('filament.almaqraa-recitation.plural_model_label');
-    }
 
     public static function form(Form $form): Form
     {
@@ -176,11 +164,7 @@ class AlMaqraaRecitationResource extends \App\Filament\Resources\AlMaqraaRecitat
                                     Select::make('present')
                                         ->label('الحضور')
                                         ->columnSpanFull()
-                                        ->options([
-                                            'present' => 'حاضر',
-                                            'absent_with_excuse' => 'غائب بعذر',
-                                            'absent_without_excuse' => 'غائب بدون عذر',
-                                        ])->live()
+                                        ->options(RecitationSession::getPresentOptions())->live()
                                         ->required(),
 
                                     Select::make('recitation_type')

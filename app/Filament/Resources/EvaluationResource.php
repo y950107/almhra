@@ -13,7 +13,6 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Validation\Rules;
 
 
 class EvaluationResource extends Resource implements HasShieldPermissions
@@ -189,7 +188,9 @@ class EvaluationResource extends Resource implements HasShieldPermissions
 
 
                 Tables\Actions\EditAction::make()
-                    ->label('تقييم المترشح')
+                    ->label('تقييم المترشح'),
+
+                Tables\Actions\DeleteAction::make()
 
             ]);
     }

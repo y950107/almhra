@@ -41,7 +41,7 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
 
     public static function getPluralModelLabel(): string
     {
-        return __('filament.almaher-recitation.plural_model_label');
+        return __('filament.almaher-recitation.navigation_label');
     }
 
 

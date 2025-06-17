@@ -44,6 +44,11 @@ class AlMutqinRecitation extends Model
             'tajweed' => 'التجويد'];
     }
 
+    public  function getTranslatedLessonTypeAttribute()
+    {
+        return $this->lesson_type ? self::getLessonTypes()[$this->lesson_type] : "";
+    }
+
 
     public function getMemAyahTextAttribute()
     {

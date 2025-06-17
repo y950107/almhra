@@ -42,7 +42,7 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
 
     public static function getPluralModelLabel(): string
     {
-        return __('filament.almutqin-recitation.plural_model_label');
+        return __('filament.almutqin-recitation.navigation_label');
     }
 
 

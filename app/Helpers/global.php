@@ -6,7 +6,6 @@ use App\Models\User;
 use App\Notifications\CandidateAccepted;
 use App\Notifications\CandidateEvaluationNotification;
 use App\Notifications\EvaluationNotif;
-use App\Notifications\StudentAccountCreated;
 use App\Notifications\TeacherAccountCreated;
 use App\Services\Moshaf_madina_Service;
 use App\Settings\GeneralSettings;
@@ -152,81 +151,12 @@ if (!function_exists('sendToInterview')) {
 
 }
 
-/*** accept candidate and create a new user**/
 
-if (!function_exists('acceptedStudent')) {
-    function acceptedStudent($candidate)
-    {
-        $password = "password";
-
-        try {
-
-            if (is_null($candidate->teacher_id))  {
-
-                Notification::make()
-                    ->title('المترشح ليس لديه معلم!')
-                    ->danger()
-                    ->send();
-                return;
-            }
-
-            DB::beginTransaction();
-
-
-
-            if (!$candidate->user_id) {
-                $user = User::create([
-                    'name' => $candidate->full_name,
-                    'email' => $candidate->email,
-                    'password' => Hash::make($password),
-                    'type' => 'student',
-                    'phone' => $candidate->phone,
-                    'acount_status' => true
-                ]);
-                $user->assignRole('Student');
-            }
-            else {
-                $user = User::findOrFail($candidate->user_id);
-                $user->acount_status = true;
-            }
-
-            $user->save();
-
-            // إنشاء سجل طالب
-            Student::create([
-                'user_id' => $user->id,
-                'teacher_id' => $candidate->teacher_id,
-                'candidate_id' => $candidate->id,
-                'start_date' => now(),
-            ]);
-
-            $candidate->update(['status' => 'accepted'], ['evaluated' => true]);
-
-            DB::commit();
-
-            $user->notify((new StudentAccountCreated($user->email, $password))->afterCommit());
-
-            Notification::make()
-                ->title('  تم إرسال المترشح إلى المقابلة بنجاح! مع اشعار ')
-                ->success()
-                ->send();
-        } catch (\Exception $ex) {
-            Db::rollBack();
-
-            Notification::make()
-                ->title('   الطالب تم انشأه مسبقا يرجى مراجعة قائمة الطلاب !')
-                ->danger()
-                ->send();
-        }
-    }
-};
-
-/**************************** */
 
 if (!function_exists('acceptedCandidate')) {
     function acceptedCandidate($candidate)
     {
-        $password = 'password';
+
 
         try {
 
@@ -243,23 +173,11 @@ if (!function_exists('acceptedCandidate')) {
 
 
 
-            if (!$candidate->user_id) {
-                $user = User::create([
-                    'name' => $candidate->full_name,
-                    'email' => $candidate->email,
-                    'password' => Hash::make($password),
-                    'type' => 'student',
-                    'phone' => $candidate->phone,
-                    'acount_status' => true
-                ]);
-                $user->assignRole('Student');
-            }
-            else {
-                $user = User::findOrFail($candidate->user_id);
-                $user->acount_status = true;
-            }
-
+            $user = User::findOrFail($candidate->user_id);
+            $user->acount_status = true;
+            $user->assignRole('Student');
             $user->save();
+
             // إنشاء سجل طالب
             Student::create([
                 'user_id' => $user->id,
@@ -272,7 +190,7 @@ if (!function_exists('acceptedCandidate')) {
 
             DB::commit();
 
-            $user->notify((new CandidateAccepted($password))->afterCommit());
+            $user->notify((new CandidateAccepted())->afterCommit());
 
             Notification::make()
                 ->title(' تم ارسال اشعار للطالب!')
@@ -311,10 +229,6 @@ if (!function_exists('evaluateCandidate')) {
             }
 
 
-
-
-            $password = "password";
-
             $program = $evaluation->candidate->program_type;
 
             switch ($program) {
@@ -338,22 +252,9 @@ if (!function_exists('evaluateCandidate')) {
             if ($evaluation->total_score >= $passing_percentage) {
                 DB::beginTransaction();
 
-                if (!$evaluation->candidate->user_id) {
-                    $user = User::create([
-                        'name' => $evaluation->candidate->full_name,
-                        'email' => $evaluation->candidate->email,
-                        'password' => Hash::make($password),
-                        'type' => 'student',
-                        'phone' => $evaluation->candidate->phone,
-                        'acount_status' => true
-                    ]);
 
-                }
-                else {
-                    $user = User::findOrFail($evaluation->candidate->user_id);
-                    $user->acount_status = true;
-
-                }
+                $user = User::findOrFail($evaluation->candidate->user_id);
+                $user->acount_status = true;
                 $user->assignRole('Student');
                 $user->save();
 
@@ -375,7 +276,6 @@ if (!function_exists('evaluateCandidate')) {
                     $user->notify(new CandidateEvaluationNotification(
                         $evaluation->candidate->status->value,
                         $user->email,
-                        $password
                     ));
                 }
                 catch (\Exception $notifEx) {
@@ -396,7 +296,6 @@ if (!function_exists('evaluateCandidate')) {
                 $evaluation->candidate->notify(new CandidateEvaluationNotification(
                     'pending',
                     $evaluation->candidate->email,
-                    null // لا يوجد كلمة مرور في حالة الرفض
                 ));
 
                 Notification::make()

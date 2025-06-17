@@ -41,7 +41,7 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
 
     public static function getPluralModelLabel(): string
     {
-        return __('filament.almaqraa-recitation.plural_model_label');
+        return __('filament.almaqraa-recitation.navigation_label');
     }
 
 

@@ -94,7 +94,8 @@ class UserResource extends Resource
                 ->formatStateUsing(fn($state) => $state ? 'مفعل' : 'غير مفعل')
                 ->badge()
                 ->colors([
-                    'success' => fn($state) => $state ? 'green' : 'red',
+                    'success' => fn($state) => $state,
+                    'danger' => fn($state) => !$state
                 ]),
             TextColumn::make('created_at')->label('تاريخ الإنشاء')->date('Y-m-d')
             ->badge()->color('info'),

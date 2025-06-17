@@ -54,7 +54,7 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
 
     public static function getPluralModelLabel(): string
     {
-        return __('filament.almutqin-recitation.plural_model_label');
+        return __('filament.almutqin-recitation.navigation_label');
     }
 
     public static function form(Form $form): Form
@@ -116,16 +116,17 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                         Select::make('student_id')
                                             ->relationship(
                                                 name: 'student',
-                                                titleAttribute: 'id',
                                                 modifyQueryUsing: fn($query) => $query->whereHas('candidate', function ($q) {
                                                     $q->where('program_type', 'mutqin');
                                                 }),
                                             )
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->candidate->full_name}")
                                             ->label('الطالب')
+                                            ->live()
                                             ->afterStateHydrated(function(Forms\Get $get, Forms\Set $set, ?RecitationSession $record) use ($quranService) {
 
                                                 $student_id = $get('student_id');
+
                                                 $almutqin =  $record ? AlMutqinRecitation::where('recitation_session_id', $record->id)->first() : null;
                                                 if ($student_id && $almutqin ) {
                                                     $last_recitation = AlMutqinRecitation::query()
@@ -194,7 +195,6 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
 
                                             })
                                             ->disabledOn('edit')
-                                            ->live()
                                             ->columnSpanFull()
                                             ->required(),
 
@@ -202,11 +202,8 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                         Select::make('present')
                                             ->label('الحضور')
                                             ->columnSpanFull()
-                                            ->options([
-                                                'present' => 'حاضر',
-                                                'absent_with_excuse' => 'غائب بعذر',
-                                                'absent_without_excuse' => 'غائب بدون عذر',
-                                            ])->live()
+                                            ->options(RecitationSession::getPresentOptions())
+                                            ->live()
                                             ->required(),
 
                                         Select::make('recitation_type')
@@ -617,6 +614,24 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                     ->action(function (array $data) {
                         return redirect()->route('recitations.pdf-download-almutqin-report', [
                             'time_range' => $data['time_range'],
+                            'start_date' => $data['start_date'] ?? null,
+                            'end_date' => $data['end_date'] ?? null,
+                        ]);
+                    }),
+                Action::make('generate_detailed_pdf')
+                    ->label('تصدير تقرير مفصل')
+                    ->icon('icon-halaka')
+                    ->color('info')
+                    ->form([
+
+                        DatePicker::make('start_date')
+                            ->label('من تاريخ'),
+
+                        DatePicker::make('end_date')
+                            ->label('إلى تاريخ')
+                    ])
+                    ->action(function (array $data) {
+                        return redirect()->route('recitations.pdf-download-almutqin-detailed-report', [
                             'start_date' => $data['start_date'] ?? null,
                             'end_date' => $data['end_date'] ?? null,
                         ]);

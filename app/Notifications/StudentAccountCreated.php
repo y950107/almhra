@@ -11,16 +11,16 @@ class StudentAccountCreated extends Notification implements ShouldQueue
 {
     use Queueable;
 
- 
+
     public $email;
-    public $password;
+
     /**
      * Create a new notification instance.
      */
-    public function __construct($email, $password)
+    public function __construct($email)
     {
         $this->email = $email;
-        $this->password = $password;
+
     }
 
     /**
@@ -46,7 +46,7 @@ class StudentAccountCreated extends Notification implements ShouldQueue
             $mailMessage->line('تهانينا! لقد تم قبولك كطالب في مدرسة تحفيظ القرآن.')
                 ->line('يمكنك الآن تسجيل الدخول باستخدام البيانات التالية:')
                 ->line('📧 البريد الإلكتروني: ' . $notifiable->email)
-                ->line('🔑 كلمة المرور: ' . $notifiable->password)
+                ->line('🔑 كلمة المرور التي قمت باختيارها عند التسجيل')
                 ->action('تسجيل الدخول', url('/student/login'))
                 ->line('نرجو لك رحلة مباركة في حفظ كتاب الله.');
         } else {

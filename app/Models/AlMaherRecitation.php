@@ -37,6 +37,11 @@ class AlMaherRecitation extends Model
         ];
     }
 
+    public  function getTranslatedLessonTitleAttribute()
+    {
+        return $this->lesson_title ? self::getLessonTitles()[$this->lesson_title] : "";
+    }
+
 
     public function getAyahTextAttribute()
     {

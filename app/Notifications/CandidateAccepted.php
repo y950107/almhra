@@ -10,15 +10,14 @@ use Illuminate\Notifications\Notification;
 class CandidateAccepted extends Notification implements ShouldQueue
 {
     use Queueable;
-   
-    protected $password;
+
+
     /**
      * Create a new notification instance.
      */
-    public function __construct($password)
+    public function __construct()
     {
-        
-        $this->password = $password;
+
     }
 
     /**
@@ -42,7 +41,7 @@ class CandidateAccepted extends Notification implements ShouldQueue
             ->line('تهانينا! لقد تم قبولك كطالب في مدرسة تحفيظ القرآن.')
             ->line('يمكنك الآن تسجيل الدخول باستخدام البيانات التالية:')
             ->line('📧 البريد الإلكتروني: ' . $notifiable->email)
-            ->line('🔑 كلمة المرور: ' . $this->password)
+            ->line('🔑 كلمة المرور التي قمت باختيارها عند التسجيل')
             ->action('تسجيل الدخول', url('/student/login'))
             ->line('نرجو لك رحلة مباركة في حفظ كتاب الله.');
     }

@@ -7,6 +7,7 @@ use App\Models\AlMaqraaRecitation;
 use App\Models\AlMutqinRecitation;
 use App\Models\RecitationSession;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 
@@ -35,25 +36,31 @@ class RecitationSessionControler extends Controller
     {
         $program = 'maqraa';
 
-        $timeRange = $request->input('time_range');
-
         $dateRange = $this->getDateRange($request, $program);
+
+        $timeRange = $request->input('time_range');
+        $startDate = $dateRange[0];
+        $endDate = $dateRange[1];
 
         $sessions = AlMaqraaRecitation::filterByDateRange($dateRange);
         $grouped = $sessions->groupBy(fn($item) => $item->recitationSession->student_id);
 
-        $stats = AlMaqraaRecitation::getStatsForGroupedSessions($grouped, $dateRange[0], $dateRange[1]);
+        $stats = AlMaqraaRecitation::getStatsForGroupedSessions($grouped, $startDate, $endDate);
         $summary = AlMaqraaRecitation::summarizeStats($stats);
 
+        $title = ($timeRange === 'monthly')
+            ? 'التقرير الشهري'
+            : (($timeRange === 'yearly')
+                ? 'التقرير السنوي'
+                : 'تقرير مخصص من ' . $startDate . ' إلى ' . $endDate);
+
+        $title .= ' - ' . ($program_name ?? '');
 
         $html = View::make('pdf.recitation', [
-            'currentMonth' => now()->locale('ar')->translatedFormat('F Y'),
+            'title' => $title,
             'timeRange' => $timeRange,
-            'startDate' => $dateRange[0],
-            'endDate' =>  $dateRange[1],
             'overallStats' => $summary,
             'statsPerStudent' => $stats,
-            'program_name' => "برنامج المقراة"
         ])->render();
 
 
@@ -84,25 +91,33 @@ class RecitationSessionControler extends Controller
     {
         $program = 'mahir';
 
-        $timeRange = $request->input('time_range');
 
         $dateRange = $this->getDateRange($request, $program);
+
+        $timeRange = $request->input('time_range');
+        $startDate = $dateRange[0];
+        $endDate = $dateRange[1];
 
         $sessions = AlMaherRecitation::filterByDateRange($dateRange);
         $grouped = $sessions->groupBy(fn($item) => $item->recitationSession->student_id);
 
-        $stats = AlMaherRecitation::getStatsForGroupedSessions($grouped, $dateRange[0], $dateRange[1]);
+        $stats = AlMaherRecitation::getStatsForGroupedSessions($grouped, $startDate, $endDate);
         $summary = AlMaherRecitation::summarizeStats($stats);
 
 
+        $title = ($timeRange === 'monthly')
+            ? 'التقرير الشهري'
+            : (($timeRange === 'yearly')
+                ? 'التقرير السنوي'
+                : 'تقرير مخصص من ' . $startDate . ' إلى ' . $endDate);
+
+        $title .= ' - ' . ($program_name ?? '');
+
         $html = View::make('pdf.recitation', [
-            'currentMonth' => now()->locale('ar')->translatedFormat('F Y'),
+            'title' => $title,
             'timeRange' => $timeRange,
-            'startDate' => $dateRange[0],
-            'endDate' =>  $dateRange[1],
             'overallStats' => $summary,
             'statsPerStudent' => $stats,
-            'program_name' => "برنامج الماهر"
         ])->render();
 
 
@@ -129,6 +144,48 @@ class RecitationSessionControler extends Controller
         );
     }
 
+    public function downloadMahirDetailedReport(Request $request)
+    {
+
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        $sessions = RecitationSession::query()->when($startDate, function (Builder $query) use($startDate) {
+            $query->where('session_date','>=' , $startDate);
+        })->when($endDate, function (Builder $query) use($endDate) {
+            $query->where('session_date','<=' , $endDate);
+        })->whereHas('almaherRecitation')->with(['almaherRecitation'])->get();
+
+
+
+        $html = View::make('pdf.mahir-detailed-recitation', [
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'sessions' => $sessions,
+        ])->render();
+
+        $pdf = new \Mpdf\Mpdf([
+            'tempDir' => storage_path('tempdir'),
+            'mode' => 'utf-8',
+            'format' => 'A4-L',
+            'default_font' => 'Cairo',
+            'dpi' => 300,
+            'autoScriptToLang' => true,
+            'autoLangToFont' => true,
+            'margin_top' => 10,
+            'margin_bottom' => 10,
+            'margin_left' => 5,
+            'margin_right' => 5,
+            'shrink_tables_to_fit' => 1,
+        ]);
+
+        $pdf->WriteHTML($html);
+
+        return response()->streamDownload(
+            fn() => print($pdf->Output('', 'I')),
+            'تقرير-برنامج الماهر.pdf'
+        );
+    }
 
     public function downloadMutqinReport(Request $request)
     {
@@ -141,16 +198,26 @@ class RecitationSessionControler extends Controller
         $sessions = AlMutqinRecitation::filterByDateRange($dateRange);
         $grouped = $sessions->groupBy(fn($item) => $item->recitationSession->student_id);
 
-        $summary = $this->calculateMutqinStats($grouped,$dateRange[0],$dateRange[1]);
+        $summary = $this->calculateMutqinStats($grouped, $dateRange[0], $dateRange[1]);
+
+        $timeRange = $request->input('time_range');
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        $title = ($timeRange === 'monthly')
+            ? 'التقرير الشهري'
+            : (($timeRange === 'yearly')
+                ? 'التقرير السنوي'
+                : 'تقرير مخصص من ' . $startDate . ' إلى ' . $endDate);
+
+        $title .= ' - ' . ($program_name ?? '');
+
 
         $html = View::make('pdf.mutqin-recitation', [
-            'currentMonth' => now()->locale('ar')->translatedFormat('F Y'),
-            'timeRange' => $request->input('time_range'),
-            'startDate' => $request->input('start_date'),
-            'endDate' => $request->input('end_date'),
+            'title' => $title,
+            'timeRange' => $timeRange,
             'overallStats' => $summary['overall'],
             'statsPerStudent' => $summary['students'],
-            'program_name' => "برنامج المتقن"
         ])->render();
 
         $pdf = new \Mpdf\Mpdf([
@@ -176,7 +243,51 @@ class RecitationSessionControler extends Controller
         );
     }
 
-    private function calculateMutqinStats($grouped , $progStart , $progEnd): array
+    public function downloadMutqinDetailedReport(Request $request)
+    {
+
+
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        $sessions = RecitationSession::query()->when($startDate, function (Builder $query) use($startDate) {
+            $query->where('session_date','>=' , $startDate);
+        })->when($endDate, function (Builder $query) use($endDate) {
+            $query->where('session_date','<=' , $endDate);
+        })->whereHas('almutqinRecitation')->with(['almutqinRecitation'])->get();
+
+
+
+        $html = View::make('pdf.mutqin-detailed-recitation', [
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'sessions' => $sessions,
+        ])->render();
+
+        $pdf = new \Mpdf\Mpdf([
+            'tempDir' => storage_path('tempdir'),
+            'mode' => 'utf-8',
+            'format' => 'A4-L',
+            'default_font' => 'Cairo',
+            'dpi' => 300,
+            'autoScriptToLang' => true,
+            'autoLangToFont' => true,
+            'margin_top' => 10,
+            'margin_bottom' => 10,
+            'margin_left' => 5,
+            'margin_right' => 5,
+            'shrink_tables_to_fit' => 1,
+        ]);
+
+        $pdf->WriteHTML($html);
+
+        return response()->streamDownload(
+            fn() => print($pdf->Output('', 'I')),
+            'تقرير-برنامج المتقن.pdf'
+        );
+    }
+
+    private function calculateMutqinStats($grouped, $progStart, $progEnd): array
     {
         $stats = [];
         $memPages = $revPages = $memTargets = $revTargets = $absences = $totalScores = 0;
@@ -194,17 +305,16 @@ class RecitationSessionControler extends Controller
             $sorted = $present->sortBy('recitationSession.session_date');
 
             $firstMem = $sorted->first(fn($r) => $r->mem_pages !== null);
-            $lastMem  = $sorted->reverse()->first(fn($r) => $r->mem_pages !== null);
+            $lastMem = $sorted->reverse()->first(fn($r) => $r->mem_pages !== null);
 
             $firstRev = $sorted->first(fn($r) => $r->rev_pages !== null);
-            $lastRev  = $sorted->reverse()->first(fn($r) => $r->rev_pages !== null);
+            $lastRev = $sorted->reverse()->first(fn($r) => $r->rev_pages !== null);
 
 
             $progStart = max(Carbon::parse($student->start_date), $progStart);
 
-            $mem_progress = $student->calculateProgress($progStart,$progEnd , 'mem_pages', true);
-            $rev_progress = $student->calculateProgress($progStart,$progEnd ,'rev_pages', false);
-
+            $mem_progress = $student->calculateProgress($progStart, $progEnd, 'mem_pages', true);
+            $rev_progress = $student->calculateProgress($progStart, $progEnd, 'rev_pages', false);
 
 
             $stats[] = [
@@ -219,7 +329,7 @@ class RecitationSessionControler extends Controller
                 'mem_end_ayah_id' => $lastMem?->mem_end_ayah_id ?? '-',
                 'mem_pages_read' => $mem_progress['cumulative_pages'],
                 'mem_monthly_target' => $mem_progress['cumulative_target'],
-                'mem_monthly_percentage' =>$mem_progress['cumulative_percentage'],
+                'mem_monthly_percentage' => $mem_progress['cumulative_percentage'],
                 'avg_evaluation_score' => $avgScore,
                 'rev_start_surah_name' => $firstRev ? getSurahName($firstRev->rev_start_surah_id) : '-',
                 'rev_start_ayah_id' => $firstRev?->rev_start_ayah_id ?? '-',
@@ -275,7 +385,6 @@ class RecitationSessionControler extends Controller
             ]
         };
     }
-
 
 
 }

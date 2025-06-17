@@ -103,6 +103,7 @@ class Student extends Model
 
         $monthsBetween =  round( $start->diffInMonths($end),2) ;
 
+
         // Dynamically resolve model class
         $modelClass = $this->getRecitationModelClass($program);
 
@@ -131,6 +132,12 @@ class Student extends Model
         $start = max(Carbon::parse($this->start_date), $settings['start']);
         $end = $settings['end'];
         return $this->calculateProgress($start,$end,$settings['pages'])['cumulative_percentage'];
+    }
+
+    public function getProgramTypeAttribute()
+    {
+
+        return Candidate::getProgramTypes()[$this->candidate->program_type];
     }
 
     public function getOnlineSessionsPercentageAttribute()

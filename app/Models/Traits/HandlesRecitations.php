@@ -45,7 +45,9 @@ trait HandlesRecitations
 
             $first = $present->sortBy('recitationSession.session_date')->first();
             $last = $present->sortByDesc('recitationSession.session_date')->first();
+
             $progStart = max(Carbon::parse($student->start_date), $progStart);
+
             $cumulative = $student->calculateProgress($progStart,$progEnd,$settings['pages']);
 
 

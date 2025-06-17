@@ -63,14 +63,24 @@ class RecitationSession extends Model
             $this->memory_score,
         ];
 
-
-
+        
         $average = array_sum($scores) / 3;
 
-        return round($average, 2);
+        return round($average);
     }
 
+    public function getTranslatedPresentAttribute() {
 
+        return $this->present ? self::getPresentOptions()[$this->present] : '';
+    }
+
+    public static function getPresentOptions() {
+        return [
+            'present' => 'حاضر',
+            'absent_with_excuse' => 'غائب بعذر',
+            'absent_without_excuse' => 'غائب بدون عذر',
+        ];
+    }
 
 
     /********** */

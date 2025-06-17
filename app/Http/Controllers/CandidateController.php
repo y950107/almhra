@@ -86,6 +86,9 @@ class CandidateController extends Controller
         ]);
 
 
+        // don't assing role to decline access to control panel
+        // $user->assignRole('Student');
+
 
         $validated['user_id'] = $user->id;
         $validated['has_ijaza'] = $validated['has_ijaza'] ?? false;

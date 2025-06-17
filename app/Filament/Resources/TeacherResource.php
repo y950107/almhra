@@ -75,6 +75,23 @@ class TeacherResource extends Resource
                             ->required()
                             ->email()
                             ->unique(ignoreRecord: true),
+
+                        Forms\Components\TextInput::make('password')
+                            ->password()
+                            ->revealable()
+                            ->dehydrated(fn ($state) => filled($state))
+                            ->confirmed()
+                            ->required(fn(string $context) => $context !== 'edit')
+                            ->maxLength(255)
+                            ->label('كلمة السر'),
+
+                        Forms\Components\TextInput::make('password_confirmation')
+                            ->password()
+                            ->revealable()
+                            ->required(fn(string $context) => $context !== 'edit')
+                            ->maxLength(255)
+                            ->label('تاكيد كلمة السر'),
+
                         Forms\Components\TextInput::make('phone')
                             ->label('الهاتف')
                             ->required()

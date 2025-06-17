@@ -77,16 +77,22 @@ Route::get('/quran/verses/{surah_id}', function ($surah_id) {
     return response()->json(Verse::where('surah_id', $surah_id)->get());
 });
 
-Route::get('/teachers/pdf-preview', [PDFController::class, 'preview'])->name('teachers.pdf-preview');
+//Route::get('/teachers/pdf-preview', [PDFController::class, 'preview'])->name('teachers.pdf-preview');
+
+
 Route::get('/teachers/pdf-download', [PDFController::class, 'download'])->name('teachers.pdf-download');
-Route::get('/students/pdf-download', [PDFController::class, 'downloadStudentsPresence'])->name('students.pdf-download');
+Route::get('/students/presence/pdf-download', [PDFController::class, 'downloadStudentsPresence'])->name('students-presence.pdf-download');
+Route::get('/students/pdf-download', [PDFController::class, 'downloadStudentsReport'])->name('students.pdf-download');
 //***** هذي خاصة ب تقرير الطلاب */
 
 Route::get('/recitations/pdf-preview', [RecitationSessionControler::class, 'preview'])->name('recitations.pdf-preview');
 //Route::get('/recitations/pdf-download', [RecitationSessionControler::class, 'download'])->name('recitations.pdf-download');
 Route::get('/recitations/pdf-download-almaqraa-report', [RecitationSessionControler::class, 'downloadMaqraaReport'])->name('recitations.pdf-download-almaqraa-report');
 Route::get('/recitations/pdf-download-almahir-report', [RecitationSessionControler::class, 'downloadMahirReport'])->name('recitations.pdf-download-almahir-report');
+Route::get('/recitations/pdf-download-almahir-report/detailed', [RecitationSessionControler::class, 'downloadMahirDetailedReport'])->name('recitations.pdf-download-almahir-detailed-report');
+
 Route::get('/recitations/pdf-download-almutqin-report', [RecitationSessionControler::class, 'downloadMutqinReport'])->name('recitations.pdf-download-almutqin-report');
+Route::get('/recitations/pdf-download-almutqin-report/detailed', [RecitationSessionControler::class, 'downloadMutqinDetailedReport'])->name('recitations.pdf-download-almutqin-detailed-report');
 
 
 

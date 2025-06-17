@@ -35,19 +35,7 @@ class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitat
 
     protected static ?int $navigationSort = 4;
 
-    public static function getNavigationLabel(): string
-    {
-        return __('filament.almutqin-recitation.navigation_label');
-    }
-    public static function getModelLabel(): string
-    {
-        return __('filament.almutqin-recitation.model_label');
-    }
 
-    public static function getPluralModelLabel(): string
-    {
-        return __('filament.almutqin-recitation.plural_model_label');
-    }
 
     public static function form(Form $form): Form
     {
@@ -194,11 +182,8 @@ class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitat
                                         Select::make('present')
                                             ->label('الحضور')
                                             ->columnSpanFull()
-                                            ->options([
-                                                'present' => 'حاضر',
-                                                'absent_with_excuse' => 'غائب بعذر',
-                                                'absent_without_excuse' => 'غائب بدون عذر',
-                                            ])->live()
+                                            ->options(RecitationSession::getPresentOptions())
+                                            ->live()
                                             ->required(),
 
                                         Select::make('recitation_type')

@@ -55,7 +55,7 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
 
     public static function getPluralModelLabel(): string
     {
-        return __('filament.almaher-recitation.plural_model_label');
+        return __('filament.almaher-recitation.navigation_label');
     }
 
     public static function form(Form $form): Form
@@ -182,11 +182,7 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                                         Select::make('present')
                                             ->label('الحضور')
                                             ->columnSpanFull()
-                                            ->options([
-                                                'present' => 'حاضر',
-                                                'absent_with_excuse' => 'غائب بعذر',
-                                                'absent_without_excuse' => 'غائب بدون عذر',
-                                            ])->live()
+                                            ->options(RecitationSession::getPresentOptions())->live()
                                             ->required(),
 
                                         Select::make('recitation_type')
@@ -486,6 +482,24 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                     ->action(function (array $data) {
                         return redirect()->route('recitations.pdf-download-almahir-report', [
                             'time_range' => $data['time_range'],
+                            'start_date' => $data['start_date'] ?? null,
+                            'end_date' => $data['end_date'] ?? null,
+                        ]);
+                    }),
+                Action::make('generate_detailed_pdf')
+                    ->label('تصدير تقرير مفصل')
+                    ->icon('icon-halaka')
+                    ->color('info')
+                    ->form([
+
+                        DatePicker::make('start_date')
+                            ->label('من تاريخ'),
+
+                        DatePicker::make('end_date')
+                            ->label('إلى تاريخ')
+                    ])
+                    ->action(function (array $data) {
+                        return redirect()->route('recitations.pdf-download-almahir-detailed-report', [
                             'start_date' => $data['start_date'] ?? null,
                             'end_date' => $data['end_date'] ?? null,
                         ]);

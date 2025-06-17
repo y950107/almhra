@@ -4,22 +4,18 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\StudentResource\Pages;
 use App\Filament\Resources\StudentResource\RelationManagers;
-use App\Models\AlMaherRecitation;
-use App\Models\AlMaqraaRecitation;
-use App\Models\AlMutqinRecitation;
 use App\Models\Candidate;
 use App\Models\Student;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
 use IbrahimBougaoua\FilaProgress\Tables\Columns\CircleProgress;
-use Illuminate\Database\Eloquent\Builder;
 
 class StudentResource extends Resource implements HasShieldPermissions
 {
@@ -96,9 +92,8 @@ class StudentResource extends Resource implements HasShieldPermissions
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('start_date','desc')
             ->columns([
-
-
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('الاسم')->sortable()->searchable(),
 
@@ -152,16 +147,38 @@ class StudentResource extends Resource implements HasShieldPermissions
                 Tables\Actions\EditAction::make('edit'),
                 Tables\Actions\DeleteAction::make('delete'),
             ])->headerActions([
-                Action::make('generate_pdf')
-                    ->label('تصدير تقرير PDF')
+                Action::make('generate_presence_pdf')
+                    ->label('تقرير الحضور و الغياب')
                     ->icon('icon-halaka')
                     ->color('success')
                     ->form([
 
                         DatePicker::make('start_date')
+                            ->default(Carbon::now()->startOfYear())
                             ->label('من تاريخ'),
 
                         DatePicker::make('end_date')
+                            ->default(Carbon::now()->endOfYear())
+                            ->label('إلى تاريخ'),
+                    ])
+                    ->action(function (array $data) {
+                        return redirect()->route('students-presence.pdf-download', [
+                            'start_date' => $data['start_date'] ?? null,
+                            'end_date' => $data['end_date'] ?? null,
+                        ]);
+                    }),
+                Action::make('generate_pdf')
+                    ->label('تقرير الطلاب')
+                    ->icon('icon-students')
+                    ->color('info')
+                    ->form([
+
+                        DatePicker::make('start_date')
+                            ->default(Carbon::now()->startOfYear())
+                            ->label('من تاريخ'),
+
+                        DatePicker::make('end_date')
+                            ->default(Carbon::now()->endOfYear())
                             ->label('إلى تاريخ'),
                     ])
                     ->action(function (array $data) {
@@ -170,7 +187,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                             'end_date' => $data['end_date'] ?? null,
                         ]);
                     })
-            ]);;
+            ]);
     }
 
     public static function getRelations(): array

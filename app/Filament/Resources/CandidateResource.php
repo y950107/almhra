@@ -5,7 +5,6 @@ namespace App\Filament\Resources;
 use App\Enums\CandidateStatus;
 use App\Filament\Resources\CandidateResource\Pages;
 use App\Models\Candidate;
-use App\Models\Student;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Carbon\Carbon;
 use Filament\Forms;
@@ -17,7 +16,6 @@ use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 
 class CandidateResource extends Resource implements HasShieldPermissions
 {
@@ -311,6 +309,7 @@ class CandidateResource extends Resource implements HasShieldPermissions
                     ])),
 
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
             ]);
     }
 
