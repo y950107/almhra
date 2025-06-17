@@ -4,6 +4,7 @@ namespace App\Filament\Resources\TeacherResource\Pages;
 
 use App\Filament\Resources\TeacherResource;
 use App\Models\User;
+use App\Notifications\TeacherAccountCreated;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
@@ -23,7 +24,12 @@ class CreateTeacher extends CreateRecord
             'type' => 'teacher',
             'acount_status' => true
         ]);
+        // Assign role and link user to teacher
+        $user->assignRole('Teacher');
+        $user->save();
 
+        // Notify user
+        $user->notify(new TeacherAccountCreated($data['password']));
         $data['user_id'] = $user->id;
 
         return static::getModel()::create($data);

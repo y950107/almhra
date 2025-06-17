@@ -4,6 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -43,43 +45,65 @@ class UserResource extends Resource
                     TextInput::make('name')
                     ->label('الاسم')
                     ->required(),
+
                     TextInput::make('email')
                         ->label('البريد الإلكتروني')
+                        ->unique(ignoreRecord: true)
                         ->email()
                         ->required(),
+                    TextInput::make('password')
+                        ->password()
+                        ->revealable()
+                        ->dehydrated(fn ($state) => filled($state))
+                        ->confirmed()
+                        ->required(fn(string $context) => $context !== 'edit')
+                        ->maxLength(255)
+                        ->label('كلمة المرور'),
+
+                    TextInput::make('password_confirmation')
+                        ->password()
+                        ->revealable()
+                        ->required(fn(string $context) => $context !== 'edit')
+                        ->maxLength(255)
+                        ->label('تاكيد كلمة المرور'),
+
                     TextInput::make('phone')
                         ->label('الهاتف')
+                        ->unique(ignoreRecord: true)
                         ->required(),
-                    TextInput::make('password')
-                        ->label('كلمة المرور')
-                        ->password()
-                        ->dehydrateStateUsing(fn($state, $record) => filled($state) ? bcrypt($state) : $record->password)
-                        ->required(fn($context) => $context === 'create'),
+
                     Select::make('type')
                         ->label('نوع المستخدم')
+                        ->columnStart(1)
                         ->options([
                             'admin' => 'مدير',
                             'teacher' => 'معلم',
                             'student' => 'طالب',
                         ])
                         ->required(),
-                    Toggle::make('acount_status')
-                        ->label('حالة الحساب')
-                        ->default(true)
-                        ->reactive(),
+
                     Select::make('roles')
                         ->label('الدور')
                         ->relationship('roles', 'name')
                         ->multiple()
                         ->preload()
+                        ->dehydrated()
                         ->required(),
+
+                    Toggle::make('acount_status')
+                        ->label('حالة الحساب')
+                        ->default(true)
+                        ->columnSpanFull()
+                        ->reactive(),
                 ]),
         ]);
     }
 
     public static function table(Table $table): Table
     {
-        return $table->columns([
+        return $table
+            ->defaultSort('created_at','desc')
+            ->columns([
             TextColumn::make('id')->label('المعرف'),
             TextColumn::make('name')->label('الاسم')->searchable(),
             TextColumn::make('email')->label('البريد الإلكتروني')->searchable(),
@@ -99,7 +123,10 @@ class UserResource extends Resource
                 ]),
             TextColumn::make('created_at')->label('تاريخ الإنشاء')->date('Y-m-d')
             ->badge()->color('info'),
-        ]);
+        ])->actions([
+            \Filament\Tables\Actions\EditAction::make(),
+                \Filament\Tables\Actions\DeleteAction::make()
+            ]);
     }
 
     public static function getRelations(): array

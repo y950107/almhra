@@ -83,14 +83,14 @@ class TeacherResource extends Resource
                             ->confirmed()
                             ->required(fn(string $context) => $context !== 'edit')
                             ->maxLength(255)
-                            ->label('كلمة السر'),
+                            ->label('كلمة المرور'),
 
                         Forms\Components\TextInput::make('password_confirmation')
                             ->password()
                             ->revealable()
                             ->required(fn(string $context) => $context !== 'edit')
                             ->maxLength(255)
-                            ->label('تاكيد كلمة السر'),
+                            ->label('تاكيد كلمة المرور'),
 
                         Forms\Components\TextInput::make('phone')
                             ->label('الهاتف')

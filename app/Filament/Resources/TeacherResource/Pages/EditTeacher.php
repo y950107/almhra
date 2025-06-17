@@ -34,7 +34,7 @@ class EditTeacher extends EditRecord
 
         $user = $record->user()
             ->updateOrCreate([], $userData);
-
+        $user->assignRole('Teacher');
         $data['user_id'] = $user->id;
 
         return parent::handleRecordUpdate($record, $data);
