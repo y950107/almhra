@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\Candidate;
+use App\Models\AlMaqraaRecitation;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class CandidatePolicy
+class AlMaqraaRecitationPolicy
 {
     use HandlesAuthorization;
 
@@ -15,15 +15,15 @@ class CandidatePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_candidate');
+        return $user->can('view_any_al::maqraa::recitation');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Candidate $candidate): bool
+    public function view(User $user, AlMaqraaRecitation $alMaqraaRecitation): bool
     {
-        return $user->can('view_candidate');
+        return $user->can('view_al::maqraa::recitation');
     }
 
     /**
@@ -31,23 +31,23 @@ class CandidatePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_candidate');
+        return $user->can('create_al::maqraa::recitation');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Candidate $candidate): bool
+    public function update(User $user, AlMaqraaRecitation $alMaqraaRecitation): bool
     {
-        return $user->can('update_candidate');
+        return $user->can('update_al::maqraa::recitation');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Candidate $candidate): bool
+    public function delete(User $user, AlMaqraaRecitation $alMaqraaRecitation): bool
     {
-        return $user->can('delete_candidate');
+        return $user->can('delete_al::maqraa::recitation');
     }
 
     /**
@@ -55,13 +55,13 @@ class CandidatePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_candidate');
+        return $user->can('delete_any_al::maqraa::recitation');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, Candidate $candidate): bool
+    public function forceDelete(User $user, AlMaqraaRecitation $alMaqraaRecitation): bool
     {
         return $user->can('{{ ForceDelete }}');
     }
@@ -77,7 +77,7 @@ class CandidatePolicy
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, Candidate $candidate): bool
+    public function restore(User $user, AlMaqraaRecitation $alMaqraaRecitation): bool
     {
         return $user->can('{{ Restore }}');
     }
@@ -93,7 +93,7 @@ class CandidatePolicy
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, Candidate $candidate): bool
+    public function replicate(User $user, AlMaqraaRecitation $alMaqraaRecitation): bool
     {
         return $user->can('{{ Replicate }}');
     }

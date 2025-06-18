@@ -19,15 +19,17 @@ class IsAdmin
         if (auth()->check()) {
             $user = auth()->user();
 
-            if (!$user->hasRole('super_admin')) {
+            // do not allow Student and Teacher to access Admin Panel
+            if ($user->hasRole('Student')) {
                 Filament::auth()->logout();
+                return redirect()->route('filament.student.auth.login');
+            }
 
-                if ($user->hasRole('Student')) {
-                    return redirect()->route('filament.student.auth.login');
-                }
-
+            if ($user->hasRole('Teacher')) {
+                Filament::auth()->logout();
                 return redirect()->route('filament.teacher.auth.login');
             }
+
         }
 
         return $next($request);

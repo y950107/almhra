@@ -13,6 +13,7 @@ class SessionPolicy
         if ($user->hasRole('super_admin')) {
             return true;
         }
+        return false;
     }
     public function viewAny(User $user): bool
     {

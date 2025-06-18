@@ -1,11 +1,9 @@
 <?php
 
-
-
 namespace App\Policies;
 
-use App\Models\RecitationSession;
 use App\Models\User;
+use App\Models\RecitationSession;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class RecitationSessionPolicy
@@ -13,29 +11,23 @@ class RecitationSessionPolicy
     use HandlesAuthorization;
 
     /**
-     * السماح برؤية جميع الجلسات
+     * Determine whether the user can view any models.
      */
-
-   /* public function before(User $user, $ability)
-    {
-        dd($user);
-        return $user->hasRole('super_admin');
-    }*/
     public function viewAny(User $user): bool
     {
-        return  $user->hasRole('super_admin') || $user->hasPermissionTo('view_any_recitation::session') ;
+        return $user->can('view_any_recitation::session');
     }
 
     /**
-     * السماح برؤية جلسة معينة
+     * Determine whether the user can view the model.
      */
-    public function view(User $user, RecitationSession $session): bool
+    public function view(User $user, RecitationSession $recitationSession): bool
     {
         return $user->can('view_recitation::session');
     }
 
     /**
-     * السماح بإنشاء جلسة جديدة
+     * Determine whether the user can create models.
      */
     public function create(User $user): bool
     {
@@ -43,27 +35,74 @@ class RecitationSessionPolicy
     }
 
     /**
-     * السماح بتحديث جلسة معينة
+     * Determine whether the user can update the model.
      */
-    public function update(User $user, RecitationSession $session): bool
+    public function update(User $user, RecitationSession $recitationSession): bool
     {
-
         return $user->can('update_recitation::session');
     }
 
     /**
-     * السماح بحذف جلسة معينة
+     * Determine whether the user can delete the model.
      */
-    public function delete(User $user, RecitationSession $session): bool
+    public function delete(User $user, RecitationSession $recitationSession): bool
     {
         return $user->can('delete_recitation::session');
     }
 
     /**
-     * السماح بحذف أي جلسة
+     * Determine whether the user can bulk delete.
      */
     public function deleteAny(User $user): bool
     {
         return $user->can('delete_any_recitation::session');
+    }
+
+    /**
+     * Determine whether the user can permanently delete.
+     */
+    public function forceDelete(User $user, RecitationSession $recitationSession): bool
+    {
+        return $user->can('{{ ForceDelete }}');
+    }
+
+    /**
+     * Determine whether the user can permanently bulk delete.
+     */
+    public function forceDeleteAny(User $user): bool
+    {
+        return $user->can('{{ ForceDeleteAny }}');
+    }
+
+    /**
+     * Determine whether the user can restore.
+     */
+    public function restore(User $user, RecitationSession $recitationSession): bool
+    {
+        return $user->can('{{ Restore }}');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->can('{{ RestoreAny }}');
+    }
+
+    /**
+     * Determine whether the user can replicate.
+     */
+    public function replicate(User $user, RecitationSession $recitationSession): bool
+    {
+        return $user->can('{{ Replicate }}');
+    }
+
+    /**
+     * Determine whether the user can reorder.
+     */
+    public function reorder(User $user): bool
+    {
+        return $user->can('{{ Reorder }}');
     }
 }

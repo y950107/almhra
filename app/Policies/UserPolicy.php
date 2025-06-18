@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Models\User;
+
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class UserPolicy
@@ -10,76 +11,134 @@ class UserPolicy
     use HandlesAuthorization;
 
     /**
-     * السماح للمستخدمين الذين لديهم دور Super Admin بجميع الصلاحيات.
+     * Determine whether the user can view any models.
+     *
+     * @param  \App\Models\User  $user
+     * @return bool
      */
-    public function before(User $user, $ability)
-    {
-        if ($user->hasRole('super_admin')) {
-            return true;
-        }
-    }
-
-    /**
-     * تحديد من يمكنه رؤية جميع المعلمين.
-     */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         return $user->can('view_any_user');
     }
 
     /**
-     * تحديد من يمكنه رؤية معلم معين.
+     * Determine whether the user can view the model.
+     *
+     * @param  \App\Models\User  $user
+     * @return bool
      */
-    public function view(User $user)
+    public function view(User $user): bool
     {
         return $user->can('view_user');
     }
 
     /**
-     * تحديد من يمكنه إنشاء معلمين جدد.
+     * Determine whether the user can create models.
+     *
+     * @param  \App\Models\User  $user
+     * @return bool
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
         return $user->can('create_user');
     }
 
     /**
-     * تحديد من يمكنه تحديث بيانات المعلم.
+     * Determine whether the user can update the model.
+     *
+     * @param  \App\Models\User  $user
+     * @return bool
      */
-    public function update(User $user)
+    public function update(User $user): bool
     {
         return $user->can('update_user');
     }
 
     /**
-     * تحديد من يمكنه حذف معلم معين.
+     * Determine whether the user can delete the model.
+     *
+     * @param  \App\Models\User  $user
+     * @return bool
      */
-    public function delete(User $user)
+    public function delete(User $user): bool
     {
         return $user->can('delete_user');
     }
 
     /**
-     * تحديد من يمكنه حذف عدة معلمين دفعة واحدة.
+     * Determine whether the user can bulk delete.
+     *
+     * @param  \App\Models\User  $user
+     * @return bool
      */
-    public function deleteAny(User $user)
+    public function deleteAny(User $user): bool
     {
         return $user->can('delete_any_user');
     }
 
     /**
-     * تحديد من يمكنه استعادة معلم بعد حذفه.
+     * Determine whether the user can permanently delete.
+     *
+     * @param  \App\Models\User  $user
+     * @return bool
      */
-    public function restore(User $user)
+    public function forceDelete(User $user): bool
+    {
+        return $user->can('force_delete_user');
+    }
+
+    /**
+     * Determine whether the user can permanently bulk delete.
+     *
+     * @param  \App\Models\User  $user
+     * @return bool
+     */
+    public function forceDeleteAny(User $user): bool
+    {
+        return $user->can('force_delete_any_user');
+    }
+
+    /**
+     * Determine whether the user can restore.
+     *
+     * @param  \App\Models\User  $user
+     * @return bool
+     */
+    public function restore(User $user): bool
     {
         return $user->can('restore_user');
     }
 
     /**
-     * تحديد من يمكنه حذف معلم نهائيًا.
+     * Determine whether the user can bulk restore.
+     *
+     * @param  \App\Models\User  $user
+     * @return bool
      */
-    public function forceDelete(User $user)
+    public function restoreAny(User $user): bool
     {
-        return $user->can('force_delete_user');
+        return $user->can('restore_any_user');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     *
+     * @param  \App\Models\User  $user
+     * @return bool
+     */
+    public function replicate(User $user): bool
+    {
+        return $user->can('replicate_user');
+    }
+
+    /**
+     * Determine whether the user can reorder.
+     *
+     * @param  \App\Models\User  $user
+     * @return bool
+     */
+    public function reorder(User $user): bool
+    {
+        return $user->can('reorder_user');
     }
 }
