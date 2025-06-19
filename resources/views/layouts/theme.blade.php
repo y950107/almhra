@@ -52,8 +52,8 @@
     <style>
         .logo a img{
 
-                height: 120px;
-                width: 140px;
+                height: 110px;
+                width: 130px;
         }
         .logo{
             display: contents;
@@ -77,13 +77,28 @@
         .login-as.sec{
             background-color: white;
         }
+         #logos
+        {
+            justify-content: space-between ;
+        }
         @media(max-width:500px)
         {
             .login-as{
                     font-size: 0.81rem;
                     display: inherit;
                     padding: 0.6rem;
-        height: auto;
+                    height: auto;
+            }
+            #logos
+            {
+                justify-content:center !important ;
+            }
+        }
+        @media(max-width:768px)
+        {
+            #logos
+            {
+                justify-content:center !important ;
             }
         }
     </style>

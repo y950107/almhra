@@ -27,11 +27,11 @@
 	<div class="header-upper">
 		<div class="auto-container">
 			<div class="inner-container">
-				<div class="d-flex justify-content-between align-items-center flex-wrap">
+				<div class="d-flex align-items-center flex-wrap" id="logos">
 					
 					<div class="logo-box">
-						<div class="logo"><a href=""><img src="{{asset('assets/logo.png')}}"  alt="" title=""></a></div>
-						<div class="logo"><a href=""><img src="{{asset('assets/favicon.png')}}"  alt="" title=""></a></div>
+						<div class="logo"><a href=""><img src="{{asset('storage/'.app(\App\Settings\GeneralSettings::class)->logo)}}"  alt="" title=""></a></div>
+						<div class="logo"><a href=""><img src="{{asset('storage/'.app(\App\Settings\GeneralSettings::class)->favicon)}}"  alt="" title=""></a></div>
 					</div>
 					
 					<div class="nav-outer">
@@ -49,9 +49,9 @@
 							<div class="navbar-collapse collapse clearfix" id="navbarSupportedContent">
 								<ul class="navigation clearfix">
 									<li><a href="">الرئيسية</a></li>
-									<li><a href="#about">عن الاكاديمية</a></li>
+									<li><a href="#about">عن الموقع</a></li>
 
-									<li><a href="#sessions">الحلقات</a></li>
+									<li><a href="#sessions"> الخدمات</a></li>
 									
 									<li><a href="#contact">الاتصال بنا</a></li>
 									<li><a href=""></a></li>
@@ -82,7 +82,7 @@
 						</div>
 
 						<!-- Mobile Navigation Toggler -->
-						<div class="mobile-nav-toggler"><span class="icon flaticon-menu"></span></div>
+						<div class="mobile-nav-toggler d-none"><span class="icon flaticon-menu"></span></div>
 					</div>
 
 				</div>
@@ -97,7 +97,7 @@
 		<div class="close-btn"><span class="icon flaticon-close-1"></span></div>
 		
 		<nav class="menu-box">
-			<div class="nav-logo"><a href=""><img src="{{asset('assets/logo.png')}}" alt="" title=""></a></div>
+			<div class="nav-logo"><a href=""><img src="{{asset('storage/'.app(\App\Settings\GeneralSettings::class)->logo)}}" alt="" title=""></a></div>
 			<div class="menu-outer"><!--Here Menu Will Come Automatically Via Javascript / Same Menu as in Header--></div>
 		</nav>
 	</div>

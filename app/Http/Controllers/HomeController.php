@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Settings\GeneralSettings;
+
 class HomeController extends Controller
 {
     //
@@ -11,6 +13,7 @@ class HomeController extends Controller
     }
     public function index()
     {
-        return view('home');
+        $settings = app(GeneralSettings::class);
+        return view('home',compact('settings'));
     }
 }

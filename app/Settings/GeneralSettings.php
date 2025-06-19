@@ -76,6 +76,14 @@ class GeneralSettings extends Settings
     public string $calendar_type;
     public array $working_days;
     public array $prayer_times;
+    public array $welcome_section;
+    public array $services_section;
+    public array $features_section;
+    public string $slider_title;
+    public string $student_login_button_title;
+    public string $teacher_login_button_title;
+
+
 
     public static function group(): string
     {

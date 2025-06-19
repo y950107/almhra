@@ -299,6 +299,76 @@ class GeneralSettingsPage extends SettingsPage
 
                                                 Forms\Components\Toggle::make('dark_mode')
                                                     ->label('تفعيل الوضع الليلي'),
+                                                Forms\Components\Section::make('الشعار والهوية البصرية')
+                                                        ->description('تحميل شعار وأيقونة الموقع')
+                                                        ->schema([
+                                                         Forms\Components\FileUpload::make('logo')
+                                                        ->label('الشعار')
+                                                        ->image(),
+                    
+                                                Forms\Components\FileUpload::make('favicon')
+                                                        ->label('الأيقونة')
+                                                        ->image(),
+                                                Forms\Components\TextInput::make('slider_title')
+                                                        ->label('عنوان السلايدر'),
+                                                Forms\Components\TextInput::make('student_login_button_title')
+                                                        ->label('عنوان زر تسجيل دخول كطالب'),
+                                                Forms\Components\TextInput::make('teacher_login_button_title')
+                                                        ->label('عنوان زر تسجيل دخول كمعلم'),
+                                                Forms\Components\TextInput::make('slider_title')
+                                                        ->label('عنوان السلايدر'),
+                                                Forms\Components\Section::make('جزء الميزات')
+                                                ->collapsible(true)
+                                                ->collapsed(true)
+                                                ->schema([
+                                                    Forms\Components\Repeater::make('features_section')
+                                                        ->label('جزء الميزات')
+                                                        ->schema([
+                                                            Forms\Components\TextInput::make('title')
+                                                                ->label('الخاصية'),
+
+                                                            Forms\Components\Textarea::make('value')
+                                                                ->label('المحتوى'),
+                                                        ])
+                                                        ->reorderable(false)
+                                                        ->deletable(false)
+                                                        ->columns()
+                                                ]),
+                                                Forms\Components\Section::make('جزء التعريف')
+                                                ->collapsible(true)
+                                                ->collapsed(true)
+                                                ->schema([
+                                                    Forms\Components\Repeater::make('welcome_section')
+                                                        ->label('جزء التعريف')
+                                                        ->schema([
+                                                            Forms\Components\TextInput::make('title')
+                                                                ->label('الخاصية'),
+
+                                                            Forms\Components\Textarea::make('value')
+                                                                ->label('المحتوى'),
+                                                        ])
+                                                        ->reorderable(false)
+                                                        ->deletable(false)
+                                                        ->columns()
+                                                ]),
+                                                Forms\Components\Section::make('جزء خدماتنا')
+                                                ->collapsible(true)
+                                                ->collapsed(true)
+                                                ->schema([
+                                                    Forms\Components\Repeater::make('services_section')
+                                                        ->label('جزء خدماتنا')
+                                                        ->schema([
+                                                            Forms\Components\TextInput::make('title')
+                                                                ->label('الخاصية'),
+
+                                                            Forms\Components\Textarea::make('value')
+                                                                ->label('المحتوى'),
+                                                        ])
+                                                        ->reorderable(false)
+                                                        ->deletable(false)
+                                                        ->columns()
+                                                    ])
+                                                ])
                                             ]),
                                     ]),
                                 Tabs\Tab::make('اعدادات التقييم والتقارير')
