@@ -41,8 +41,8 @@ class TeacherPanelProvider extends PanelProvider
 
             ])
             ->font('Noto Kufi Arabic' , provider: GoogleFontProvider::class)
-            ->brandLogo(asset("assets/".app(GeneralSettings::class)->logo))
-            ->favicon(asset("assets/".app(GeneralSettings::class)->logo))
+            ->brandLogo(asset('storage/'.app(\App\Settings\GeneralSettings::class)->logo))
+            ->favicon(asset('storage/'.app(\App\Settings\GeneralSettings::class)->logo))
             ->discoverResources(in: app_path('Filament/Teacher/Resources'), for: 'App\\Filament\\Teacher\\Resources')
             ->discoverPages(in: app_path('Filament/Teacher/Pages'), for: 'App\\Filament\\Teacher\\Pages')
             ->pages([

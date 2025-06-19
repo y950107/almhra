@@ -38,8 +38,8 @@ class AdminPanelProvider extends PanelProvider
             ->login(Login::class)
 
             ->font('Noto Kufi Arabic' , provider: GoogleFontProvider::class)
-            ->brandLogo(asset("assets/".app(GeneralSettings::class)->logo))
-            ->favicon(asset("assets/".app(GeneralSettings::class)->logo))
+            ->brandLogo(asset('storage/'.app(\App\Settings\GeneralSettings::class)->logo))
+            ->favicon(asset('storage/'.app(\App\Settings\GeneralSettings::class)->logo))
             ->colors([
                 'primary' => Color::Amber,
             ])
