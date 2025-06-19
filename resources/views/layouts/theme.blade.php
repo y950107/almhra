@@ -45,8 +45,8 @@
     <meta property="og:site_name" content="{{ app(\App\Settings\GeneralSettings::class)->company_name ."-" . app(\App\Settings\GeneralSettings::class)->branch_name }}" />
     <meta property="fb:app_id" content>
     <!-- favicon -->
-    <link href="{{ app(\App\Settings\GeneralSettings::class)->favicon ? {{asset('storage/'.app(\App\Settings\GeneralSettings::class)->favicon)}} : asset('favicon.ico')}}" rel="shortcut icon" type="image/x-icon">
-    <link rel="icon" href="{{ app(\App\Settings\GeneralSettings::class)->favicon ? {{asset('storage/'.app(\App\Settings\GeneralSettings::class)->favicon)}} : asset('favicon.ico')}}" type="image/x-icon">
+    <link href="{{ app(\App\Settings\GeneralSettings::class)->favicon ? asset('storage/'.app(\App\Settings\GeneralSettings::class)->favicon) : asset('favicon.ico')}}" rel="shortcut icon" type="image/x-icon">
+    <link rel="icon" href="{{ app(\App\Settings\GeneralSettings::class)->favicon ? asset('storage/'.app(\App\Settings\GeneralSettings::class)->favicon) : asset('favicon.ico')}}" type="image/x-icon">
 
 
     <style>
