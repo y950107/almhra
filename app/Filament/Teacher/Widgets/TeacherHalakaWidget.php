@@ -18,12 +18,12 @@ class TeacherHalakaWidget extends Widget
 
         $halaka = Halaka::where('teacher_id',auth()->user()->teacher->id)->first();
 
-        $cumulativePercentage = $halaka->getProgressPercentageAttribute();
+        $cumulativePercentage = $halaka?->getProgressPercentageAttribute() ?? 0;
 
         return [
             'title' => 'نسبة انجاز الحلقة',
             'value' => $cumulativePercentage,
-            'chartId' => 'gauge-chart-' . $this->getId(),
+            'chartId' => 'gauge-chart-' . $this->getId() ?? 0,
         ];
     }
 
