@@ -249,6 +249,31 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                                         $startPage = $quranService->getStartPageByAyah($get('start_surah_id'), $get('start_ayah_id'));
                                         $set('start_page', $startPage);
                                     }
+
+
+                                    if ($get('end_ayah_id')) {
+                                        // حساب عدد الأسطر
+                                        $targetLines = $quranService->calculateLines(
+                                            $get('start_surah_id'),
+                                            $get('start_ayah_id'),
+                                            $get('end_surah_id'),
+                                            $get('end_ayah_id')
+                                        );
+
+                                        // حساب عدد الصفحات
+                                        $startSurahId = $get('start_surah_id');
+
+
+                                        if ($startSurahId == 1) {
+                                            $targetLines -= 7;
+                                            $targetPages = round($targetLines / 15,1) + 1;
+                                        } else {
+                                            $targetPages = round($targetLines / 15,1);
+                                        }
+
+                                        $set('pages', $targetPages);
+                                    }
+
                                 }),
 
 
@@ -284,29 +309,37 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
 
                                 })
                                 ->afterStateUpdated(function ($get, $set) use ($quranService) {
-                                    // حساب عدد الأسطر
-                                    $targetLines = $quranService->calculateLines(
-                                        $get('start_surah_id'),
-                                        $get('start_ayah_id'),
-                                        $get('end_surah_id'),
-                                        $get('end_ayah_id')
-                                    );
+
                                     if ($get('end_surah_id') && $get('end_ayah_id')) {
                                         $startPage = $quranService->getStartPageByAyah($get('end_surah_id'), $get('end_ayah_id'));
                                         $set('end_page', $startPage);
                                     };
-                                    // حساب عدد الصفحات
-                                    $startSurahId = $get('start_surah_id');
+
+                                    if ($get('start_ayah_id')) {
+                                        // حساب عدد الأسطر
+                                        $targetLines = $quranService->calculateLines(
+                                            $get('start_surah_id'),
+                                            $get('start_ayah_id'),
+                                            $get('end_surah_id'),
+                                            $get('end_ayah_id')
+                                        );
 
 
-                                    if ($startSurahId == 1) {
-                                        $targetLines -= 7;
-                                        $targetPages = ceil($targetLines / 15) + 1;
-                                    } else {
-                                        $targetPages = ceil($targetLines / 15);
+
+                                        // حساب عدد الصفحات
+                                        $startSurahId = $get('start_surah_id');
+
+
+                                        if ($startSurahId == 1) {
+                                            $targetLines -= 7;
+                                            $targetPages = round($targetLines / 15,1) + 1;
+                                        } else {
+                                            $targetPages = round($targetLines / 15,1);
+                                        }
+
+                                        $set('pages', $targetPages);
                                     }
-                                    $targetPages = number_format($targetPages, 2);
-                                    $set('pages', $targetPages);
+
                                 }),
 
                             TextInput::make('start_page')

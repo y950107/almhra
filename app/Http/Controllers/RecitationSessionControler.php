@@ -357,11 +357,11 @@ class RecitationSessionControler extends Controller
 
                 'mem_total_pages' => $memPages,
                 'mem_total_monthly_target' => $memTargets,
-                'mem_total_monthly_percentage' => $memTargets > 0 ? round($memPages / $memTargets * 100) : 0,
-                'total_score' => $totalSessions > 0 ? round($totalScores / $totalSessions) : 0,
+                'mem_total_monthly_percentage' => $memTargets > 0 ? round($memPages / $memTargets * 100,1) : 0,
+                'total_score' => $totalSessions > 0 ? round($totalScores / $totalSessions,1) : 0,
                 'rev_total_pages' => $revPages,
                 'rev_total_monthly_target' => $revTargets,
-                'rev_total_monthly_percentage' => $revTargets > 0 ? round($revPages / $revTargets * 100) : 0,
+                'rev_total_monthly_percentage' => $revTargets > 0 ? round($revPages / $revTargets * 100,1) : 0,
             ],
         ];
 

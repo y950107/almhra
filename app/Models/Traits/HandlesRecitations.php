@@ -58,7 +58,7 @@ trait HandlesRecitations
                 'teacher_name' => $recitations->first()->recitationSession->halaka->teacher->name ?? '-',
                 'absences' => $absences,
                 'registration_month' => Carbon::parse($student->start_date)->getTranslatedMonthName(),
-                'avg_evaluation_score' => round($avgScore),
+                'avg_evaluation_score' => round($avgScore,1),
                 'start_surah_id' => $first->start_surah_id ?? null,
                 'start_surah_name' =>  $first->start_surah_id ? getSurahName($first->start_surah_id) : "",
                 'start_ayah_id' => $first->start_ayah_id ?? null,
@@ -67,7 +67,7 @@ trait HandlesRecitations
                 'end_ayah_id' => $last->end_ayah_id ?? null,
                 'pages_read' => $pagesRead,
                 'monthly_target' =>  $monthlyTarget,
-                'monthly_percentage' => $monthlyTarget > 0 ? round($pagesRead / $monthlyTarget * 100) : 0,
+                'monthly_percentage' => $monthlyTarget > 0 ? round($pagesRead / $monthlyTarget * 100,1) : 0,
                 ...$cumulative,
             ];
         }
@@ -89,11 +89,11 @@ trait HandlesRecitations
             'total_absences_percentage' => $totalSessions > 0 ? round($totalAbsences / $totalSessions * 100) : 0,
             'total_pages' => $totalPages,
             'total_monthly_target' => $totalTarget,
-            'total_monthly_percentage' => $totalTarget > 0 ? round($totalPages / $totalTarget * 100) : 0,
-            'total_score' => $totalSessions > 0 ? round($totalScores / $totalSessions) : 0,
+            'total_monthly_percentage' => $totalTarget > 0 ? round($totalPages / $totalTarget * 100,1) : 0,
+            'total_score' => $totalSessions > 0 ? round($totalScores / $totalSessions,1) : 0,
             'total_cumulative_pages' => $totalCumulativePages,
             'total_cumulative_target' => $totalCumulativeTarget,
-            'total_cumulative_percentage' => $totalCumulativeTarget > 0 ? round($totalCumulativePages / $totalCumulativeTarget * 100) : 0,
+            'total_cumulative_percentage' => $totalCumulativeTarget > 0 ? round($totalCumulativePages / $totalCumulativeTarget * 100,1) : 0,
         ];
     }
 

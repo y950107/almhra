@@ -63,10 +63,10 @@ class RecitationSession extends Model
             $this->memory_score,
         ];
 
-        
+
         $average = array_sum($scores) / 3;
 
-        return round($average);
+        return round($average,1);
     }
 
     public function getTranslatedPresentAttribute() {

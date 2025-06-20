@@ -69,7 +69,7 @@ class Halaka extends Model
 
 
         return $percentages->count() > 0
-            ? round($percentages->avg(), 2)
+            ? round($percentages->avg(), 1)
             : 0;
 
 

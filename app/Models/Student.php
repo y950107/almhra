@@ -111,15 +111,15 @@ class Student extends Model
 
         $cumulativePages = $cumulativeRecitations->sum($pages_att);
 
-        $cumulativeTarget = round($monthsBetween * $monthlyTarget);
+        $cumulativeTarget = $monthsBetween * $monthlyTarget;
 
         $percentage = $cumulativeTarget > 0
-            ?  round(($cumulativePages / $cumulativeTarget) * 100)
+            ?  round(($cumulativePages / $cumulativeTarget) * 100,1)
             : 0;
 
         return [
-            'cumulative_pages' => round($cumulativePages),
-            'cumulative_target' => round($cumulativeTarget),
+            'cumulative_pages' => round($cumulativePages,1),
+            'cumulative_target' => round($cumulativeTarget,1),
             'cumulative_percentage' => $percentage,
             'recitations_count' => $cumulativeRecitations->count()
         ];

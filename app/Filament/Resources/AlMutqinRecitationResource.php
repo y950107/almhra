@@ -263,9 +263,34 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                         ->afterStateUpdated(function ($get, $set) use ($quranService) {
 
                                             if ($get('mem_start_surah_id') && $get('mem_start_ayah_id')) {
-                                                $startPage = $quranService->getStartPageByAyah($get('mem_start_surah_id'), $get('mem_start_ayah_id'));
+                                                $startPage = $quranService->getStartPageByAyah($get('mem_start_surah_id'), $get('start_ayah_id'));
                                                 $set('mem_start_page', $startPage);
                                             }
+
+
+                                            if ($get('mem_end_ayah_id')) {
+                                                // حساب عدد الأسطر
+                                                $targetLines = $quranService->calculateLines(
+                                                    $get('mem_start_surah_id'),
+                                                    $get('mem_start_ayah_id'),
+                                                    $get('mem_end_surah_id'),
+                                                    $get('mem_end_ayah_id')
+                                                );
+
+                                                // حساب عدد الصفحات
+                                                $startSurahId = $get('mem_start_surah_id');
+
+
+                                                if ($startSurahId == 1) {
+                                                    $targetLines -= 7;
+                                                    $targetPages = round($targetLines / 15,1) + 1;
+                                                } else {
+                                                    $targetPages = round($targetLines / 15,1);
+                                                }
+
+                                                $set('mem_pages', $targetPages);
+                                            }
+
                                         }),
 
 
@@ -301,29 +326,37 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
 
                                         })
                                         ->afterStateUpdated(function ($get, $set) use ($quranService) {
-                                            // حساب عدد الأسطر
-                                            $targetLines = $quranService->calculateLines(
-                                                $get('mem_start_surah_id'),
-                                                $get('mem_start_ayah_id'),
-                                                $get('mem_end_surah_id'),
-                                                $get('mem_end_ayah_id')
-                                            );
+
                                             if ($get('mem_end_surah_id') && $get('mem_end_ayah_id')) {
-                                                $startPage = $quranService->getStartPageByAyah($get('mem_end_surah_id'), $get('mem_end_ayah_id'));
+                                                $startPage = $quranService->getStartPageByAyah($get('mem_end_surah_id'), $get('end_ayah_id'));
                                                 $set('mem_end_page', $startPage);
                                             };
-                                            // حساب عدد الصفحات
-                                            $startSurahId = $get('mem_start_surah_id');
+
+                                            if ($get('mem_start_ayah_id')) {
+                                                // حساب عدد الأسطر
+                                                $targetLines = $quranService->calculateLines(
+                                                    $get('mem_start_surah_id'),
+                                                    $get('mem_start_ayah_id'),
+                                                    $get('mem_end_surah_id'),
+                                                    $get('mem_end_ayah_id')
+                                                );
 
 
-                                            if ($startSurahId == 1) {
-                                                $targetLines -= 7;
-                                                $targetPages = ceil($targetLines / 15) + 1;
-                                            } else {
-                                                $targetPages = ceil($targetLines / 15);
+
+                                                // حساب عدد الصفحات
+                                                $startSurahId = $get('mem_start_surah_id');
+
+
+                                                if ($startSurahId == 1) {
+                                                    $targetLines -= 7;
+                                                    $targetPages = round($targetLines / 15,1) + 1;
+                                                } else {
+                                                    $targetPages = round($targetLines / 15,1);
+                                                }
+
+                                                $set('mem_pages', $targetPages);
                                             }
-                                            $targetPages = number_format($targetPages, 2);
-                                            $set('mem_pages', $targetPages);
+
                                         }),
 
                                     TextInput::make('mem_start_page')
@@ -378,9 +411,34 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                         ->afterStateUpdated(function ($get, $set) use ($quranService) {
 
                                             if ($get('rev_start_surah_id') && $get('rev_start_ayah_id')) {
-                                                $startPage = $quranService->getStartPageByAyah($get('rev_start_surah_id'), $get('rev_start_ayah_id'));
+                                                $startPage = $quranService->getStartPageByAyah($get('rev_start_surah_id'), $get('start_ayah_id'));
                                                 $set('rev_start_page', $startPage);
                                             }
+
+
+                                            if ($get('end_ayah_id')) {
+                                                // حساب عدد الأسطر
+                                                $targetLines = $quranService->calculateLines(
+                                                    $get('rev_start_surah_id'),
+                                                    $get('rev_start_ayah_id'),
+                                                    $get('rev_end_surah_id'),
+                                                    $get('rev_end_ayah_id')
+                                                );
+
+                                                // حساب عدد الصفحات
+                                                $startSurahId = $get('rev_start_surah_id');
+
+
+                                                if ($startSurahId == 1) {
+                                                    $targetLines -= 7;
+                                                    $targetPages = round($targetLines / 15,1) + 1;
+                                                } else {
+                                                    $targetPages = round($targetLines / 15,1);
+                                                }
+
+                                                $set('rev_pages', $targetPages);
+                                            }
+
                                         }),
 
 
@@ -416,29 +474,37 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
 
                                         })
                                         ->afterStateUpdated(function ($get, $set) use ($quranService) {
-                                            // حساب عدد الأسطر
-                                            $targetLines = $quranService->calculateLines(
-                                                $get('rev_start_surah_id'),
-                                                $get('rev_start_ayah_id'),
-                                                $get('rev_end_surah_id'),
-                                                $get('rev_end_ayah_id')
-                                            );
+
                                             if ($get('rev_end_surah_id') && $get('rev_end_ayah_id')) {
-                                                $startPage = $quranService->getStartPageByAyah($get('rev_end_surah_id'), $get('rev_end_ayah_id'));
+                                                $startPage = $quranService->getStartPageByAyah($get('rev_end_surah_id'), $get('end_ayah_id'));
                                                 $set('rev_end_page', $startPage);
                                             };
-                                            // حساب عدد الصفحات
-                                            $startSurahId = $get('rev_start_surah_id');
+
+                                            if ($get('rev_start_ayah_id')) {
+                                                // حساب عدد الأسطر
+                                                $targetLines = $quranService->calculateLines(
+                                                    $get('rev_start_surah_id'),
+                                                    $get('rev_start_ayah_id'),
+                                                    $get('rev_end_surah_id'),
+                                                    $get('rev_end_ayah_id')
+                                                );
 
 
-                                            if ($startSurahId == 1) {
-                                                $targetLines -= 7;
-                                                $targetPages = ceil($targetLines / 15) + 1;
-                                            } else {
-                                                $targetPages = ceil($targetLines / 15);
+
+                                                // حساب عدد الصفحات
+                                                $startSurahId = $get('rev_start_surah_id');
+
+
+                                                if ($startSurahId == 1) {
+                                                    $targetLines -= 7;
+                                                    $targetPages = round($targetLines / 15,1) + 1;
+                                                } else {
+                                                    $targetPages = round($targetLines / 15,1);
+                                                }
+
+                                                $set('rev_pages', $targetPages);
                                             }
-                                            $targetPages = number_format($targetPages, 2);
-                                            $set('rev_pages', $targetPages);
+
                                         }),
 
                                     TextInput::make('rev_start_page')

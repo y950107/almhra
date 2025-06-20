@@ -190,120 +190,153 @@ class AlMaqraaRecitationResource extends \App\Filament\Resources\AlMaqraaRecitat
                         ]),
 
                         //  الأهداف القرآنية
-                        Tabs\Tab::make('نتائج الحصة')
+                        Tabs\Tab::make('نتائج الحصة')->id("actual-results")
                             ->visible(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                             ->schema([
-                            Select::make('start_surah_id')
-                                ->label('سورة البداية (اخر حصة)')
-                                ->options(fn() => collect($quranService->getSurahs())->pluck('name', 'id'))
-                                ->reactive()
-                                ->live()
-                                ->afterStateUpdated(fn($get, $set) => $set('start_ayah_id', null)),
+                                Select::make('start_surah_id')
+                                    ->label('سورة البداية (اخر حصة)')
+                                    ->options(fn() => collect($quranService->getSurahs())->pluck('name', 'id'))
+                                    ->reactive()
+                                    ->live()
+                                    ->afterStateUpdated(fn($get, $set) => $set('start_ayah_id', null)),
 
-                            Select::make('start_ayah_id')
-                                ->label('آية البداية (اخر حصة)')
-                                ->options(
-                                    fn($get) => $get('start_surah_id')
-                                        ? collect($quranService->getAyahs($get('start_surah_id')))
-                                            ->mapWithKeys(function ($ayah) {
-                                                return [
-                                                    $ayah['number'] => "{$ayah['number']} - "  . Str::limit($ayah['text'], 120)
-                                                ];
-                                            })
-                                        : []
-                                )
-                                ->reactive()
-                                ->live()
-                                ->afterStateHydrated(function ($get, $set) use ($quranService) {
+                                Select::make('start_ayah_id')
+                                    ->label('آية البداية (اخر حصة)')
+                                    ->options(
+                                        fn($get) => $get('start_surah_id')
+                                            ? collect($quranService->getAyahs($get('start_surah_id')))
+                                                ->mapWithKeys(function ($ayah) {
+                                                    return [
+                                                        $ayah['number'] => "{$ayah['number']} - "  . Str::limit($ayah['text'], 120)
+                                                    ];
+                                                })
+                                            : []
+                                    )
+                                    ->reactive()
+                                    ->live()
+                                    ->afterStateHydrated(function ($get, $set) use ($quranService) {
 
-                                    if ($get('start_surah_id') && $get('start_ayah_id')) {
-                                        $startPage = $quranService->getStartPageByAyah($get('start_surah_id'), $get('start_ayah_id'));
-                                        $set('start_page', $startPage);
-                                    }
-                                })
-                                ->afterStateUpdated(function ($get, $set) use ($quranService) {
+                                        if ($get('start_surah_id') && $get('start_ayah_id')) {
+                                            $startPage = $quranService->getStartPageByAyah($get('start_surah_id'), $get('start_ayah_id'));
+                                            $set('start_page', $startPage);
+                                        }
+                                    })
+                                    ->afterStateUpdated(function ($get, $set) use ($quranService) {
 
-                                    if ($get('start_surah_id') && $get('start_ayah_id')) {
-                                        $startPage = $quranService->getStartPageByAyah($get('start_surah_id'), $get('start_ayah_id'));
-                                        $set('start_page', $startPage);
-                                    }
-                                }),
+                                        if ($get('start_surah_id') && $get('start_ayah_id')) {
+                                            $startPage = $quranService->getStartPageByAyah($get('start_surah_id'), $get('start_ayah_id'));
+                                            $set('start_page', $startPage);
+                                        }
 
 
-                            Select::make('end_surah_id')
-                                ->label('سورة النهاية')
-                                ->options(fn() => collect($quranService->getSurahs())->pluck('name', 'id'))
-                                ->reactive()
-                                ->live()
-                                ->afterStateUpdated(fn($get, $set) => $set('end_ayah_id', null)),
+                                        if ($get('end_ayah_id')) {
+                                            // حساب عدد الأسطر
+                                            $targetLines = $quranService->calculateLines(
+                                                $get('start_surah_id'),
+                                                $get('start_ayah_id'),
+                                                $get('end_surah_id'),
+                                                $get('end_ayah_id')
+                                            );
 
-                            Select::make('end_ayah_id')
-                                ->label('آية النهاية')
-                                ->options(
-                                    fn($get) => $get('end_surah_id')
-                                        ? collect($quranService->getAyahs($get('end_surah_id')))
-                                            ->mapWithKeys(function ($ayah) {
-                                                return [
-                                                    $ayah['number'] => "{$ayah['number']} - "  . Str::limit($ayah['text'], 120)
-                                                ];
-                                            })
-                                        : []
-                                )
-                                ->reactive()
-                                ->live()
-                                ->afterStateHydrated(function ($get, $set,string $operation) use ($quranService) {
-                                    // حساب عدد الأسطر
-                                    if ($operation === 'edit') {
+                                            // حساب عدد الصفحات
+                                            $startSurahId = $get('start_surah_id');
+
+
+                                            if ($startSurahId == 1) {
+                                                $targetLines -= 7;
+                                                $targetPages = round($targetLines / 15,1) + 1;
+                                            } else {
+                                                $targetPages = round($targetLines / 15,1);
+                                            }
+
+                                            $set('pages', $targetPages);
+                                        }
+
+                                    }),
+
+
+                                Select::make('end_surah_id')
+                                    ->label('سورة النهاية')
+                                    ->options(fn() => collect($quranService->getSurahs())->pluck('name', 'id'))
+                                    ->reactive()
+                                    ->live()
+                                    ->afterStateUpdated(fn($get, $set) => $set('end_ayah_id', null)),
+
+                                Select::make('end_ayah_id')
+                                    ->label('آية النهاية')
+                                    ->options(
+                                        fn($get) => $get('end_surah_id')
+                                            ? collect($quranService->getAyahs($get('end_surah_id')))
+                                                ->mapWithKeys(function ($ayah) {
+                                                    return [
+                                                        $ayah['number'] => "{$ayah['number']} - "  . Str::limit($ayah['text'], 120)
+                                                    ];
+                                                })
+                                            : []
+                                    )
+                                    ->reactive()
+                                    ->live()
+                                    ->afterStateHydrated(function ($get, $set,string $operation) use ($quranService) {
+                                        // حساب عدد الأسطر
+                                        if ($operation === 'edit') {
+                                            if ($get('end_surah_id') && $get('end_ayah_id')) {
+                                                $startPage = $quranService->getStartPageByAyah($get('end_surah_id'), $get('end_ayah_id'));
+                                                $set('end_page', $startPage);
+                                            }
+                                        }
+
+                                    })
+                                    ->afterStateUpdated(function ($get, $set) use ($quranService) {
+
                                         if ($get('end_surah_id') && $get('end_ayah_id')) {
                                             $startPage = $quranService->getStartPageByAyah($get('end_surah_id'), $get('end_ayah_id'));
                                             $set('end_page', $startPage);
+                                        };
+
+                                        if ($get('start_ayah_id')) {
+                                            // حساب عدد الأسطر
+                                            $targetLines = $quranService->calculateLines(
+                                                $get('start_surah_id'),
+                                                $get('start_ayah_id'),
+                                                $get('end_surah_id'),
+                                                $get('end_ayah_id')
+                                            );
+
+
+
+                                            // حساب عدد الصفحات
+                                            $startSurahId = $get('start_surah_id');
+
+
+                                            if ($startSurahId == 1) {
+                                                $targetLines -= 7;
+                                                $targetPages = round($targetLines / 15,1) + 1;
+                                            } else {
+                                                $targetPages = round($targetLines / 15,1);
+                                            }
+
+                                            $set('pages', $targetPages);
                                         }
-                                    }
 
-                                })
-                                ->afterStateUpdated(function ($get, $set) use ($quranService) {
-                                    // حساب عدد الأسطر
-                                    $targetLines = $quranService->calculateLines(
-                                        $get('start_surah_id'),
-                                        $get('start_ayah_id'),
-                                        $get('end_surah_id'),
-                                        $get('end_ayah_id')
-                                    );
-                                    if ($get('end_surah_id') && $get('end_ayah_id')) {
-                                        $startPage = $quranService->getStartPageByAyah($get('end_surah_id'), $get('end_ayah_id'));
-                                        $set('end_page', $startPage);
-                                    };
-                                    // حساب عدد الصفحات
-                                    $startSurahId = $get('start_surah_id');
+                                    }),
+
+                                TextInput::make('start_page')
+                                    ->label('صفحة البداية')
+                                    ->numeric()
+                                    ->disabled(),
+
+                                TextInput::make('end_page')
+                                    ->label('صفحة النهاية')
+                                    ->numeric()
+                                    ->disabled(),
 
 
-                                    if ($startSurahId == 1) {
-                                        $targetLines -= 7;
-                                        $targetPages = ceil($targetLines / 15) + 1;
-                                    } else {
-                                        $targetPages = ceil($targetLines / 15);
-                                    }
-                                    $targetPages = number_format($targetPages, 2);
-                                    $set('pages', $targetPages);
-                                }),
-
-                            TextInput::make('start_page')
-                                ->label('صفحة البداية')
-                                ->numeric()
-                                ->disabled(),
-
-                            TextInput::make('end_page')
-                                ->label('صفحة النهاية')
-                                ->numeric()
-                                ->disabled(),
-
-
-                            TextInput::make('pages')
-                                ->label('عدد الاوجه')
-                                ->numeric()
-                                ->disabled()
-                                ->dehydrated(),
-                        ]),
+                                TextInput::make('pages')
+                                    ->label('عدد الاوجه')
+                                    ->numeric()
+                                    ->disabled()
+                                    ->dehydrated(),
+                            ]),
 
 
 
