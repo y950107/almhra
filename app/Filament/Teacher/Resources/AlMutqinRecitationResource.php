@@ -243,7 +243,7 @@ class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitat
                                         ->afterStateUpdated(function ($get, $set) use ($quranService) {
 
                                             if ($get('mem_start_surah_id') && $get('mem_start_ayah_id')) {
-                                                $startPage = $quranService->getStartPageByAyah($get('mem_start_surah_id'), $get('start_ayah_id'));
+                                                $startPage = $quranService->getStartPageByAyah($get('mem_start_surah_id'), $get('mem_start_ayah_id'));
                                                 $set('mem_start_page', $startPage);
                                             }
 
@@ -308,7 +308,7 @@ class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitat
                                         ->afterStateUpdated(function ($get, $set) use ($quranService) {
 
                                             if ($get('mem_end_surah_id') && $get('mem_end_ayah_id')) {
-                                                $startPage = $quranService->getStartPageByAyah($get('mem_end_surah_id'), $get('end_ayah_id'));
+                                                $startPage = $quranService->getStartPageByAyah($get('mem_end_surah_id'), $get('mem_end_ayah_id'));
                                                 $set('mem_end_page', $startPage);
                                             };
 
@@ -391,12 +391,12 @@ class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitat
                                         ->afterStateUpdated(function ($get, $set) use ($quranService) {
 
                                             if ($get('rev_start_surah_id') && $get('rev_start_ayah_id')) {
-                                                $startPage = $quranService->getStartPageByAyah($get('rev_start_surah_id'), $get('start_ayah_id'));
+                                                $startPage = $quranService->getStartPageByAyah($get('rev_start_surah_id'), $get('rev_start_ayah_id'));
                                                 $set('rev_start_page', $startPage);
                                             }
 
 
-                                            if ($get('end_ayah_id')) {
+                                            if ($get('rev_end_ayah_id')) {
                                                 // حساب عدد الأسطر
                                                 $targetLines = $quranService->calculateLines(
                                                     $get('rev_start_surah_id'),
@@ -456,7 +456,7 @@ class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitat
                                         ->afterStateUpdated(function ($get, $set) use ($quranService) {
 
                                             if ($get('rev_end_surah_id') && $get('rev_end_ayah_id')) {
-                                                $startPage = $quranService->getStartPageByAyah($get('rev_end_surah_id'), $get('end_ayah_id'));
+                                                $startPage = $quranService->getStartPageByAyah($get('rev_end_surah_id'), $get('rev_end_ayah_id'));
                                                 $set('rev_end_page', $startPage);
                                             };
 
