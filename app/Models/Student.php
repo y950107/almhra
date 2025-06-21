@@ -142,12 +142,12 @@ class Student extends Model
 
     public function getOnlineSessionsPercentageAttribute()
     {
-        return $this->calculateRecitationPercentage('in_person');
+        return $this->calculateRecitationPercentage('remote');
     }
 
     public function getPresentSessionsPercentageAttribute()
     {
-        return $this->calculateRecitationPercentage('remote');
+        return $this->calculateRecitationPercentage('in_person');
     }
 
     protected function calculateRecitationPercentage(string $type): int
