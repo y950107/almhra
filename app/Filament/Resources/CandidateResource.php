@@ -248,9 +248,7 @@ class CandidateResource extends Resource implements HasShieldPermissions
 
                 Tables\Columns\ViewColumn::make('audio')
                     ->label(__('filament.candidate.fields.audio_recitation'))
-                    ->view('tables.columns.audio-player')
-                    ->sortable()
-                    ->searchable(),
+                    ->view('tables.columns.audio-player'),
             ])
             ->filters([
                 SelectFilter::make('status')

@@ -131,8 +131,8 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('teacher.name')
-                    ->label('المشرف')
+                Tables\Columns\TextColumn::make('evaluator.name')
+                    ->label('المقيم')
                     ->searchable()
                     ->sortable(),
 
@@ -158,7 +158,6 @@ class EvaluationResource extends Resource implements HasShieldPermissions
 
                 TextColumn::make('status')
                     ->label('الحالة')
-                    ->searchable()
                     ->sortable()
                     ->formatStateUsing(fn(EvaluationStatus $state) => $state->label())
                     ->badge()
