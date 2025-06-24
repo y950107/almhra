@@ -17,6 +17,8 @@ use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
@@ -105,7 +107,7 @@ class AlMaqraaRecitationResource extends \App\Filament\Resources\AlMaqraaRecitat
                                                 $q->where('program_type', 'maqraa');
                                             }),
                                         )
-                                        ->getOptionLabelFromRecordUsing(fn($record) => "{$record->candidate->full_name}")
+                                        ->getOptionLabelFromRecordUsing(fn($record) => "{$record?->candidate?->full_name}")
                                         ->label('الطالب')
                                         ->afterStateHydrated(function(Forms\Get $get, Forms\Set $set, ?RecitationSession $record) use ($quranService) {
 
@@ -393,7 +395,49 @@ class AlMaqraaRecitationResource extends \App\Filament\Resources\AlMaqraaRecitat
                 AlMaqraaRecitation::query()->whereHas('recitationSession.halaka.teacher', function ($query) {
                     return $query->where('user_id', auth()->id());
                 })
-            )
+            )->filters([
+                // Filter by student
+                SelectFilter::make('student_id')
+                    ->label('الطلاب')
+                    ->multiple()
+                    ->searchable()
+                    ->preload()
+                    ->relationship('recitationSession.student', 'id',modifyQueryUsing: function (Builder $query) {
+                        $query->where('teacher_id',auth()->user()?->teacher?->id);
+                    })->getOptionLabelFromRecordUsing(fn($record) => "{$record?->candidate?->full_name}"),
+
+                // Filter by date from
+                Filter::make('from_date')
+                    ->label('من تاريخ')
+                    ->form([
+                        DatePicker::make('from')->label('من تاريخ'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        if ($data['from']) {
+                            $query->whereHas('recitationSession', fn ($q) =>
+                            $q->whereDate('session_date', '>=', $data['from'])
+                            );
+                        }
+                    })    ->indicateUsing(function (array $data): ?string {
+                        return $data['from'] ? 'من: ' . \Carbon\Carbon::parse($data['from'])->format('Y-m-d') : null;
+                    }),
+
+                // Filter by date to
+                Filter::make('to_date')
+                    ->label('إلى تاريخ')
+                    ->form([
+                        DatePicker::make('to')->label('إلى تاريخ'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        if ($data['to']) {
+                            $query->whereHas('recitationSession', fn ($q) =>
+                            $q->whereDate('session_date', '<=', $data['to'])
+                            );
+                        }
+                    })   ->indicateUsing(function (array $data): ?string {
+                        return $data['to'] ? 'إلى: ' . \Carbon\Carbon::parse($data['to'])->format('Y-m-d') : null;
+                    }),
+            ])
             ->headerActions([]);
     }
 
