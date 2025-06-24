@@ -1,6 +1,6 @@
 @extends('pdf.template')
 
-@section('title','تقرير المفصل لبرنامج الماهر')
+@section('title','تقرير المفصل لبرنامج التأسيس')
 
 @section('content')
     <table class="data">

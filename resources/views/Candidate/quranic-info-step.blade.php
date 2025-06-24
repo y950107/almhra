@@ -4,7 +4,7 @@
         <legend class="text-lg font-semibold text-green-600">المعلومات القرآنية</legend>
 
         <div class="mb-4">
-            <label for="quran_level" class="block text-sm font-medium text-gray-700">مستوى القرآن*</label>
+            <label for="quran_level" class="block text-sm font-medium text-gray-700">تقييمك في الحفظ*</label>
             <select name="quran_level" id="quran_level" class="select2 w-full">
                 <option value="">اختر المستوى</option>
                 @foreach ($quranLevels as $key => $value)
@@ -63,7 +63,7 @@
         <!-- التقييم الذاتي -->
         <!-- التقييم الذاتي -->
         <div class="mb-4">
-            <label for="self_evaluation" class="block text-sm font-medium text-gray-700">التقييم الذاتي*</label>
+            <label for="self_evaluation" class="block text-sm font-medium text-gray-700">تقييمك في التجويد*</label>
             <select name="self_evaluation" id="self_evaluation" class="select2 w-full">
                 <option value="">اختر التقييم</option>
                 <option value="60" {{ old('self_evaluation') == '60' ? 'selected' : '' }}>60%</option>

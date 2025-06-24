@@ -69,7 +69,7 @@ return [
     ],
 
     'almaher-recitation' => [
-        'navigation_label' => 'قسم الماهر',
+        'navigation_label' => 'قسم التأسيس',
         'model_label' => 'حصة تسميع',
         'plural_model_label' => ' حصص التسميع',
     ],

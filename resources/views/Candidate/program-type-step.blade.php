@@ -8,7 +8,7 @@
                 <option value="">اختر البرنامج</option>
                 <option value="maqraa" {{ old('program_type') == 'maqraa' ? 'selected' : '' }}>برنامج المقرأة</option>
                 <option value="mutqin" {{ old('program_type') == 'mutqin' ? 'selected' : '' }}>برنامج المتقن</option>
-                <option value="mahir"  {{ old('program_type') == 'mahir' ? 'selected' : '' }}>برنامج الماهر</option>
+                <option value="mahir"  {{ old('program_type') == 'mahir' ? 'selected' : '' }}>برنامج التأسيس</option>
             </select>
         </div>
 
