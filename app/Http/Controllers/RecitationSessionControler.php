@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AlMaherRecitation;
 use App\Models\AlMaqraaRecitation;
 use App\Models\AlMutqinRecitation;
+use App\Models\Candidate;
 use App\Models\RecitationSession;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -35,6 +36,7 @@ class RecitationSessionControler extends Controller
     public function downloadMaqraaReport(Request $request)
     {
         $program = 'maqraa';
+        $program_name = Candidate::getProgramTypes()[$program];
 
         $dateRange = $this->getDateRange($request, $program);
 
@@ -42,13 +44,19 @@ class RecitationSessionControler extends Controller
         $startDate = $dateRange[0];
         $endDate = $dateRange[1];
 
-        $teachersIds = $request->input('teachers');
+        $teachersIds = $request->input('teachers') ?? [];
 
-        $sessions = AlMaqraaRecitation::filterByDateRange($dateRange)->whereHas('recitationSession',function (Builder $query) use( $teachersIds) {
-            $query->whereHas('halaka',function (Builder $query) use($teachersIds) {
-                $query->whereIn('teacher_id',$teachersIds);
+        $sessionsQuery = AlMaqraaRecitation::filterByDateRange($dateRange);
+
+        if (!empty($teachersIds)) {
+            $sessionsQuery->whereHas('recitationSession', function (Builder $query) use ($teachersIds) {
+                $query->whereHas('halaka', function (Builder $query) use ($teachersIds) {
+                    $query->whereIn('teacher_id', $teachersIds);
+                });
             });
-        })->get();
+        }
+
+        $sessions = $sessionsQuery->get();
 
         $grouped = $sessions->groupBy(fn($item) => $item->recitationSession->student_id);
 
@@ -97,7 +105,7 @@ class RecitationSessionControler extends Controller
     public function downloadMahirReport(Request $request)
     {
         $program = 'mahir';
-
+        $program_name = Candidate::getProgramTypes()[$program];
 
         $dateRange = $this->getDateRange($request, $program);
 
@@ -107,11 +115,17 @@ class RecitationSessionControler extends Controller
 
         $teachersIds = $request->input('teachers');
 
-        $sessions = AlMaherRecitation::filterByDateRange($dateRange)->whereHas('recitationSession',function (Builder $query) use( $teachersIds) {
-            $query->whereHas('halaka',function (Builder $query) use($teachersIds) {
-                $query->whereIn('teacher_id',$teachersIds);
+        $sessionsQuery = AlMaherRecitation::filterByDateRange($dateRange);
+
+        if (!empty($teachersIds)) {
+            $sessionsQuery->whereHas('recitationSession', function (Builder $query) use ($teachersIds) {
+                $query->whereHas('halaka', function (Builder $query) use ($teachersIds) {
+                    $query->whereIn('teacher_id', $teachersIds);
+                });
             });
-        })->get();
+        }
+
+        $sessions = $sessionsQuery->get();
         $grouped = $sessions->groupBy(fn($item) => $item->recitationSession->student_id);
 
         $stats = AlMaherRecitation::getStatsForGroupedSessions($grouped, $startDate, $endDate);
@@ -165,13 +179,17 @@ class RecitationSessionControler extends Controller
         $teachersIds = $request->input('teachers');
 
 
-        $sessions = RecitationSession::query()->whereHas('halaka',function (Builder $query) use($teachersIds) {
-        $query->whereIn('teacher_id',$teachersIds);
-        })->when($startDate, function (Builder $query) use($startDate) {
+        $sessions = RecitationSession::query()->when($startDate, function (Builder $query) use($startDate) {
             $query->where('session_date','>=' , $startDate);
         })->when($endDate, function (Builder $query) use($endDate) {
             $query->where('session_date','<=' , $endDate);
-        })->whereHas('almaherRecitation')->with(['almaherRecitation'])->get();
+        })->whereHas('almaherRecitation')->with(['almaherRecitation']);
+
+        if (!empty($teachersIds)) {
+            $sessions = $sessions->whereHas('halaka',function (Builder $query) use($teachersIds) {
+                $query->whereIn('teacher_id',$teachersIds);
+            })->get();
+        }
 
 
 
@@ -208,6 +226,7 @@ class RecitationSessionControler extends Controller
     {
 
         $program = 'mutqin';
+        $program_name = Candidate::getProgramTypes()[$program];
 
 
         $dateRange = $this->getDateRange($request, $program);
@@ -215,11 +234,17 @@ class RecitationSessionControler extends Controller
 
         $teachersIds = $request->input('teachers');
 
-        $sessions = AlMutqinRecitation::filterByDateRange($dateRange)->whereHas('recitationSession',function (Builder $query) use( $teachersIds) {
-            $query->whereHas('halaka',function (Builder $query) use($teachersIds) {
-                $query->whereIn('teacher_id',$teachersIds);
+        $sessionsQuery = AlMutqinRecitation::filterByDateRange($dateRange);
+
+        if (!empty($teachersIds)) {
+            $sessionsQuery->whereHas('recitationSession', function (Builder $query) use ($teachersIds) {
+                $query->whereHas('halaka', function (Builder $query) use ($teachersIds) {
+                    $query->whereIn('teacher_id', $teachersIds);
+                });
             });
-        })->get();
+        }
+
+        $sessions = $sessionsQuery->get();
         $grouped = $sessions->groupBy(fn($item) => $item->recitationSession->student_id);
 
         $summary = $this->calculateMutqinStats($grouped, $dateRange[0], $dateRange[1]);
@@ -275,16 +300,18 @@ class RecitationSessionControler extends Controller
         $endDate = $request->input('end_date');
         $teachersIds = $request->input('teachers');
 
-        $sessions = RecitationSession::query()->whereHas('halaka',function (Builder $query) use($teachersIds) {
-            $query->whereIn('teacher_id',$teachersIds);
-        })
+        $sessions = RecitationSession::query()
             ->when($startDate, function (Builder $query) use($startDate) {
             $query->where('session_date','>=' , $startDate);
         })->when($endDate, function (Builder $query) use($endDate) {
             $query->where('session_date','<=' , $endDate);
-        })->whereHas('almutqinRecitation')->with(['almutqinRecitation'])->get();
+        })->whereHas('almutqinRecitation')->with(['almutqinRecitation']);
 
-
+        if (!empty($teachersIds)) {
+            $sessions = $sessions->whereHas('halaka',function (Builder $query) use($teachersIds) {
+                $query->whereIn('teacher_id',$teachersIds);
+            })->get();
+        }
 
         $html = View::make('pdf.mutqin-detailed-recitation', [
             'startDate' => $startDate,
