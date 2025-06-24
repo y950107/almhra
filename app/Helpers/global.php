@@ -186,7 +186,13 @@ if (!function_exists('acceptedCandidate')) {
                 'start_date' => now(),
             ]);
 
-            $candidate->update(['status' => 'accepted'], ['evaluated' => true]);
+            $candidate->update([
+                'status' => 'accepted',
+                'evaluated' => true
+            ]);
+
+           Evaluation::where('candidate_id',$candidate->id)
+                ->update(['status' => 'passed']);
 
             DB::commit();
 
@@ -288,10 +294,10 @@ if (!function_exists('evaluateCandidate')) {
                     ->success()
                     ->send();
             } else {
-
+                DB::beginTransaction();
                 $evaluation->update(['status' => 'failed']);
                 $evaluation->candidate->update(['status' => 'pending','evaluated' => true]);
-
+                DB::commit();
                 // إرسال إشعار إلى البريد الإلكتروني للمترشح (بدون إنشاء حساب)
                 $evaluation->candidate->notify(new CandidateEvaluationNotification(
                     'pending',

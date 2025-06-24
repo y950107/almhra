@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Enums\CandidateStatus;
+use App\Enums\EvaluationStatus;
 use App\Filament\Resources\CandidateResource\Pages;
 use App\Models\Candidate;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
@@ -234,7 +235,12 @@ class CandidateResource extends Resource implements HasShieldPermissions
                     ->sortable()
                     ->toggleable()
                     ->formatStateUsing(fn($state) => $state instanceof CandidateStatus ? __('filament.candidate.status.' . $state->value) : __('filament.candidate.status.unknown'))
-                    ->badge(),
+                    ->badge()
+                    ->color(fn(CandidateStatus $state) => match ($state) {
+                        CandidateStatus::PENDING => 'warning',
+                        CandidateStatus::INTERVIEW => 'info',
+                        CandidateStatus::ACCEPTED => 'success',
+                    }),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('filament.candidate.fields.created_at'))

@@ -56,7 +56,7 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                 Forms\Components\Select::make('candidate_id')
                     ->label('المترشح')
                     ->relationship('candidate', 'full_name',modifyQueryUsing: function (Builder $query) {
-                        $query->where('evaluated',false);
+                        $query->whereDoesntHave('student');
                     })
                     ->disabledOn('edit')
                     ->required(),
@@ -115,6 +115,8 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                 Forms\Components\Hidden::make('status')
                     ->label('الحالة')
                     ->default(fn($get) => ($get('total_score') >= 80 ? 'passed' : 'pending')),
+
+
             ]);
     }
 
