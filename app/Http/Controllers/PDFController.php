@@ -59,8 +59,9 @@ class PDFController extends Controller
         // Optionally filter by date range
         $from = $request->input('start_date');
         $to = $request->input('end_date');
-
-        $students = Student::with(['recitationSessions' => function ($query) use ($from, $to) {
+        $teachersIds = $request->input('teachers');
+        $students = Student::query()->whereIn('teacher_id',$teachersIds)
+            ->with(['recitationSessions' => function ($query) use ($from, $to) {
             if ($from && $to) {
                 $query->whereBetween('session_date', [$from, $to]);
             }
@@ -136,14 +137,18 @@ class PDFController extends Controller
 
     public function downloadStudentsReport(Request $request)
     {
+
         $from = $request->input('start_date');
         $to = $request->input('end_date');
-
-        $students = Student::query()->when($from, function (Builder $query) use($from) {
+        $teachersIds = $request->input('teachers');
+        $students = Student::query()->whereIn('teacher_id',$teachersIds)
+            ->when($from, function (Builder $query) use($from) {
             $query->whereDate('start_date','>=',$from);
         })->when($to, function (Builder $query) use($to) {
             $query->whereDate('start_date','<=',$to);
         })->get();
+
+
 
         $html = View::make('pdf.students', compact('students'))->render();
 

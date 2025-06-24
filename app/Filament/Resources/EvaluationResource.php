@@ -55,7 +55,9 @@ class EvaluationResource extends Resource implements HasShieldPermissions
             ->schema([
                 Forms\Components\Select::make('candidate_id')
                     ->label('المترشح')
-                    ->relationship('candidate', 'full_name')
+                    ->relationship('candidate', 'full_name',modifyQueryUsing: function (Builder $query) {
+                        $query->where('evaluated',false);
+                    })
                     ->disabledOn('edit')
                     ->required(),
 

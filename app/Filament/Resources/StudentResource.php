@@ -5,7 +5,9 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\StudentResource\Pages;
 use App\Filament\Resources\StudentResource\RelationManagers;
 use App\Models\Candidate;
+use App\Models\Halaka;
 use App\Models\Student;
+use App\Models\Teacher;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Carbon\Carbon;
 use Filament\Forms;
@@ -16,6 +18,7 @@ use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
 use IbrahimBougaoua\FilaProgress\Tables\Columns\CircleProgress;
+use Mpdf\Tag\Select;
 
 class StudentResource extends Resource implements HasShieldPermissions
 {
@@ -160,11 +163,19 @@ class StudentResource extends Resource implements HasShieldPermissions
                         DatePicker::make('end_date')
                             ->default(Carbon::now()->endOfYear())
                             ->label('إلى تاريخ'),
+
+                        Forms\Components\Select::make('teachers')
+                            ->label('المعلم')
+                            ->options(Teacher::pluck('name','id'))
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
                     ])
                     ->action(function (array $data) {
                         return redirect()->route('students-presence.pdf-download', [
                             'start_date' => $data['start_date'] ?? null,
                             'end_date' => $data['end_date'] ?? null,
+                            'teachers' => $data['teachers'] ?? [],
                         ]);
                     }),
                 Action::make('generate_pdf')
@@ -180,11 +191,22 @@ class StudentResource extends Resource implements HasShieldPermissions
                         DatePicker::make('end_date')
                             ->default(Carbon::now()->endOfYear())
                             ->label('إلى تاريخ'),
+
+                        Forms\Components\Select::make('teachers')
+                            ->label('المعلمين')
+                        ->options(Teacher::pluck('name','id'))
+                        ->multiple()
+                        ->searchable()
+                        ->preload()
+
                     ])
                     ->action(function (array $data) {
+
                         return redirect()->route('students.pdf-download', [
                             'start_date' => $data['start_date'] ?? null,
                             'end_date' => $data['end_date'] ?? null,
+                            'teachers' => $data['teachers'] ?? [],
+
                         ]);
                     })
             ]);

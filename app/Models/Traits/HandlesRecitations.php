@@ -13,7 +13,7 @@ trait HandlesRecitations
     {
         return static::whereHas('recitationSession', fn ($q) =>
         $q->whereBetween('session_date', [$range[0], $range[1]])
-        )->with(['recitationSession.student'])->get();
+        )->with(['recitationSession.student']);
     }
 
     public static function forStudentWithin(array $range, int $studentId)

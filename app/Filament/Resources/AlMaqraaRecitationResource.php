@@ -7,6 +7,7 @@ use App\Filament\Resources\AlMaqraaRecitationResource\RelationManagers;
 use App\Models\AlMaqraaRecitation;
 use App\Models\Halaka;
 use App\Models\RecitationSession;
+use App\Models\Teacher;
 use App\Services\Moshaf_madina_Service;
 use App\Settings\GeneralSettings;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
@@ -496,12 +497,21 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                             ->label('إلى تاريخ')
                             ->visible(fn($get) => $get('time_range') === 'custom')
                             ->required(fn($get) => $get('time_range') === 'custom'),
+
+                        Forms\Components\Select::make('teachers')
+                            ->label('المعلمين')
+                            ->options(Teacher::pluck('name','id'))
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
                     ])
                     ->action(function (array $data) {
                         return redirect()->route('recitations.pdf-download-almaqraa-report', [
                             'time_range' => $data['time_range'],
                             'start_date' => $data['start_date'] ?? null,
                             'end_date' => $data['end_date'] ?? null,
+                            'teachers' => $data['teachers'] ?? [],
+
                         ]);
                     })
             ])->filters([

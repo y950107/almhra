@@ -7,6 +7,7 @@ use App\Filament\Resources\AlMutqinRecitationResource\RelationManagers;
 use App\Models\AlMutqinRecitation;
 use App\Models\Halaka;
 use App\Models\RecitationSession;
+use App\Models\Teacher;
 use App\Services\Moshaf_madina_Service;
 use App\Settings\GeneralSettings;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
@@ -676,12 +677,22 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                             ->label('إلى تاريخ')
                             ->visible(fn($get) => $get('time_range') === 'custom')
                             ->required(fn($get) => $get('time_range') === 'custom'),
+
+
+                        Forms\Components\Select::make('teachers')
+                            ->label('المعلمين')
+                            ->options(Teacher::pluck('name','id'))
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
                     ])
                     ->action(function (array $data) {
                         return redirect()->route('recitations.pdf-download-almutqin-report', [
                             'time_range' => $data['time_range'],
                             'start_date' => $data['start_date'] ?? null,
                             'end_date' => $data['end_date'] ?? null,
+                            'teachers' => $data['teachers'] ?? [],
+
                         ]);
                     }),
                 Action::make('generate_detailed_pdf')
@@ -694,12 +705,21 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                             ->label('من تاريخ'),
 
                         DatePicker::make('end_date')
-                            ->label('إلى تاريخ')
+                            ->label('إلى تاريخ'),
+
+
+                        Forms\Components\Select::make('teachers')
+                            ->label('المعلمين')
+                            ->options(Teacher::pluck('name','id'))
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
                     ])
                     ->action(function (array $data) {
                         return redirect()->route('recitations.pdf-download-almutqin-detailed-report', [
                             'start_date' => $data['start_date'] ?? null,
                             'end_date' => $data['end_date'] ?? null,
+                            'teachers' => $data['teachers'] ?? [],
                         ]);
                     })
             ])->filters([

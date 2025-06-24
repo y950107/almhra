@@ -96,7 +96,9 @@ class AlMaherRecitationResource extends \App\Filament\Resources\AlMaherRecitatio
                                             ->relationship(
                                                 name: 'student',
                                                 titleAttribute: 'id',
-                                                modifyQueryUsing: fn($query) => $query->whereHas('candidate', function ($q) {
+                                                modifyQueryUsing: fn($query) => $query
+                                                    ->where('teacher_id',auth()->user()?->teacher?->id)
+                                                    ->whereHas('candidate', function ($q) {
                                                     $q->where('program_type', 'mahir');
                                                 }),
                                             )

@@ -99,7 +99,9 @@ class AlMaqraaRecitationResource extends \App\Filament\Resources\AlMaqraaRecitat
                                         ->relationship(
                                             name: 'student',
                                             titleAttribute: 'id',
-                                            modifyQueryUsing: fn($query) => $query->whereHas('candidate', function ($q) {
+                                            modifyQueryUsing: fn(Builder $query) => $query
+                                                ->where('teacher_id',auth()->user()?->teacher?->id)
+                                                ->whereHas('candidate', function ($q) {
                                                 $q->where('program_type', 'maqraa');
                                             }),
                                         )

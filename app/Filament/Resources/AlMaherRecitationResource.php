@@ -8,6 +8,7 @@ use App\Models\AlMaherRecitation;
 use App\Models\Halaka;
 use App\Models\RecitationSession;
 use App\Models\Student;
+use App\Models\Teacher;
 use App\Services\Moshaf_madina_Service;
 use App\Settings\GeneralSettings;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
@@ -511,12 +512,23 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                             ->label('إلى تاريخ')
                             ->visible(fn($get) => $get('time_range') === 'custom')
                             ->required(fn($get) => $get('time_range') === 'custom'),
+
+                        Forms\Components\Select::make('teachers')
+                            ->label('المعلمين')
+                            ->options(Teacher::pluck('name','id'))
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
+
+
                     ])
                     ->action(function (array $data) {
                         return redirect()->route('recitations.pdf-download-almahir-report', [
                             'time_range' => $data['time_range'],
                             'start_date' => $data['start_date'] ?? null,
                             'end_date' => $data['end_date'] ?? null,
+                            'teachers' => $data['teachers'] ?? [],
+
                         ]);
                     }),
                 Action::make('generate_detailed_pdf')
@@ -529,12 +541,21 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                             ->label('من تاريخ'),
 
                         DatePicker::make('end_date')
-                            ->label('إلى تاريخ')
+                            ->label('إلى تاريخ'),
+
+                        Forms\Components\Select::make('teachers')
+                            ->label('المعلمين')
+                            ->options(Teacher::pluck('name','id'))
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
                     ])
                     ->action(function (array $data) {
                         return redirect()->route('recitations.pdf-download-almahir-detailed-report', [
                             'start_date' => $data['start_date'] ?? null,
                             'end_date' => $data['end_date'] ?? null,
+                            'teachers' => $data['teachers'] ?? [],
+
                         ]);
                     })
             ])->filters([
