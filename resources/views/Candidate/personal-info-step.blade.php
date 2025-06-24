@@ -4,7 +4,7 @@
         <legend class="text-lg font-semibold text-blue-600">المعلومات الشخصية</legend>
         <!-- الاسم الكامل -->
         <div class="mb-4">
-            <label for="full_name" class="block text-sm font-medium text-gray-700">الاسم الكامل (حسب الهوية)*</label>
+            <label for="full_name" class="block text-sm font-medium text-gray-700">الاسم الكامل رباعي (حسب الهوية)*</label>
             <input type="text" name="full_name" id="full_name" value="{{ old('full_name') }}"
                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
         </div>
@@ -12,7 +12,7 @@
         <!-- رقم الهوية -->
         <div class="mb-4">
             <label for="national_id" class="block text-sm font-medium text-gray-700">رقم الهوية*</label>
-            <input type="text" name="national_id" id="national_id" value="{{ old('national_id') }}"
+            <input type="number" name="national_id" id="national_id" value="{{ old('national_id') }}"
                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
         </div>
 
@@ -26,8 +26,17 @@
         <!-- رقم الجوال -->
         <div class="mb-4">
             <label for="phone" class="block text-sm font-medium text-gray-700">رقم الجوال*</label>
-            <input type="text" name="phone" id="phone" value="{{ old('phone') }}"
-                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+            <input 
+                type="tel" 
+                name="phone" 
+                id="phone" 
+                value="{{ old('phone') }}"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                pattern="^(0|966|\+966)?[0-9]{9}$"
+                placeholder="5XXXXXXXX"
+                required
+                oninput="normalizePhone(this)"
+            >
         </div>
 
         <!-- البريد الإلكتروني -->

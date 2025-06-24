@@ -153,5 +153,25 @@
                 بجامع والدة الأمير بندر بن عبد العزيز - بحي الندى . جميع الحقوق محفوظة &copy; {{ date('Y') }}</p>
         </div>
     </footer>
+    <script>
+        function normalizePhone(input) {
+            // Remove all non-digit characters
+            let phone = input.value.replace(/\D/g, '');
+        
+            // If starts with 0, remove it (Saudi numbers should start with 5)
+            if (phone.startsWith('0')) {
+                phone = phone.substring(1);
+            }
+        
+            // Ensure it's a Saudi number (9 digits after 966)
+            if (phone.length === 9 && phone.startsWith('5')) {
+                // Optional: Add country code (966) if needed
+                // phone = '966' + phone;
+            }
+        
+            // Update the input value
+            input.value = phone;
+        }
+        </script>
     </body>
 </html>

@@ -26,7 +26,7 @@
             </div>
 
             <div id="desc_mahir">
-                <h4 class="font-bold text-green-700">برنامج الماهر</h4>
+                <h4 class="font-bold text-green-700">برنامج التأسيس</h4>
                 <p>يختص بتصحيح وتأسيس الطالب  فيركز على الجودة في أحكام التجويد ومخارج الحروف وصفاته.</p>
             </div>
         </div>
