@@ -2,21 +2,23 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\CandidateStatus;
-use App\Enums\EvaluationStatus;
-use App\Filament\Resources\CandidateResource\Pages;
-use App\Models\Candidate;
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Carbon\Carbon;
 use Filament\Forms;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Tabs;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
+use App\Models\Candidate;
+use Filament\Tables\Table;
+use App\Enums\CandidateStatus;
+use App\Enums\EvaluationStatus;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Tabs;
+use Filament\Tables\Actions\Action;
+use Filament\Forms\Components\Section;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
-use Filament\Tables\Table;
+use Filament\Forms\Components\CheckboxList;
+use App\Filament\Resources\CandidateResource\Pages;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
 class CandidateResource extends Resource implements HasShieldPermissions
 {
@@ -223,12 +225,16 @@ class CandidateResource extends Resource implements HasShieldPermissions
                     ->formatStateUsing(fn($state) => __('filament.candidate.levels.' . $state))
                     ->sortable()
                     ->toggleable(),
-
-                Tables\Columns\IconColumn::make('has_ijaza')
-                    ->label(__('filament.candidate.fields.has_ijaza'))
-                    ->boolean()
+                Tables\Columns\TextColumn::make('self_evaluation')
+                    ->label(__('filament.candidate.fields.tajweed_level'))
                     ->sortable()
                     ->toggleable(),
+
+                // Tables\Columns\IconColumn::make('has_ijaza')
+                //     ->label(__('filament.candidate.fields.has_ijaza'))
+                //     ->boolean()
+                //     ->sortable()
+                //     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('status')
                     ->label(__('filament.candidate.fields.status'))
@@ -322,7 +328,23 @@ class CandidateResource extends Resource implements HasShieldPermissions
 
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
-            ]);
+            ])
+            ->headerActions([
+                Action::make('generate_pdf')
+                ->label('تصدير PDF')
+                ->icon('icon-halaka')
+                ->color('success')
+                ->form([
+                    CheckboxList::make('candidates_id')
+                        ->label('اختر المترشحين')
+                        ->options(Candidate::pluck('full_name', 'id')->toArray())
+                        ->columns(2)
+                        ->bulkToggleable() // ✅ خاصية "تحديد الجميع"
+                        ->searchable(),
+                ])
+                ->action(function (array $data) {
+                    return redirect()->route('candidates.pdf-download', ['candidates_id' => $data['candidates_id']]);
+                }), ]);;
     }
 
     public static function getRelations(): array

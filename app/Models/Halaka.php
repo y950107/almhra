@@ -36,14 +36,15 @@ class Halaka extends Model
         return $this->hasManyThrough(Student::class, RecitationSession::class, 'halaka_id', 'id', 'id', 'student_id');
     }
 
-
     public function getStudentsCountAttribute()
     {
-        $getcount = $this->students()->count();
-        if ($getcount > 0) {
-            return $getcount .'/'. app(GeneralSettings::class)->students_per_group .' '.'طالب';
-        }
-        return  $getcount .'/'. app(GeneralSettings::class)->students_per_group .' '.'طالب';
+            try {
+                $count = $this->students()->count();
+                $max = app(GeneralSettings::class)->students_per_group;
+                return "$count/$max طالب";
+            } catch (\Exception $e) {
+                return '0/0 طالب (خطأ)';
+            }
     }
 
     public function getStatusAttribute()

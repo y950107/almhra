@@ -37,7 +37,7 @@ Route::get('/candidate', [CandidateController::class, 'create'])->name('candidat
 
 // POST route to process the submitted form
 Route::post('/candidate', [CandidateController::class, 'store'])->name('candidate.store');
-
+Route::get('/candidates/pdf-download', action: [PDFController::class, 'downloadCandidatesReport'])->name('candidates.pdf-download');
 /* Route::get('/test-update', function () {
     $user = Auth::user();
 
@@ -94,6 +94,7 @@ Route::get('/recitations/pdf-download-almahir-report/detailed', [RecitationSessi
 Route::get('/recitations/pdf-download-almutqin-report', [RecitationSessionControler::class, 'downloadMutqinReport'])->name('recitations.pdf-download-almutqin-report');
 Route::get('/recitations/pdf-download-almutqin-report/detailed', [RecitationSessionControler::class, 'downloadMutqinDetailedReport'])->name('recitations.pdf-download-almutqin-detailed-report');
 
+Route::get('/evaluations/pdf-download', action: [PDFController::class, 'downloadEvaluationsReport'])->name('evaluations.pdf-download');
 
 
 // Route::get('language/{locale}', function (string $locale) {

@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Evaluation;
+use Mpdf\Mpdf;
 use App\Models\Student;
 use App\Models\Teacher;
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\Candidate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
-use Mpdf\Mpdf;
+use Illuminate\Database\Eloquent\Builder;
 
 class PDFController extends Controller
 {
@@ -50,6 +52,70 @@ class PDFController extends Controller
         return response()->streamDownload(
             fn() => print($mpdf->Output('', 'I')),
             'قائمة-المعلمين.pdf'
+        );
+    }
+    public function downloadCandidatesReport(Request $request)
+    {
+        $candidates_id = $request->input('teacher_ids', []);
+
+        $candidates = Candidate::when(!empty($candidates_id), function ($query) use ($candidates_id) {
+            $query->whereIn('id', $candidates_id);
+        })->get();
+
+        $html = View::make('pdf.candidates', compact('candidates'))->render();
+
+        $mpdf = new Mpdf([
+            'tempDir' => storage_path('tempdir'),
+            'mode' => 'utf-8',
+            'format' => 'A4-L',
+            'default_font' => 'Cairo',
+            'dpi' => 300,
+            'autoScriptToLang' => true,
+            'autoLangToFont' => true,
+            'margin_top' => 10,
+            'margin_bottom' => 10,
+            'margin_left' => 5,
+            'margin_right' => 5,
+            'shrink_tables_to_fit' => 1,
+        ]);
+
+        $mpdf->WriteHTML($html);
+
+        return response()->streamDownload(
+            fn() => print($mpdf->Output('', 'I')),
+            'قائمة-المترشحين.pdf'
+        );
+    }
+    public function downloadEvaluationsReport(Request $request)
+    {
+        $evaluations_id = $request->input('teacher_ids', []);
+
+        $evaluations = Evaluation::when(!empty($evaluations_id), function ($query) use ($evaluations_id) {
+            $query->whereIn('id', $evaluations_id);
+        })->get();
+
+        $html = View::make('pdf.evaluations', compact('evaluations'))->render();
+
+        $mpdf = new Mpdf([
+            'tempDir' => storage_path('tempdir'),
+            'mode' => 'utf-8',
+            'format' => 'A4-L',
+            'default_font' => 'Cairo',
+            'dpi' => 300,
+            'autoScriptToLang' => true,
+            'autoLangToFont' => true,
+            'margin_top' => 10,
+            'margin_bottom' => 10,
+            'margin_left' => 5,
+            'margin_right' => 5,
+            'shrink_tables_to_fit' => 1,
+        ]);
+
+        $mpdf->WriteHTML($html);
+
+        return response()->streamDownload(
+            fn() => print($mpdf->Output('', 'I')),
+            'قائمة التقييم.pdf'
         );
     }
 

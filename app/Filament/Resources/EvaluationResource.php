@@ -2,17 +2,19 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\EvaluationStatus;
-use App\Filament\Resources\EvaluationResource\Pages;
-use App\Models\Evaluation;
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Form;
+use App\Models\Evaluation;
 use Filament\Tables\Table;
+use App\Enums\EvaluationStatus;
+use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\CheckboxList;
+use App\Filament\Resources\EvaluationResource\Pages;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
 
 class EvaluationResource extends Resource implements HasShieldPermissions
@@ -195,7 +197,30 @@ class EvaluationResource extends Resource implements HasShieldPermissions
 
                 Tables\Actions\DeleteAction::make()
 
-            ]);
+            ])
+            ->headerActions([
+                Action::make('generate_pdf')
+                ->label('تصدير PDF')
+                ->icon('icon-halaka')
+                ->color('success')
+                // ->form([
+                //     CheckboxList::make('evaluations_id')
+                //     ->label('اختر مقابلات التقييم')
+                //     ->options(
+                //         Evaluation::with(['candidate' => fn($query) => $query->select('id', 'full_name')])->get()
+                //     )
+                //     ->getOptionLabelFromRecordUsing(function (Evaluation $record) {
+                //         return $record->candidate->full_name ?? 'Unknown'; // Access through relationship
+                //     })
+                //     ->columns(2)
+                //     ->bulkToggleable()
+                //     ->searchable()
+                // ])
+                ->action(function (array $data) {
+                    return redirect()->route('evaluations.pdf-download');
+                }), 
+            ])
+            ;
     }
 
     public static function getRelations(): array

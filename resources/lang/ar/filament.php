@@ -112,7 +112,8 @@ return [
             'email' => 'البريد الإلكتروني',
             'birthdate' => 'تاريخ الميلاد',
             'qualification' => 'المؤهل العلمي',
-            'quran_level' => 'المستوى القرآني',
+            'quran_level' => 'المستوى في الحفظ',
+            'tajweed_level' => 'المستوى في التجويد',
             'desired_recitations' => 'القراءات المرغوبة',
             'self_evaluation' => 'تقييم ذاتي',
             'has_ijaza' => 'هل لديه إجازة؟',
@@ -144,6 +145,8 @@ return [
             'interview' => 'مقابلة',
             'accepted' => 'مقبول',
             'rejected' => 'مرفوض',
+            'passed' => 'ناجح',
+            'failed' => 'لم ينجح',
             'unknown' => 'غير معروف',
         ],
 
