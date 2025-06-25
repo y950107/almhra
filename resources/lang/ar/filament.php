@@ -145,7 +145,7 @@ return [
             'interview' => 'مقابلة',
             'accepted' => 'مقبول',
             'rejected' => 'مرفوض',
-            'passed' => 'ناجح',
+            'passed' => 'مقبول',
             'failed' => 'لم ينجح',
             'unknown' => 'غير معروف',
         ],

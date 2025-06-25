@@ -19,6 +19,7 @@
         </thead>
         <tbody>
         @foreach($candidates as $index => $candidate)
+      
             <tr>
                 <td>{{ $index + 1 }}</td>
                 <td>{{ $candidate->full_name }}</td>
@@ -28,7 +29,10 @@
                 <td>{{ __('filament.candidate.levels.' .$candidate->quran_level)}}</td>
                 <td>{{ $candidate->self_evaluation }}</td>
                 @php
-                    $status = $candidate->self_evaluation instanceof \App\Enums\CandidateStatus ? __('filament.candidate.status.' . $candidate->self_evaluation) : __('filament.candidate.status.unknown')
+                    $status = $candidate->status instanceof \App\Enums\CandidateStatus 
+                    ? __('filament.candidate.status.' . $candidate->status->value) 
+                    : 
+                    __('filament.candidate.status.unknown')
                 @endphp
                 <td>{{ $status}}</td>
                 <td>{{ date("d M Y",strtotime($candidate->created_at))}}</td>
