@@ -190,8 +190,8 @@ class GeneralSettingsPage extends SettingsPage
                                             ])
                                             ->columns(),
 
-                                        Forms\Components\Section::make('برنامج الماهر')
-                                            ->description('اعدادات برنامج الماهر')
+                                        Forms\Components\Section::make('برنامج التأسيس')
+                                            ->description('اعدادات برنامج التأسيس')
                                             ->schema([
                                                 Forms\Components\TextInput::make('mahir_monthly_target')
                                                     ->label('عدد الاوجه الشهري')

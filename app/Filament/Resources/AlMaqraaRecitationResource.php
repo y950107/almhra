@@ -207,6 +207,7 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                                                 })
                                                 ->toArray()
                                         )
+                                        ->required(fn (Forms\Get $get): bool => $get('present') === 'present')
                                         ->visible(fn (Forms\Get $get): bool => $get('present') === 'present'),
                                 ])->relationship('recitationSession')->columns()->statePath('recitationSession')->dehydrated(),
 
@@ -221,6 +222,7 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                                 ->options(fn() => collect($quranService->getSurahs())->pluck('name', 'id'))
                                 ->reactive()
                                 ->live()
+                                ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                 ->afterStateUpdated(fn($get, $set) => $set('start_ayah_id', null)),
 
                             Select::make('start_ayah_id')
@@ -275,7 +277,8 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                                         $set('pages', $targetPages);
                                     }
 
-                                }),
+                                })
+                                ->visible(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
 
 
                             Select::make('end_surah_id')
@@ -283,6 +286,7 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                                 ->options(fn() => collect($quranService->getSurahs())->pluck('name', 'id'))
                                 ->reactive()
                                 ->live()
+                                ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                 ->afterStateUpdated(fn($get, $set) => $set('end_ayah_id', null)),
 
                             Select::make('end_ayah_id')
@@ -341,24 +345,28 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                                         $set('pages', $targetPages);
                                     }
 
-                                }),
+                                })
+                                ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
 
                             TextInput::make('start_page')
                                 ->label('صفحة البداية')
                                 ->numeric()
-                                ->disabled(),
+                                ->disabled()
+                                ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
 
                             TextInput::make('end_page')
                                 ->label('صفحة النهاية')
                                 ->numeric()
-                                ->disabled(),
+                                ->disabled()
+                                ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
 
 
                             TextInput::make('pages')
                                 ->label('عدد الاوجه')
                                 ->numeric()
                                 ->disabled()
-                                ->dehydrated(),
+                                ->dehydrated()
+                                ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
                         ]),
 
 
@@ -366,33 +374,36 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                         // تقييمات المعلم
                         Tabs\Tab::make('تقييمات المعلم')
                             ->visible(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
-                ->schema([
+                            ->schema([
 
-                    Forms\Components\Group::make([
-                        TextInput::make('tajweed_score')
-                            ->numeric()
-                            ->minValue(0)
-                            ->maxValue(100)
-                            ->suffix('من 100')
-                            ->label('درجة التجويد'),
+                                Forms\Components\Group::make([
+                                    TextInput::make('tajweed_score')
+                                        ->numeric()
+                                        ->minValue(0)
+                                        ->maxValue(100)
+                                        ->suffix('من 100')
+                                        ->label('درجة التجويد')
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
 
-                        TextInput::make('fluency_score')
-                            ->numeric()
-                            ->minValue(0)
-                            ->maxValue(100)
-                            ->suffix('من 100')
-                            ->label('درجة الطلاقة'),
+                                    TextInput::make('fluency_score')
+                                        ->numeric()
+                                        ->minValue(0)
+                                        ->maxValue(100)
+                                        ->suffix('من 100')
+                                        ->label('درجة الطلاقة')
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
 
-                        TextInput::make('memory_score')
-                            ->numeric()
-                            ->minValue(0)
-                            ->maxValue(100)
-                            ->suffix('من 100')
-                            ->label('درجة الحفظ'),
-                        ])->relationship('recitationSession')->statePath('recitationSession')->dehydrated()
+                                    TextInput::make('memory_score')
+                                        ->numeric()
+                                        ->minValue(0)
+                                        ->maxValue(100)
+                                        ->suffix('من 100')
+                                        ->label('درجة الحفظ')
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
+                                    ])->relationship('recitationSession')->statePath('recitationSession')->dehydrated()
 
 
-                ]),
+                            ]),
                         //  الملاحظات العامة
                         Tabs\Tab::make('الملاحظات العامة')->schema([
                             Textarea::make('evaluation_notes')->label('ملاحظات المعلم'),
@@ -498,12 +509,12 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                             ->visible(fn($get) => $get('time_range') === 'custom')
                             ->required(fn($get) => $get('time_range') === 'custom'),
 
-                        Forms\Components\Select::make('teachers')
+                         Forms\Components\CheckboxList::make('teachers')
                             ->label('المعلمين')
                             ->options(Teacher::pluck('name','id'))
-                            ->multiple()
-                            ->searchable()
-                            ->preload()
+                            ->columns(2)
+                            ->bulkToggleable() 
+                            ->searchable(),
                     ])
                     ->action(function (array $data) {
                         return redirect()->route('recitations.pdf-download-almaqraa-report', [
@@ -518,7 +529,13 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                 // Filter by student
                 SelectFilter::make('student_id')
                     ->label('الطالب')
-                    ->relationship('recitationSession.student.candidate', 'full_name'),
+                    // ->relationship('recitationSession.student.candidate', 'full_name')
+                    ->relationship(
+                        name: 'recitationSession.student.candidate',
+                        titleAttribute: 'id',
+                        modifyQueryUsing: fn($query) => $query->where('program_type', 'maqraa'),
+                    )
+                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->full_name}") ,
 
                 // Filter by date from
                 Filter::make('from_date')

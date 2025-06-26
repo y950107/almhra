@@ -188,7 +188,9 @@ class AlMaqraaRecitationResource extends \App\Filament\Resources\AlMaqraaRecitat
                                                     return [$value => $value];
                                                 })
                                                 ->toArray()
-                                        )                                        ->visible(fn (Forms\Get $get): bool => $get('present') === 'present'),
+                                        )
+                                        ->required(fn (Forms\Get $get): bool => $get('present') === 'present')
+                                        ->visible(fn (Forms\Get $get): bool => $get('present') === 'present'),
                                 ])->relationship('recitationSession')->columns()->statePath('recitationSession')->dehydrated(),
 
                         ]),
@@ -202,6 +204,7 @@ class AlMaqraaRecitationResource extends \App\Filament\Resources\AlMaqraaRecitat
                                     ->options(fn() => collect($quranService->getSurahs())->pluck('name', 'id'))
                                     ->reactive()
                                     ->live()
+                                    ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                     ->afterStateUpdated(fn($get, $set) => $set('start_ayah_id', null)),
 
                                 Select::make('start_ayah_id')
@@ -218,6 +221,7 @@ class AlMaqraaRecitationResource extends \App\Filament\Resources\AlMaqraaRecitat
                                     )
                                     ->reactive()
                                     ->live()
+                                    ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                     ->afterStateHydrated(function ($get, $set) use ($quranService) {
 
                                         if ($get('start_surah_id') && $get('start_ayah_id')) {
@@ -264,6 +268,7 @@ class AlMaqraaRecitationResource extends \App\Filament\Resources\AlMaqraaRecitat
                                     ->options(fn() => collect($quranService->getSurahs())->pluck('name', 'id'))
                                     ->reactive()
                                     ->live()
+                                    ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                     ->afterStateUpdated(fn($get, $set) => $set('end_ayah_id', null)),
 
                                 Select::make('end_ayah_id')
@@ -280,6 +285,7 @@ class AlMaqraaRecitationResource extends \App\Filament\Resources\AlMaqraaRecitat
                                     )
                                     ->reactive()
                                     ->live()
+                                    ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                     ->afterStateHydrated(function ($get, $set,string $operation) use ($quranService) {
                                         // حساب عدد الأسطر
                                         if ($operation === 'edit') {
@@ -327,11 +333,13 @@ class AlMaqraaRecitationResource extends \App\Filament\Resources\AlMaqraaRecitat
                                 TextInput::make('start_page')
                                     ->label('صفحة البداية')
                                     ->numeric()
+                                    ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                     ->disabled(),
 
                                 TextInput::make('end_page')
                                     ->label('صفحة النهاية')
                                     ->numeric()
+                                    ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                     ->disabled(),
 
 
@@ -339,6 +347,7 @@ class AlMaqraaRecitationResource extends \App\Filament\Resources\AlMaqraaRecitat
                                     ->label('عدد الاوجه')
                                     ->numeric()
                                     ->disabled()
+                                    ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                     ->dehydrated(),
                             ]),
 
@@ -356,21 +365,24 @@ class AlMaqraaRecitationResource extends \App\Filament\Resources\AlMaqraaRecitat
                                         ->minValue(0)
                                         ->maxValue(100)
                                         ->suffix('من 100')
-                                        ->label('درجة التجويد'),
+                                        ->label('درجة التجويد')
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
 
                                     TextInput::make('fluency_score')
                                         ->numeric()
                                         ->minValue(0)
                                         ->maxValue(100)
                                         ->suffix('من 100')
-                                        ->label('درجة الطلاقة'),
+                                        ->label('درجة الطلاقة')
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
 
                                     TextInput::make('memory_score')
                                         ->numeric()
                                         ->minValue(0)
                                         ->maxValue(100)
                                         ->suffix('من 100')
-                                        ->label('درجة الحفظ'),
+                                        ->label('درجة الحفظ')
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
                                 ])->relationship('recitationSession')->statePath('recitationSession')->dehydrated()
 
 

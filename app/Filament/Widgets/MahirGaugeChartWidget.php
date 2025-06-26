@@ -36,7 +36,7 @@ class MahirGaugeChartWidget extends Widget
             : 0;
 
         return [
-            'title' => 'نسبة الإنجاز برنامج الماهر',
+            'title' => 'نسبة الإنجاز برنامج التأسيس',
             'value' => $average,
             'chartId' => 'gauge-chart-' . $this->getId(),
         ];

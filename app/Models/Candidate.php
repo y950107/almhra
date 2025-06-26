@@ -59,7 +59,7 @@ class Candidate extends Model
 
     public static function getProgramTypes(): array
     {
-        return ['maqraa' => 'برنامج المقرأة', 'mutqin' => 'برنامج المتقن', 'mahir' => 'برنامج الماهر'];
+        return ['maqraa' => 'برنامج المقرأة', 'mutqin' => 'برنامج المتقن', 'mahir' => 'برنامج التأسيس'];
     }
 
     public static function getQuranLevels(): array

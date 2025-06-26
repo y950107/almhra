@@ -207,7 +207,9 @@ class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitat
                                                         return [$value => $value];
                                                     })
                                                     ->toArray()
-                                            )                                            ->visible(fn (Forms\Get $get): bool => $get('present') === 'present'),
+                                            )
+                                            ->required(fn (Forms\Get $get): bool => $get('present') === 'present')
+                                            ->visible(fn (Forms\Get $get): bool => $get('present') === 'present'),
                                     ])->relationship('recitationSession')->columns()->statePath('recitationSession')->dehydrated(),
 
                                 ]),
@@ -221,6 +223,7 @@ class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitat
                                         ->options(fn() => collect($quranService->getSurahs())->pluck('name', 'id'))
                                         ->reactive()
                                         ->live()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->afterStateUpdated(fn($get, $set) => $set('mem_start_ayah_id', null)),
 
                                     Select::make('mem_start_ayah_id')
@@ -237,6 +240,7 @@ class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitat
                                         )
                                         ->reactive()
                                         ->live()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->afterStateHydrated(function ($get, $set) use ($quranService) {
 
                                             if ($get('mem_start_surah_id') && $get('mem_start_ayah_id')) {
@@ -283,6 +287,7 @@ class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitat
                                         ->options(fn() => collect($quranService->getSurahs())->pluck('name', 'id'))
                                         ->reactive()
                                         ->live()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->afterStateUpdated(fn($get, $set) => $set('mem_end_ayah_id', null)),
 
                                     Select::make('mem_end_ayah_id')
@@ -299,6 +304,7 @@ class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitat
                                         )
                                         ->reactive()
                                         ->live()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->afterStateHydrated(function ($get, $set,string $operation) use ($quranService) {
                                             // حساب عدد الأسطر
                                             if ($operation === 'edit') {
@@ -346,17 +352,20 @@ class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitat
                                     TextInput::make('mem_start_page')
                                         ->label('صفحة البداية')
                                         ->numeric()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->disabled(),
 
                                     TextInput::make('mem_end_page')
                                         ->label('صفحة النهاية')
                                         ->numeric()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->disabled(),
 
 
                                     TextInput::make('mem_pages')
                                         ->label('عدد الاوجه')
                                         ->numeric()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->disabled()
                                         ->dehydrated(),
                                 ]),
@@ -369,6 +378,7 @@ class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitat
                                         ->options(fn() => collect($quranService->getSurahs())->pluck('name', 'id'))
                                         ->reactive()
                                         ->live()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->afterStateUpdated(fn($get, $set) => $set('rev_start_ayah_id', null)),
 
                                     Select::make('rev_start_ayah_id')
@@ -385,6 +395,7 @@ class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitat
                                         )
                                         ->reactive()
                                         ->live()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->afterStateHydrated(function ($get, $set) use ($quranService) {
 
                                             if ($get('rev_start_surah_id') && $get('rev_start_ayah_id')) {
@@ -431,6 +442,7 @@ class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitat
                                         ->options(fn() => collect($quranService->getSurahs())->pluck('name', 'id'))
                                         ->reactive()
                                         ->live()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->afterStateUpdated(fn($get, $set) => $set('rev_end_ayah_id', null)),
 
                                     Select::make('rev_end_ayah_id')
@@ -447,6 +459,7 @@ class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitat
                                         )
                                         ->reactive()
                                         ->live()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->afterStateHydrated(function ($get, $set,string $operation) use ($quranService) {
                                             // حساب عدد الأسطر
                                             if ($operation === 'edit') {
@@ -494,11 +507,13 @@ class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitat
                                     TextInput::make('rev_start_page')
                                         ->label('صفحة البداية')
                                         ->numeric()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->disabled(),
 
                                     TextInput::make('rev_end_page')
                                         ->label('صفحة النهاية')
                                         ->numeric()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->disabled(),
 
 
@@ -506,6 +521,7 @@ class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitat
                                         ->label('عدد الاوجه')
                                         ->numeric()
                                         ->disabled()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->dehydrated(),
                                 ]),
 
@@ -515,6 +531,7 @@ class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitat
                                     Select::make('lesson_type')
                                         ->label('الدرس المصاحب ')
                                         ->options(AlMutqinRecitation::getLessonTypes())
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->columnSpanFull(),
 
                                     TextInput::make('lesson_title')
@@ -536,21 +553,24 @@ class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitat
                                             ->minValue(0)
                                             ->maxValue(100)
                                             ->suffix('من 100')
-                                            ->label('درجة التجويد'),
+                                            ->label('درجة التجويد')
+                                            ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
 
                                         TextInput::make('fluency_score')
                                             ->numeric()
                                             ->minValue(0)
                                             ->maxValue(100)
                                             ->suffix('من 100')
-                                            ->label('درجة الطلاقة'),
+                                            ->label('درجة الطلاقة')
+                                            ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
 
                                         TextInput::make('memory_score')
                                             ->numeric()
                                             ->minValue(0)
                                             ->maxValue(100)
                                             ->suffix('من 100')
-                                            ->label('درجة الحفظ'),
+                                            ->label('درجة الحفظ')
+                                            ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
                                     ])->relationship('recitationSession')->statePath('recitationSession')->dehydrated()
 
 

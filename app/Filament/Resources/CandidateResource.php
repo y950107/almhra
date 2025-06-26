@@ -344,7 +344,7 @@ class CandidateResource extends Resource implements HasShieldPermissions
                 ])
                 ->action(function (array $data) {
                     return redirect()->route('candidates.pdf-download', ['candidates_id' => $data['candidates_id']]);
-                }), ]);;
+                }), ]);
     }
 
     public static function getRelations(): array

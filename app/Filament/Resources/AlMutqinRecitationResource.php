@@ -224,7 +224,9 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                                         return [$value => $value];
                                                     })
                                                     ->toArray()
-                                            )                                            ->visible(fn (Forms\Get $get): bool => $get('present') === 'present'),
+                                            )  
+                                            ->required(fn (Forms\Get $get): bool => $get('present') === 'present')                                          
+                                            ->visible(fn (Forms\Get $get): bool => $get('present') === 'present'),
                                     ])->relationship('recitationSession')->columns()->statePath('recitationSession')->dehydrated(),
 
                                 ]),
@@ -238,6 +240,7 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                         ->options(fn() => collect($quranService->getSurahs())->pluck('name', 'id'))
                                         ->reactive()
                                         ->live()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->afterStateUpdated(fn($get, $set) => $set('mem_start_ayah_id', null)),
 
                                     Select::make('mem_start_ayah_id')
@@ -254,6 +257,7 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                         )
                                         ->reactive()
                                         ->live()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->afterStateHydrated(function ($get, $set) use ($quranService) {
 
                                             if ($get('mem_start_surah_id') && $get('mem_start_ayah_id')) {
@@ -300,6 +304,7 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                         ->options(fn() => collect($quranService->getSurahs())->pluck('name', 'id'))
                                         ->reactive()
                                         ->live()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->afterStateUpdated(fn($get, $set) => $set('mem_end_ayah_id', null)),
 
                                     Select::make('mem_end_ayah_id')
@@ -316,6 +321,7 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                         )
                                         ->reactive()
                                         ->live()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->afterStateHydrated(function ($get, $set,string $operation) use ($quranService) {
                                             // حساب عدد الأسطر
                                             if ($operation === 'edit') {
@@ -363,19 +369,22 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                     TextInput::make('mem_start_page')
                                         ->label('صفحة البداية')
                                         ->numeric()
-                                        ->disabled(),
+                                        ->disabled()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
 
                                     TextInput::make('mem_end_page')
                                         ->label('صفحة النهاية')
                                         ->numeric()
-                                        ->disabled(),
+                                        ->disabled()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
 
 
                                     TextInput::make('mem_pages')
                                         ->label('عدد الاوجه')
                                         ->numeric()
                                         ->disabled()
-                                        ->dehydrated(),
+                                        ->dehydrated()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
                                 ]),
 
                             Tabs\Tab::make('نتائج المراجعة')
@@ -386,6 +395,7 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                         ->options(fn() => collect($quranService->getSurahs())->pluck('name', 'id'))
                                         ->reactive()
                                         ->live()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->afterStateUpdated(fn($get, $set) => $set('rev_start_ayah_id', null)),
 
                                     Select::make('rev_start_ayah_id')
@@ -402,6 +412,7 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                         )
                                         ->reactive()
                                         ->live()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->afterStateHydrated(function ($get, $set) use ($quranService) {
 
                                             if ($get('rev_start_surah_id') && $get('rev_start_ayah_id')) {
@@ -448,6 +459,7 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                         ->options(fn() => collect($quranService->getSurahs())->pluck('name', 'id'))
                                         ->reactive()
                                         ->live()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->afterStateUpdated(fn($get, $set) => $set('rev_end_ayah_id', null)),
 
                                     Select::make('rev_end_ayah_id')
@@ -464,6 +476,7 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                         )
                                         ->reactive()
                                         ->live()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->afterStateHydrated(function ($get, $set,string $operation) use ($quranService) {
                                             // حساب عدد الأسطر
                                             if ($operation === 'edit') {
@@ -511,11 +524,13 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                     TextInput::make('rev_start_page')
                                         ->label('صفحة البداية')
                                         ->numeric()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->disabled(),
 
                                     TextInput::make('rev_end_page')
                                         ->label('صفحة النهاية')
                                         ->numeric()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->disabled(),
 
 
@@ -523,6 +538,7 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                         ->label('عدد الاوجه')
                                         ->numeric()
                                         ->disabled()
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->dehydrated(),
                                 ]),
 
@@ -532,11 +548,13 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                     Select::make('lesson_type')
                                         ->label('الدرس المصاحب ')
                                         ->options(AlMutqinRecitation::getLessonTypes())
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->columnSpanFull(),
 
                                     TextInput::make('lesson_title')
                                         ->label('عنوان الدرس المصاحب')
                                         ->required(fn($get) => $get('lesson_type') !== null)
+                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                         ->columnSpanFull(),
 
                                 ]),
@@ -553,6 +571,7 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                             ->minValue(0)
                                             ->maxValue(100)
                                             ->suffix('من 100')
+                                            ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                             ->label('درجة التجويد'),
 
                                         TextInput::make('fluency_score')
@@ -560,6 +579,7 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                             ->minValue(0)
                                             ->maxValue(100)
                                             ->suffix('من 100')
+                                            ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                             ->label('درجة الطلاقة'),
 
                                         TextInput::make('memory_score')
@@ -567,6 +587,7 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                             ->minValue(0)
                                             ->maxValue(100)
                                             ->suffix('من 100')
+                                            ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
                                             ->label('درجة الحفظ'),
                                     ])->relationship('recitationSession')->statePath('recitationSession')->dehydrated()
                                 ]),
@@ -679,12 +700,12 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                             ->required(fn($get) => $get('time_range') === 'custom'),
 
 
-                        Forms\Components\Select::make('teachers')
+                         Forms\Components\CheckboxList::make('teachers')
                             ->label('المعلمين')
                             ->options(Teacher::pluck('name','id'))
-                            ->multiple()
-                            ->searchable()
-                            ->preload()
+                            ->columns(2)
+                            ->bulkToggleable() 
+                            ->searchable(),
                     ])
                     ->action(function (array $data) {
                         return redirect()->route('recitations.pdf-download-almutqin-report', [
@@ -708,12 +729,12 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                             ->label('إلى تاريخ'),
 
 
-                        Forms\Components\Select::make('teachers')
+                         Forms\Components\CheckboxList::make('teachers')
                             ->label('المعلمين')
                             ->options(Teacher::pluck('name','id'))
-                            ->multiple()
-                            ->searchable()
-                            ->preload()
+                            ->columns(2)
+                            ->bulkToggleable() 
+                            ->searchable(),
                     ])
                     ->action(function (array $data) {
                         return redirect()->route('recitations.pdf-download-almutqin-detailed-report', [
@@ -726,7 +747,12 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                 // Filter by student
                 SelectFilter::make('student_id')
                     ->label('الطالب')
-                    ->relationship('recitationSession.student.candidate', 'full_name'),
+                    ->relationship(
+                        name: 'recitationSession.student.candidate',
+                        titleAttribute: 'id',
+                        modifyQueryUsing: fn($query) => $query->where('program_type', 'mutqin'),
+                    )
+                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->full_name}") ,
 
                 // Filter by date from
                 Filter::make('from_date')
