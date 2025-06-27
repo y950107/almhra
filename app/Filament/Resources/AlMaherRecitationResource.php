@@ -2,33 +2,34 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\AlMaherRecitationResource\Pages;
-use App\Filament\Resources\AlMaherRecitationResource\RelationManagers;
-use App\Models\AlMaherRecitation;
+use Filament\Forms;
 use App\Models\Halaka;
-use App\Models\RecitationSession;
 use App\Models\Student;
 use App\Models\Teacher;
-use App\Services\Moshaf_madina_Service;
-use App\Settings\GeneralSettings;
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
-use Filament\Forms;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Tabs;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Get;
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables\Actions\Action;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Enums\FiltersLayout;
-use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
+use Filament\Resources\Resource;
+use App\Models\AlMaherRecitation;
+use App\Models\RecitationSession;
+use App\Settings\GeneralSettings;
+use Filament\Forms\Components\Tabs;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Section;
+use App\Services\Moshaf_madina_Service;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\AlMaherRecitationResource\Pages;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
+use App\Filament\Resources\AlMaherRecitationResource\RelationManagers;
 
 class AlMaherRecitationResource extends Resource implements HasShieldPermissions
 {
@@ -118,9 +119,14 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                                             ->relationship(
                                                 name: 'student',
                                                 titleAttribute: 'id',
-                                                modifyQueryUsing: fn($query) => $query->whereHas('candidate', function ($q) {
-                                                    $q->where('program_type', 'mahir');
-                                                }),
+                                                modifyQueryUsing: function (Builder $query, Get $get) {
+                                                    return $query
+                                                        ->whereHas('candidate', fn($q) => $q->where('program_type', 'maqraa'))
+                                                        ->when(
+                                                            $get('halaka_id'),
+                                                            fn($query) => $query->where('teacher_id', Halaka::find($get('halaka_id'))?->teacher_id)
+                                                        );
+                                                }
                                             )
                                             ->getOptionLabelFromRecordUsing(fn(Student $record) => "{$record->candidate->full_name}")
                                             ->label('الطالب')
@@ -528,7 +534,7 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
 
                         Forms\Components\CheckboxList::make('teachers')
                             ->label('المعلمين')
-                            ->options(Teacher::pluck('name','id'))
+                            ->options(Teacher::where('program_type','mahir')->pluck('name','id'))
                             ->columns(2)
                             ->bulkToggleable() 
                             ->searchable(),

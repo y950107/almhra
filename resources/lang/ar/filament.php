@@ -123,6 +123,7 @@ return [
             'teacher' => 'المعلم',
             'status' => 'الحالة',
             'created_at' => 'تاريخ الإنشاء',
+            'program' => 'البرنامج',
         ],
 
         'levels' => [

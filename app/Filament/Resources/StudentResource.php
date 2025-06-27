@@ -2,23 +2,24 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\StudentResource\Pages;
-use App\Filament\Resources\StudentResource\RelationManagers;
-use App\Models\Candidate;
+use Carbon\Carbon;
+use Filament\Forms;
+use Filament\Tables;
+use Mpdf\Tag\Select;
 use App\Models\Halaka;
 use App\Models\Student;
 use App\Models\Teacher;
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
-use Carbon\Carbon;
-use Filament\Forms;
-use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Get;
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Actions\Action;
+use App\Models\Candidate;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
+use Filament\Forms\Components\DatePicker;
+use App\Filament\Resources\StudentResource\Pages;
+use App\Filament\Resources\StudentResource\RelationManagers;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use IbrahimBougaoua\FilaProgress\Tables\Columns\CircleProgress;
-use Mpdf\Tag\Select;
 
 class StudentResource extends Resource implements HasShieldPermissions
 {
@@ -163,13 +164,23 @@ class StudentResource extends Resource implements HasShieldPermissions
                         DatePicker::make('end_date')
                             ->default(Carbon::now()->endOfYear())
                             ->label('إلى تاريخ'),
-
-                        Forms\Components\Select::make('teachers')
-                            ->label('المعلم')
-                            ->options(Teacher::pluck('name','id'))
-                            ->multiple()
-                            ->searchable()
-                            ->preload()
+                        Forms\Components\Select::make('program_type')
+                            ->label('البرنامج')
+                            ->options(Candidate::getProgramTypes())
+                            ->reactive()
+                            ->live(),
+                        Forms\Components\CheckboxList::make('teachers')
+                            ->label('اختر المترشحين')
+                            ->options(function (Get $get) {
+                                return Teacher::when($get('program_type'), function ($query) use ($get) {
+                                    $query->where('program_type', $get('program_type'));
+                                })
+                                ->pluck('name', 'id')
+                                ->toArray();
+                            })
+                            ->columns(2)
+                            ->bulkToggleable()
+                            ->searchable(),
                     ])
                     ->action(function (array $data) {
                         return redirect()->route('students-presence.pdf-download', [
@@ -191,13 +202,23 @@ class StudentResource extends Resource implements HasShieldPermissions
                         DatePicker::make('end_date')
                             ->default(Carbon::now()->endOfYear())
                             ->label('إلى تاريخ'),
-
-                        Forms\Components\Select::make('teachers')
-                            ->label('المعلمين')
-                        ->options(Teacher::pluck('name','id'))
-                        ->multiple()
-                        ->searchable()
-                        ->preload()
+                        Forms\Components\Select::make('program_type')
+                            ->label('البرنامج')
+                            ->options(Candidate::getProgramTypes())
+                            ->reactive()
+                            ->live(),
+                        Forms\Components\CheckboxList::make('teachers')
+                            ->label('اختر المترشحين')
+                            ->options(function (Get $get) {
+                                return Teacher::when($get('program_type'), function ($query) use ($get) {
+                                    $query->where('program_type', $get('program_type'));
+                                })
+                                ->pluck('name', 'id')
+                                ->toArray();
+                            })
+                            ->columns(2)
+                            ->bulkToggleable()
+                            ->searchable(),
 
                     ])
                     ->action(function (array $data) {

@@ -59,12 +59,12 @@ trait HandlesRecitations
                 'absences' => $absences,
                 'registration_month' => Carbon::parse($student->start_date)->getTranslatedMonthName(),
                 'avg_evaluation_score' => round($avgScore,1),
-                'start_surah_id' => $first->start_surah_id ?? null,
-                'start_surah_name' =>  $first->start_surah_id ? getSurahName($first->start_surah_id) : "",
-                'start_ayah_id' => $first->start_ayah_id ?? null,
-                'end_surah_id' => $last->end_surah_id ?? null,
-                'end_surah_name' => $last->end_surah_id ? getSurahName($last->end_surah_id): "",
-                'end_ayah_id' => $last->end_ayah_id ?? null,
+                'start_surah_id' => $first?->start_surah_id ?? null,
+                'start_surah_name' =>  $first?->start_surah_id ? getSurahName($first?->start_surah_id) : "",
+                'start_ayah_id' => $first?->start_ayah_id ?? null,
+                'end_surah_id' => $last?->end_surah_id ?? null,
+                'end_surah_name' => $last?->end_surah_id ? getSurahName($last?->end_surah_id): "",
+                'end_ayah_id' => $last?->end_ayah_id ?? null,
                 'pages_read' => $pagesRead,
                 'monthly_target' =>  $monthlyTarget,
                 'monthly_percentage' => $monthlyTarget > 0 ? round($pagesRead / $monthlyTarget * 100,1) : 0,
@@ -78,7 +78,7 @@ trait HandlesRecitations
     public static function summarizeStats(array $stats): array
     {
         $totalPages = array_sum(array_column($stats, 'pages_read'));
-        $totalTarget = array_sum(array_column($stats, 'monthly_target'));
+        $totalTarget = request()['time_range'] =="monthly" ? array_sum(array_column($stats, 'monthly_target')) : array_sum(array_column($stats, 'monthly_target')) * 12;
         $totalCumulativePages = array_sum(array_column($stats, 'cumulative_pages'));
         $totalCumulativeTarget = array_sum(array_column($stats, 'cumulative_target'));
         $totalAbsences = array_sum(array_column($stats, 'absences'));
@@ -96,8 +96,6 @@ trait HandlesRecitations
             'total_cumulative_percentage' => $totalCumulativeTarget > 0 ? round($totalCumulativePages / $totalCumulativeTarget * 100,1) : 0,
         ];
     }
-
-
 
     public static function getAyahText($surah_id , $ayah_id)
     {

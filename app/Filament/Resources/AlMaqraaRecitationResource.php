@@ -2,32 +2,33 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\AlMaqraaRecitationResource\Pages;
-use App\Filament\Resources\AlMaqraaRecitationResource\RelationManagers;
-use App\Models\AlMaqraaRecitation;
-use App\Models\Halaka;
-use App\Models\RecitationSession;
-use App\Models\Teacher;
-use App\Services\Moshaf_madina_Service;
-use App\Settings\GeneralSettings;
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Tabs;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
+use App\Models\Halaka;
+use App\Models\Teacher;
+use Filament\Forms\Get;
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables\Actions\Action;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Enums\FiltersLayout;
-use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
+use Filament\Resources\Resource;
+use App\Models\RecitationSession;
+use App\Settings\GeneralSettings;
+use App\Models\AlMaqraaRecitation;
+use Filament\Forms\Components\Tabs;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Section;
+use App\Services\Moshaf_madina_Service;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\AlMaqraaRecitationResource\Pages;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
+use App\Filament\Resources\AlMaqraaRecitationResource\RelationManagers;
 
 class AlMaqraaRecitationResource extends Resource implements HasShieldPermissions
 {
@@ -116,13 +117,18 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                                         ->default(today())
                                         ->required(),
 
-                                    Select::make('student_id')
+                                        Select::make('student_id')
                                         ->relationship(
                                             name: 'student',
                                             titleAttribute: 'id',
-                                            modifyQueryUsing: fn($query) => $query->whereHas('candidate', function ($q) {
-                                                $q->where('program_type', 'maqraa');
-                                            }),
+                                            modifyQueryUsing: function (Builder $query, Get $get) {
+                                                return $query
+                                                    ->whereHas('candidate', fn($q) => $q->where('program_type', 'maqraa'))
+                                                    ->when(
+                                                        $get('halaka_id'),
+                                                        fn($query) => $query->where('teacher_id', Halaka::find($get('halaka_id'))?->teacher_id)
+                                                    );
+                                            }
                                         )
                                         ->getOptionLabelFromRecordUsing(fn($record) => "{$record->candidate->full_name}")
                                         ->label('الطالب')
@@ -371,39 +377,39 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
 
 
 
-                        // تقييمات المعلم
                         Tabs\Tab::make('تقييمات المعلم')
-                            ->visible(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
-                            ->schema([
-
-                                Forms\Components\Group::make([
-                                    TextInput::make('tajweed_score')
-                                        ->numeric()
-                                        ->minValue(0)
-                                        ->maxValue(100)
-                                        ->suffix('من 100')
-                                        ->label('درجة التجويد')
-                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
-
-                                    TextInput::make('fluency_score')
-                                        ->numeric()
-                                        ->minValue(0)
-                                        ->maxValue(100)
-                                        ->suffix('من 100')
-                                        ->label('درجة الطلاقة')
-                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
-
-                                    TextInput::make('memory_score')
-                                        ->numeric()
-                                        ->minValue(0)
-                                        ->maxValue(100)
-                                        ->suffix('من 100')
-                                        ->label('درجة الحفظ')
-                                        ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
-                                    ])->relationship('recitationSession')->statePath('recitationSession')->dehydrated()
-
-
-                            ]),
+                        ->visible(fn (Get $get): bool => $get('recitationSession.present') === 'present')
+                        ->schema([
+                            Forms\Components\Group::make([
+                                TextInput::make('tajweed_score')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->maxValue(100)
+                                    ->suffix('من 100')
+                                    ->label('درجة التجويد')
+                                    ->required(fn (Get $get): bool => $get('recitationSession.present') === 'present'),
+                    
+                                TextInput::make('fluency_score')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->maxValue(100)
+                                    ->suffix('من 100')
+                                    ->label('درجة الطلاقة')
+                                    ->required(fn (Get $get): bool => $get('recitationSession.present') === 'present'),
+                    
+                                TextInput::make('memory_score')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->maxValue(100)
+                                    ->suffix('من 100')
+                                    ->label('درجة الحفظ')
+                                    ->required(fn (Get $get): bool => $get('recitationSession.present') === 'present'),
+                            ])
+                            // Remove these lines as they're incorrectly placed here:
+                            // ->relationship('recitationSession')
+                            // ->statePath('recitationSession')
+                            // ->dehydrated()
+                        ]),
                         //  الملاحظات العامة
                         Tabs\Tab::make('الملاحظات العامة')->schema([
                             Textarea::make('evaluation_notes')->label('ملاحظات المعلم'),
@@ -511,7 +517,7 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
 
                          Forms\Components\CheckboxList::make('teachers')
                             ->label('المعلمين')
-                            ->options(Teacher::pluck('name','id'))
+                            ->options(Teacher::where('program_type','maqraa')->pluck('name','id'))
                             ->columns(2)
                             ->bulkToggleable() 
                             ->searchable(),

@@ -11,7 +11,9 @@
             <th>رقم الهوية</th>
             <th>{{__('filament.candidate.fields.email')}}</th>
             <th>{{__('filament.candidate.fields.phone')}}</th>
+            <th>{{__('filament.candidate.fields.program')}}</th>
             <th>{{__('filament.candidate.fields.quran_level')}}</th>
+            
             <th>{{__('filament.candidate.fields.tajweed_level')}}</th>
             <th>{{__('filament.candidate.fields.status')}}</th>
             <th>{{__('filament.candidate.fields.created_at')}}</th>
@@ -26,6 +28,7 @@
                 <td>{{ $candidate->national_id }}</td>
                 <td>{{ $candidate->email }}</td>
                 <td>{{ $candidate->phone }}</td>
+                <td>{{ \App\Models\Candidate::getProgramTypes()[$candidate->program_type] ?? 'غير معروف' }}</td>
                 <td>{{ __('filament.candidate.levels.' .$candidate->quran_level)}}</td>
                 <td>{{ $candidate->self_evaluation }}</td>
                 @php

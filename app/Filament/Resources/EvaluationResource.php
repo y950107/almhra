@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\CheckboxList;
 use App\Filament\Resources\EvaluationResource\Pages;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
+use App\Models\Candidate;
 
 
 class EvaluationResource extends Resource implements HasShieldPermissions
@@ -136,7 +137,13 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                     ->label('البريد الالكتروني')
                     ->searchable()
                     ->sortable(),
-
+                Tables\Columns\TextColumn::make('candidate.program_type')
+                    ->formatStateUsing(fn($state) => Candidate::getProgramTypes()[$state] ?? 'غير معروف')
+                    ->label('البرنامج')
+                    ->sortable()
+                    ->searchable()
+                    ->badge()
+                    ->color('info'),
                 Tables\Columns\TextColumn::make('evaluator.name')
                     ->label('المقيم')
                     ->searchable()

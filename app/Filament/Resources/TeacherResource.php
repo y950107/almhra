@@ -2,18 +2,19 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\TeacherResource\Pages;
-use App\Models\Candidate;
-use App\Models\Teacher;
 use Filament\Forms;
-use Filament\Forms\Components\CheckboxList;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Teacher;
+use Filament\Forms\Get;
+use Filament\Forms\Form;
+use App\Models\Candidate;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Illuminate\Validation\Rules;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
-use Illuminate\Validation\Rules;
+use Filament\Forms\Components\CheckboxList;
+use App\Filament\Resources\TeacherResource\Pages;
 
 class TeacherResource extends Resource
 {
@@ -220,12 +221,23 @@ class TeacherResource extends Resource
                 ->icon('icon-halaka')
                 ->color('success')
                 ->form([
-                    CheckboxList::make('teacher_ids')
-                        ->label('اختر المعلمين')
-                        ->options(Teacher::pluck('name', 'id')->toArray())
-                        ->columns(2)
-                        ->bulkToggleable() // ✅ خاصية "تحديد الجميع"
-                        ->searchable(),
+                    Forms\Components\Select::make('program_type')
+                            ->label('البرنامج')
+                            ->options(Candidate::getProgramTypes())
+                            ->reactive()
+                            ->live(),
+                        Forms\Components\CheckboxList::make('teacher_ids')
+                            ->label('اختر المترشحين')
+                            ->options(function (Get $get) {
+                                return Teacher::when($get('program_type'), function ($query) use ($get) {
+                                    $query->where('program_type', $get('program_type'));
+                                })
+                                ->pluck('name', 'id')
+                                ->toArray();
+                            })
+                            ->columns(2)
+                            ->bulkToggleable()
+                            ->searchable(),
                 ])
                 ->action(function (array $data) {
                     return redirect()->route('teachers.pdf-download', ['teacher_ids' => $data['teacher_ids']]);

@@ -219,7 +219,13 @@ class CandidateResource extends Resource implements HasShieldPermissions
                 Tables\Columns\TextColumn::make('national_id')->label('رقم الهوية')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('email')->label(__('filament.candidate.fields.email'))->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('phone')->label(__('filament.candidate.fields.phone'))->searchable()->sortable(),
-
+                Tables\Columns\TextColumn::make('program_type')
+                ->formatStateUsing(fn($state) => Candidate::getProgramTypes()[$state] ?? 'غير معروف')
+                ->label('البرنامج')
+                ->sortable()
+                ->searchable()
+                ->badge()
+                ->color('info'),
                 Tables\Columns\TextColumn::make('quran_level')
                     ->label(__('filament.candidate.fields.quran_level'))
                     ->formatStateUsing(fn($state) => __('filament.candidate.levels.' . $state))

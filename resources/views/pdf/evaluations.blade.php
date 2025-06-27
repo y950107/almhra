@@ -9,6 +9,7 @@
             <th>#</th>
             <th>المترشح</th>
             <th>{{__('filament.candidate.fields.email')}}</th>
+            <th>{{__('filament.candidate.fields.program')}}</th>
             <th>المقيم</th>
             <th>درجة التجويد</th>
             <th>درجة الصوت</th>
@@ -24,6 +25,7 @@
                 <td>{{ $index + 1 }}</td>
                 <td>{{ $evaluation->candidate->full_name }}</td>
                 <td>{{ $evaluation->candidate->email }}</td>
+                <td>{{ \App\Models\Candidate::getProgramTypes()[$evaluation->candidate->program_type] ?? 'غير معروف' }}</td>
                 <td>{{ $evaluation->evaluator->name }}</td>
                 <td>{{ $evaluation->tajweed_score }}</td>
                 <td>{{ $evaluation->voice_score }}</td>

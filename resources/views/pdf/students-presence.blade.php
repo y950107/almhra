@@ -8,6 +8,7 @@
         <tr>
             <th>#</th>
             <th>اسم الطالب</th>
+            <th>{{__('filament.candidate.fields.program')}}</th>
             <th>عدد الجلسات</th>
             <th>الحضور</th>
             <th>الغياب</th>
@@ -20,6 +21,7 @@
             <tr>
                 <td>{{ $index + 1 }}</td>
                 <td>{{ $student->full_name }}</td>
+                <td>{{ \App\Models\Candidate::getProgramTypes()[$student->candidate->program_type] ?? 'غير معروف' }}</td>
                 <td>{{ $student->total_sessions }}</td>
                 <td>{{ $student->presence_count }}</td>
                 <td>{{ $student->absence_count }}</td>
@@ -30,7 +32,7 @@
         </tbody>
         <tfoot class="tfoot">
         <tr>
-            <th colspan="2">المجموع الكلي</th>
+            <th colspan="3">المجموع الكلي</th>
             <th>{{ $overallStats['total_sessions'] }}</th>
             <th>{{ $overallStats['total_presence'] }}</th>
             <th>{{ $overallStats['total_absence'] }}</th>

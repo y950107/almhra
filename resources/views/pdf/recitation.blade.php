@@ -29,6 +29,9 @@
         </thead>
         <tbody>
         @foreach ($statsPerStudent as $index => $stat)
+        @php
+            $target = request()['time_range'] =="monthly" ? $stat['monthly_target'] : $stat['monthly_target'] * 12;
+        @endphp
             <tr>
                 <td>{{ $index + 1 }}</td>
                 <td>{{ $stat['student_name'] }}</td>
@@ -40,7 +43,7 @@
                 <td>{{ $stat['end_ayah_id'] }}</td>
                 <td>{{ $stat['absences'] }}</td>
                 <td>{{ $stat['pages_read'] }}</td>
-                <td>{{ $stat['monthly_target'] }}</td>
+                <td>{{ $target }}</td>
                 <td>{{ $stat['monthly_percentage'] }}%</td>
                 @if($timeRange === 'monthly')
                     <td>{{ $stat['cumulative_pages'] }}</td>
