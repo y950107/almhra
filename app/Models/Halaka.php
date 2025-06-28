@@ -39,7 +39,8 @@ class Halaka extends Model
     public function getStudentsCountAttribute()
     {
             try {
-                $count = $this->students()->count();
+                $count = $this->teacher->students()->count() ;
+                // $halaka->students()->distinct('students.id')->count('students.id')
                 $max = app(GeneralSettings::class)->students_per_group;
                 return "$count/$max طالب";
             } catch (\Exception $e) {

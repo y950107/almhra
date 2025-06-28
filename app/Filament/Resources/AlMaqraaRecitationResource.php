@@ -104,12 +104,11 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
 
                                             $halaka = Halaka::find($state);
                                             if (!$halaka) return 'الحلقة غير موجودة';
+                                            $current =$halaka->students_count;
+                                            // $current = $halaka->students()->distinct('students.id')->count('students.id');
+                                            // $max = app(GeneralSettings::class)->students_per_group;
 
-                                            $current = $halaka->students()->distinct('students.id')->count('students.id');
-
-                                            $max = app(GeneralSettings::class)->students_per_group;
-
-                                            return "الطلاب المسجلون: {$current}/{$max}";
+                                            return $current;
                                         })
                                         ->reactive(),
                                     DatePicker::make('session_date')
