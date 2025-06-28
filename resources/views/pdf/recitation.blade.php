@@ -30,7 +30,10 @@
         <tbody>
         @foreach ($statsPerStudent as $index => $stat)
         @php
-            $target = request()['time_range'] =="monthly" ? $stat['monthly_target'] : $stat['monthly_target'] * 12;
+            $monthsBetween =  round( \Carbon\Carbon::createFromDate($stat['student_start_date'])->diffInMonths(now()),2) ;
+            // $monthsBetween = $monthsBetween < 1 ? 1 : $monthsBetween;
+            $target = request()['time_range'] =="monthly" ? $stat['monthly_target'] : $stat['monthly_target'] * $monthsBetween;
+
         @endphp
             <tr>
                 <td>{{ $index + 1 }}</td>
@@ -47,6 +50,7 @@
                 <td>{{ $stat['monthly_percentage'] }}%</td>
                 @if($timeRange === 'monthly')
                     <td>{{ $stat['cumulative_pages'] }}</td>
+                    {{-- <td>{{ $monthly_target}}</td> --}}
                     <td>{{ $stat['cumulative_target'] }}</td>
                     <td>{{ $stat['cumulative_percentage'] }}%</td>
                 @endif

@@ -101,8 +101,9 @@ class Student extends Model
 
         $monthlyTarget =  $this->getActualMonthlyTargetAttribute($mem);
 
+    
         $monthsBetween =  round( $start->diffInMonths($end),2) ;
-
+        $monthsBetween = $monthsBetween < 1 ? 1 : $monthsBetween;
 
         // Dynamically resolve model class
         $modelClass = $this->getRecitationModelClass($program);

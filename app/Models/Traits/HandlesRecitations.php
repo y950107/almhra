@@ -46,9 +46,10 @@ trait HandlesRecitations
             $first = $present->sortBy('recitationSession.session_date')->first();
             $last = $present->sortByDesc('recitationSession.session_date')->first();
 
-            $progStart = max(Carbon::parse($student->start_date), $progStart);
+            // $progStart = max(Carbon::parse($student->start_date), $progStart);
+            $startDate = \Carbon\Carbon::parse($student->start_date);
 
-            $cumulative = $student->calculateProgress($progStart,$progEnd,$settings['pages']);
+            $cumulative = $student->calculateProgress($startDate,$progEnd,$settings['pages']);
 
 
 
@@ -58,6 +59,7 @@ trait HandlesRecitations
                 'teacher_name' => $recitations->first()->recitationSession->halaka->teacher->name ?? '-',
                 'absences' => $absences,
                 'registration_month' => Carbon::parse($student->start_date)->getTranslatedMonthName(),
+                'student_start_date' => $student->start_date,
                 'avg_evaluation_score' => round($avgScore,1),
                 'start_surah_id' => $first?->start_surah_id ?? null,
                 'start_surah_name' =>  $first?->start_surah_id ? getSurahName($first?->start_surah_id) : "",
