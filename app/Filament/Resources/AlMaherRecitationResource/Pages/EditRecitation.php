@@ -5,6 +5,8 @@ namespace App\Filament\Resources\AlMaherRecitationResource\Pages;
 use App\Filament\Resources\AlMaherRecitationResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use App\Models\RecitationSession;
+use Illuminate\Database\Eloquent\Model;
 
 class EditRecitation extends EditRecord
 {
@@ -21,10 +23,23 @@ class EditRecitation extends EditRecord
     {
         return AlMaherRecitationResource::getUrl();
     }
-
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $data['recitationSession'] = RecitationSession::find($data['recitation_session_id']);
+        
+      
+        $data["tajweed_score"] =  $this->record?->recitationSession?->tajweed_score;
+        $data["fluency_score"] =  $this->record?->recitationSession?->fluency_score;
+        $data["memory_score"] =  $this->record?->recitationSession?->memory_score;
+        $data["evaluation_notes"] =  $this->record?->recitationSession?->evaluation_notes;
+        $data["notes"] =  $this->record?->recitationSession?->notes;
+        
+        return $data;
+    }
     protected function mutateFormDataBeforeSave(array $data): array
     {
 
+        $session = RecitationSession::find($data['recitationSession']['id']);
         if ($data['recitationSession']['present'] !== 'present') {
             $data = [
                 'recitation_session_id' => $data['recitationSession']['id'],
@@ -37,7 +52,13 @@ class EditRecitation extends EditRecord
                 'mem_lines' =>  null,
             ];
         }
+        $data['recitationSession']["evaluation_notes"] =  $data['evaluation_notes'] ?? '';
+        $data['recitationSession']["notes"] =  $data['notes'] ?? '';
+        $data['recitationSession']["tajweed_score"] =  $data['tajweed_score'] ?? 0;
+        $data['recitationSession']["memory_score"] =  $data['memory_score'] ?? 0;
+        $data['recitationSession']["fluency_score"] =  $data['fluency_score'] ?? 0;
 
+        $session->update($data['recitationSession']);
         return parent::mutateFormDataBeforeSave($data);
 
     }

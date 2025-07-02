@@ -60,14 +60,17 @@ class AlMaherRecitationResource extends \App\Filament\Resources\AlMaherRecitatio
                                                 titleAttribute: 'name',
                                                 modifyQueryUsing: function (Builder $query) {
                                                     $maxStudents = app(GeneralSettings::class)->students_per_group;
-
-                                                    return $query->where('teacher_id',auth()->user()?->teacher?->id)
-                                                        ->where(function ($q) use ($maxStudents) {
-                                                            $q->whereHas('students', function ($q) use ($maxStudents) {
-                                                                $q->groupBy('halaka_id')
-                                                                    ->havingRaw('count(*) < ?', [$maxStudents]);
-                                                            })->orWhereDoesntHave('students');
-                                                        });
+                                                    
+                                                    return $query->where('teacher_id', auth()->user()?->teacher?->id)
+                                                        // ->where(function ($q) use ($maxStudents) {
+                                                        //     $q->whereDoesntHave('students')
+                                                        //     ->orWhereHas('students', function ($q) use ($maxStudents) {
+                                                        //         $q->select('halaka_id')
+                                                        //             ->groupBy('halaka_id')
+                                                        //             ->havingRaw('count(*) < ?', [$maxStudents]);
+                                                        //     });
+                                                        // })
+                                                        ;
                                                 }
                                             )
                                             ->label('الحلقة')
@@ -395,7 +398,11 @@ class AlMaherRecitationResource extends \App\Filament\Resources\AlMaherRecitatio
                                             ->suffix('من 100')
                                             ->label('درجة الحفظ')
                                             ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
-                                    ])->relationship('recitationSession')->statePath('recitationSession')->dehydrated()
+                                    ])
+                                    // Remove these lines as they're incorrectly placed here:
+                                    // ->relationship('recitationSession')
+                                    // ->statePath('recitationSession')
+                                    // ->dehydrated()
 
 
                                 ]),

@@ -87,7 +87,8 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                                                             $q->whereHas('students', function ($q) use ($maxStudents) {
                                                                 $q->groupBy('halaka_id')
                                                                     ->havingRaw('count(*) < ?', [$maxStudents]);
-                                                            })->orWhereDoesntHave('students');
+                                                            })
+                                                            ->orWhereDoesntHave('students');
                                                         });
                                                 }
                                             )
@@ -418,7 +419,8 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                                             ->suffix('من 100')
                                             ->label('درجة الحفظ')
                                             ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
-                                    ])->relationship('recitationSession')->statePath('recitationSession')->dehydrated()
+                                    ])
+                                    // ->relationship('recitationSession')->statePath('recitationSession')->dehydrated()
 
 
                                 ]),
