@@ -71,6 +71,8 @@ trait HandlesRecitations
                 'monthly_target' =>  $monthlyTarget,
                 'monthly_percentage' => $monthlyTarget > 0 ? round($pagesRead / $monthlyTarget * 100,1) : 0,
                 ...$cumulative,
+                'translated_lesson_title' =>  $last?->translated_lesson_title,
+                'mem_lines' =>  $last?->mem_lines,
             ];
         }
 

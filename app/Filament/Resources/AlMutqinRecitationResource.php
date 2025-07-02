@@ -83,12 +83,13 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                                     $maxStudents = app(GeneralSettings::class)->students_per_group;
 
                                                     return $query
-                                                        ->where(function ($q) use ($maxStudents) {
-                                                            $q->whereHas('students', function ($q) use ($maxStudents) {
-                                                                $q->groupBy('halaka_id')
-                                                                    ->havingRaw('count(*) < ?', [$maxStudents]);
-                                                            })->orWhereDoesntHave('students');
-                                                        });
+                                                        // ->where(function ($q) use ($maxStudents) {
+                                                        //     $q->whereHas('students', function ($q) use ($maxStudents) {
+                                                        //         $q->groupBy('halaka_id')
+                                                        //             ->havingRaw('count(*) < ?', [$maxStudents]);
+                                                        //     })->orWhereDoesntHave('students');
+                                                        // })
+                                                        ;
                                                 }
                                             )
                                             ->label('الحلقة')

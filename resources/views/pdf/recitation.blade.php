@@ -25,15 +25,21 @@
                 <th>نسبة الإنجاز</th>
             @endif
             <th>معدل التقييم</th>
+            <th>المتن</th>
+            <th>حفظ المتن</th>
+
         </tr>
         </thead>
         <tbody>
+            @php
+                $mem_lines_count=0;
+            @endphp
         @foreach ($statsPerStudent as $index => $stat)
         @php
             $monthsBetween =  round( \Carbon\Carbon::createFromDate($stat['student_start_date'])->diffInMonths(now()),2) ;
             // $monthsBetween = $monthsBetween < 1 ? 1 : $monthsBetween;
             $target = request()['time_range'] =="monthly" ? $stat['monthly_target'] : $stat['monthly_target'] * $monthsBetween;
-
+            $mem_lines_count+=$stat['mem_lines'];
         @endphp
             <tr>
                 <td>{{ $index + 1 }}</td>
@@ -47,7 +53,8 @@
                 <td>{{ $stat['absences'] }}</td>
                 <td>{{ $stat['pages_read'] }}</td>
                 <td>{{ $target }}</td>
-                <td>{{ $stat['monthly_percentage'] }}%</td>
+                 <td>{{ round(($stat['pages_read'] / ($target  == 0 ? 1 : $target) * 100)) }}%</td>
+                <!--<td>{{ $stat['monthly_percentage'] }}%</td>-->
                 @if($timeRange === 'monthly')
                     <td>{{ $stat['cumulative_pages'] }}</td>
                     {{-- <td>{{ $monthly_target}}</td> --}}
@@ -55,9 +62,10 @@
                     <td>{{ $stat['cumulative_percentage'] }}%</td>
                 @endif
                 <td>{{ $stat['avg_evaluation_score'] }}</td>
+                <td>{{ $stat['translated_lesson_title'] }}</td>
+                <td>{{ $stat['mem_lines'] }}</td>
             </tr>
         @endforeach
-
 
         </tbody>
 
@@ -74,7 +82,9 @@
                 <th>{{ $overallStats['total_cumulative_target'] }}</th>
                 <th>{{ $overallStats['total_cumulative_percentage'] }}%</th>
             @endif
-            <th>{{ $overallStats['total_score'] }}</th>
+            <th colspan="">{{ $overallStats['total_score'] }}</th>
+            <th colspan=""></th>
+            <th colspan="">{{$mem_lines_count}}</th>
         </tr>
         <tr>
 
@@ -86,8 +96,12 @@
             @if($timeRange === 'monthly')
                 <th colspan="2">عدد الاوجه</th>
 
-                <th>المؤشر العام</th>
+                <th colspan="3">المؤشر العام</th>
+            @else 
+            <th colspan=""></th>
+            <th colspan=""></th>
             @endif
+            
         </tr>
         </tfoot>
 

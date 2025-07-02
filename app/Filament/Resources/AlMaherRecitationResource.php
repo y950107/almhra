@@ -83,13 +83,14 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                                                     $maxStudents = app(GeneralSettings::class)->students_per_group;
 
                                                     return $query
-                                                        ->where(function ($q) use ($maxStudents) {
-                                                            $q->whereHas('students', function ($q) use ($maxStudents) {
-                                                                $q->groupBy('halaka_id')
-                                                                    ->havingRaw('count(*) < ?', [$maxStudents]);
-                                                            })
-                                                            ->orWhereDoesntHave('students');
-                                                        });
+                                                        // ->where(function ($q) use ($maxStudents) {
+                                                        //     $q->whereHas('students', function ($q) use ($maxStudents) {
+                                                        //         $q->groupBy('halaka_id')
+                                                        //             ->havingRaw('count(*) < ?', [$maxStudents]);
+                                                        //     })
+                                                        //     ->orWhereDoesntHave('students');
+                                                        // })
+                                                        ;
                                                 }
                                             )
                                             ->label('الحلقة')
@@ -551,33 +552,33 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
 
                         ]);
                     }),
-                Action::make('generate_detailed_pdf')
-                    ->label('تصدير تقرير مفصل')
-                    ->icon('icon-halaka')
-                    ->color('info')
-                    ->form([
+                // Action::make('generate_detailed_pdf')
+                //     ->label('تصدير تقرير مفصل')
+                //     ->icon('icon-halaka')
+                //     ->color('info')
+                //     ->form([
 
-                        DatePicker::make('start_date')
-                            ->label('من تاريخ'),
+                //         DatePicker::make('start_date')
+                //             ->label('من تاريخ'),
 
-                        DatePicker::make('end_date')
-                            ->label('إلى تاريخ'),
+                //         DatePicker::make('end_date')
+                //             ->label('إلى تاريخ'),
 
-                        Forms\Components\CheckboxList::make('teachers')
-                            ->label('المعلمين')
-                            ->options(Teacher::pluck('name','id'))
-                            ->columns(2)
-                            ->bulkToggleable() 
-                            ->searchable(),
-                    ])
-                    ->action(function (array $data) {
-                        return redirect()->route('recitations.pdf-download-almahir-detailed-report', [
-                            'start_date' => $data['start_date'] ?? null,
-                            'end_date' => $data['end_date'] ?? null,
-                            'teachers' => $data['teachers'] ?? [],
+                //         Forms\Components\CheckboxList::make('teachers')
+                //             ->label('المعلمين')
+                //             ->options(Teacher::pluck('name','id'))
+                //             ->columns(2)
+                //             ->bulkToggleable() 
+                //             ->searchable(),
+                //     ])
+                //     ->action(function (array $data) {
+                //         return redirect()->route('recitations.pdf-download-almahir-detailed-report', [
+                //             'start_date' => $data['start_date'] ?? null,
+                //             'end_date' => $data['end_date'] ?? null,
+                //             'teachers' => $data['teachers'] ?? [],
 
-                        ]);
-                    })
+                //         ]);
+                //     })
             ])->filters([
                 // Filter by student
                 SelectFilter::make('student_id')

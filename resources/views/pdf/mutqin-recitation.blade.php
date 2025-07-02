@@ -53,7 +53,8 @@
                     <td>{{ $stat['rev_end_ayah_id'] }}</td>
                     <td>{{ $stat['rev_pages_read'] }}</td>
                     <td>{{ $stat['rev_monthly_target'] }}</td>
-                    <td>{{ $stat['rev_monthly_percentage'] }}%</td>
+                    <td>{{ round(($stat['rev_pages_read'] / ($stat['rev_monthly_percentage'] == 0 ? 1 : $stat['rev_monthly_target'])) * 100 )}}%</td>
+                    {{-- <td>{{ $stat['rev_monthly_percentage'] }}%</td> --}}
                     <td>{{ $stat['avg_evaluation_score'] }}</td>
                 </tr>
             @endforeach
