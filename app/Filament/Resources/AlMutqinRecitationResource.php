@@ -121,7 +121,7 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                                 titleAttribute: 'id',
                                                 modifyQueryUsing: function (Builder $query, Get $get) {
                                                     return $query
-                                                        ->whereHas('candidate', fn($q) => $q->where('program_type', 'mutqin'))
+                                                        // ->whereHas('candidate', fn($q) => $q->where('program_type', 'mutqin'))
                                                         ->when(
                                                             $get('halaka_id'),
                                                             fn($query) => $query->where('teacher_id', Halaka::find($get('halaka_id'))?->teacher_id)
@@ -697,7 +697,23 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                             ])
                             ->required()
                             ->live(),
-
+                        Select::make('month')
+                            ->label('الشهر')
+                            ->options([    1 => 'يناير',
+                                2 => 'فبراير',
+                                3 => 'مارس',
+                                4 => 'أبريل',
+                                5 => 'مايو',
+                                6 => 'يونيو',
+                                7 => 'يوليو',
+                                8 => 'أغسطس',
+                                9 => 'سبتمبر',
+                                10 => 'أكتوبر',
+                                11 => 'نوفمبر',
+                                12 => 'ديسمبر'
+                            ])
+                            ->visible(fn($get) => $get('time_range') === 'monthly')
+                            ->required(fn($get) => $get('time_range') === 'monthly'),
                         DatePicker::make('start_date')
                             ->label('من تاريخ')
                             ->visible(fn($get) => $get('time_range') === 'custom')
@@ -719,6 +735,7 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                     ->action(function (array $data) {
                         return redirect()->route('recitations.pdf-download-almutqin-report', [
                             'time_range' => $data['time_range'],
+                            'month' => $data['month'] ?? null,
                             'start_date' => $data['start_date'] ?? null,
                             'end_date' => $data['end_date'] ?? null,
                             'teachers' => $data['teachers'] ?? [],

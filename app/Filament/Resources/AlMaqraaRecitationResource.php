@@ -123,7 +123,7 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                                             titleAttribute: 'id',
                                             modifyQueryUsing: function (Builder $query, Get $get) {
                                                 return $query
-                                                    ->whereHas('candidate', fn($q) => $q->where('program_type', 'maqraa'))
+                                                    // ->whereHas('candidate', fn($q) => $q->where('program_type', 'maqraa'))
                                                     ->when(
                                                         $get('halaka_id'),
                                                         fn($query) => $query->where('teacher_id', Halaka::find($get('halaka_id'))?->teacher_id)
@@ -504,7 +504,24 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                             ])
                             ->required()
                             ->live(),
-
+                        Select::make('month')
+                            ->label('الشهر')
+                            ->options([
+                                1 => 'يناير',
+                                2 => 'فبراير',
+                                3 => 'مارس',
+                                4 => 'أبريل',
+                                5 => 'مايو',
+                                6 => 'يونيو',
+                                7 => 'يوليو',
+                                8 => 'أغسطس',
+                                9 => 'سبتمبر',
+                                10 => 'أكتوبر',
+                                11 => 'نوفمبر',
+                                12 => 'ديسمبر'
+                            ])
+                            ->visible(fn($get) => $get('time_range') === 'monthly')
+                            ->required(fn($get) => $get('time_range') === 'monthly'),
                         DatePicker::make('start_date')
                             ->label('من تاريخ')
                             ->visible(fn($get) => $get('time_range') === 'custom')
@@ -525,6 +542,7 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                     ->action(function (array $data) {
                         return redirect()->route('recitations.pdf-download-almaqraa-report', [
                             'time_range' => $data['time_range'],
+                            'month' => $data['month'] ?? null,
                             'start_date' => $data['start_date'] ?? null,
                             'end_date' => $data['end_date'] ?? null,
                             'teachers' => $data['teachers'] ?? [],
@@ -532,35 +550,34 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                         ]);
                     })
             ])->filters([
-                // Filter by student
                 SelectFilter::make('halaka_id')
-                        ->label('الحلقة')
-                        ->options(function () {
-                            return Halaka::query()
-                                ->latest()
-                                ->pluck('name', 'id')
-                                ->toArray();
-                        })
-                        ->searchable()  // Adds search functionality for long lists
-                        ->preload()     // Loads options immediately (good for <100 items)
-                        ->query(function (Builder $query, $state) {
-                            if (filled($state['value'])) {
-                                return $query->whereHas('recitationSession',function($query) use ($state){
-                                    return $query->where('halaka_id', $state['value']);
-                                });
-                            }
-                            
-                            return $query;
-                        })
-                        ->indicateUsing(function (array $state): ?string {
-                            if (empty($state['value'])) {
-                                return null;
-                            }
-                            
-                            $halaka = Halaka::find($state['value']);
-                            return $halaka ? 'الحلقة: '.$halaka->name : null;
-                        })
-                    ,
+                ->label('الحلقة')
+                ->options(function () {
+                    return Halaka::query()
+                        ->latest()
+                        ->pluck('name', 'id')
+                        ->toArray();
+                })
+                ->searchable()  // Adds search functionality for long lists
+                ->preload()     // Loads options immediately (good for <100 items)
+                ->query(function (Builder $query, $state) {
+                    if (filled($state['value'])) {
+                        return $query->whereHas('recitationSession',function($query) use ($state){
+                            return $query->where('halaka_id', $state['value']);
+                        });
+                    }
+                    
+                    return $query;
+                })
+                ->indicateUsing(function (array $state): ?string {
+                    if (empty($state['value'])) {
+                        return null;
+                    }
+                    
+                    $halaka = Halaka::find($state['value']);
+                    return $halaka ? 'الحلقة: '.$halaka->name : null;
+                }) ,
+                // Filter by student
                 SelectFilter::make('student_id')
                     ->label('الطالب')
                     // ->relationship('recitationSession.student.candidate', 'full_name')
