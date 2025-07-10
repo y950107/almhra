@@ -121,7 +121,7 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                                 titleAttribute: 'id',
                                                 modifyQueryUsing: function (Builder $query, Get $get) {
                                                     return $query
-                                                        ->whereHas('candidate', fn($q) => $q->where('program_type', 'maqraa'))
+                                                        ->whereHas('candidate', fn($q) => $q->where('program_type', 'mutqin'))
                                                         ->when(
                                                             $get('halaka_id'),
                                                             fn($query) => $query->where('teacher_id', Halaka::find($get('halaka_id'))?->teacher_id)
@@ -753,6 +753,33 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                         ]);
                     })
             ])->filters([
+                SelectFilter::make('halaka_id')
+                ->label('الحلقة')
+                ->options(function () {
+                    return Halaka::query()
+                        ->latest()
+                        ->pluck('name', 'id')
+                        ->toArray();
+                })
+                ->searchable()  // Adds search functionality for long lists
+                ->preload()     // Loads options immediately (good for <100 items)
+                ->query(function (Builder $query, $state) {
+                    if (filled($state['value'])) {
+                        return $query->whereHas('recitationSession',function($query) use ($state){
+                            return $query->where('halaka_id', $state['value']);
+                        });
+                    }
+                    
+                    return $query;
+                })
+                ->indicateUsing(function (array $state): ?string {
+                    if (empty($state['value'])) {
+                        return null;
+                    }
+                    
+                    $halaka = Halaka::find($state['value']);
+                    return $halaka ? 'الحلقة: '.$halaka->name : null;
+                }) ,
                 // Filter by student
                 SelectFilter::make('student_id')
                     ->label('الطالب')

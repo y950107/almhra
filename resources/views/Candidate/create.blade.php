@@ -8,7 +8,7 @@
         <h1 class="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-6">تقديم الطلب للمترشحين</h1>
 
         @if (session()->has('success'))
-            <div class="mb-4 p-4 bag-green-100 text-green-600 rounded">
+            <div class="mb-4 p-4 bg-green-100 text-green-600 rounded  w-full max-w-2xl m-auto">
                 {{session()->get('success')}}
             </div>
             <script>
@@ -23,7 +23,7 @@
             </script>
         @endif
         @if ($errors->any())
-            <div class="mb-4 p-4 bg-red-100 text-red-600 rounded">
+            <div class="mb-4 p-4 bg-red-100 text-red-600 rounded  w-full max-w-2xl m-auto">
                 <ul class="list-disc list-inside text-sm">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
@@ -104,9 +104,20 @@
 
                 if (selected === 'maqraa') {
                     $('#maqraa_fields').removeClass('hidden');
+                    $('#has_ijaza').attr('required', true);
+                    $('#desired_recitation').attr('required', true);
+                    $('#audio_recitation').attr('required', true);
+                    $('#self_evaluation').attr('required', true);
+                    $('#quran_level').attr('required', true);
                     $('#maqraa_file').removeClass('hidden');
                 } else {
                     $('#maqraa_fields').addClass('hidden');
+                    $('#has_ijaza').attr('required', false);
+                    $('#desired_recitation').attr('required', false);
+                    $('#maqraa_file').attr('required', false);
+                    $('#self_evaluation').attr('required', false);
+                    $('#quran_level').attr('required', false);
+                    $('#audio_recitation').attr('required', false);
                     $('#maqraa_file').addClass('hidden');
                 }
             }).trigger('change');
@@ -203,6 +214,12 @@
             var fileInput = document.getElementById(inputId);
             var fileName = fileInput.files.length > 0 ? fileInput.files[0].name : 'لم يتم اختيار ملف';
             document.getElementById(outputId).textContent = fileName;
+            const button = fileInput.closest('.relative').querySelector('button[type="button"]');
+    
+            if (button) {
+                button.classList.remove('border-red-500', 'bg-red-50');
+                button.classList.add('border-gray-300', 'bg-purple-50');
+            }
         }
 
         function showStep(stepToShow) {
@@ -332,6 +349,49 @@
         // Run on page load in case of old() data
         window.addEventListener('DOMContentLoaded', toggleIjazaTypes);
     </script>
+    <script>
+        function validateFileInput(input) {
+            console.log(input.getAttribute('id'));
+            const button = input.getAttribute('id') =="qualification_file" ? document.getElementById('file_upload_button') : document.getElementById('file_upload_button2');
+            const fileNameDisplay = document.getElementById('qualification_file_name');
+    
+            if (input.hasAttribute('required') && !input.value) {
+                // Apply error styles to button
+                button.classList.add('border-red-500', 'bg-red-50');
+                button.classList.remove('border-gray-300', 'bg-purple-50');
+                valid = false;
+                 Swal.fire({
+                    title: 'يرجى إكمال البيانات',
+                    text: 'يجب تعبئة جميع الحقول المطلوبة قبل الانتقال.',
+                    icon: 'warning',
+                    confirmButtonText: 'حسنًا'
+                });
+            } else {
+                // Remove error styles
+                button.classList.remove('border-red-500', 'bg-red-50');
+                button.classList.add('border-gray-300', 'bg-purple-50');
+                
+                // Update file name display if file is selected
+                if (input.files.length > 0) {
+                    fileNameDisplay.textContent = input.files[0].name;
+                }
+            }
+        }
+        
+        // Add initial validation on form submit
+        document.querySelector('#submit-form').addEventListener('click', function(e) {
+           
+            const fileInput = document.getElementById('qualification_file');
+            const audio_recitation = document.getElementById('audio_recitation');
+            validateFileInput(fileInput);
+            validateFileInput(audio_recitation);
+            
+            if (!fileInput.value && fileInput.hasAttribute('required')) {
+                e.preventDefault(); // Prevent form submission
+            }
+        });
+    </script>
+    
 
 @endsection
 

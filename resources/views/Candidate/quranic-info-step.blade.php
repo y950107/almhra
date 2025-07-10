@@ -102,8 +102,8 @@
                 🎓 ملف الاجازة / المؤهلات / الشهادات
             </label>
             <div class="relative">
-                <input type="file" name="qualification_file" id="qualification_file" class="hidden" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="updateFileName('qualification_file', 'qualification_file_name')">
-                <button type="button" onclick="document.getElementById('qualification_file').click()"
+                <input type="file" name="qualification_file" id="qualification_file" required class="hidden" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="updateFileName('qualification_file', 'qualification_file_name')">
+                <button  id="file_upload_button" type="button" onclick="document.getElementById('qualification_file').click()"
                         class="block w-full text-sm text-gray-700 py-2 px-4 rounded-md border-2 border-gray-300
                            bg-purple-100 hover:bg-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-300">
                     اختر الملف
@@ -120,7 +120,7 @@
             </label>
             <div class="relative">
                 <input type="file" name="audio_recitation" id="audio_recitation" class="hidden" accept=".mp3,.wav,.ogg" onchange="updateFileName('audio_recitation', 'audio_recitation_name')">
-                <button type="button" onclick="document.getElementById('audio_recitation').click()"
+                <button  id="file_upload_button2" type="button" onclick="document.getElementById('audio_recitation').click()"
                         class="block w-full text-sm text-gray-700 py-2 px-4 rounded-md border-2 border-gray-300
                            bg-purple-100 hover:bg-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-300">
                     اختر المقطع
@@ -138,6 +138,7 @@
             → السابق
         </button>
         <button type="submit"
+                id="submit-form"
                 class="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition">
             تقديم الطلب
         </button>

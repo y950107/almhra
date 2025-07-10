@@ -533,6 +533,34 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                     })
             ])->filters([
                 // Filter by student
+                SelectFilter::make('halaka_id')
+                        ->label('الحلقة')
+                        ->options(function () {
+                            return Halaka::query()
+                                ->latest()
+                                ->pluck('name', 'id')
+                                ->toArray();
+                        })
+                        ->searchable()  // Adds search functionality for long lists
+                        ->preload()     // Loads options immediately (good for <100 items)
+                        ->query(function (Builder $query, $state) {
+                            if (filled($state['value'])) {
+                                return $query->whereHas('recitationSession',function($query) use ($state){
+                                    return $query->where('halaka_id', $state['value']);
+                                });
+                            }
+                            
+                            return $query;
+                        })
+                        ->indicateUsing(function (array $state): ?string {
+                            if (empty($state['value'])) {
+                                return null;
+                            }
+                            
+                            $halaka = Halaka::find($state['value']);
+                            return $halaka ? 'الحلقة: '.$halaka->name : null;
+                        })
+                    ,
                 SelectFilter::make('student_id')
                     ->label('الطالب')
                     // ->relationship('recitationSession.student.candidate', 'full_name')
