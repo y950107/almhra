@@ -98,7 +98,7 @@ class Login extends BaseAuth
 
         return match ($panel) {
             'admin' => 'تسجيل الدخول - لوحة الإدارة',
-            'teacher' => 'تسجيل الدخول - صفحة المعلمين ',
+            'teacher' => 'تسجيل الدخول - صفحة المقرئين  ',
             'student' => 'تسجيل الدخول - صفحة الطالب',
             default => 'تسجيل الدخول',
         };

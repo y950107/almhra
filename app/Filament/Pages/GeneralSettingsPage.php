@@ -310,13 +310,13 @@ class GeneralSettingsPage extends SettingsPage
                                                         ->label('الأيقونة')
                                                         ->image(),
                                                 Forms\Components\TextInput::make('slider_title')
-                                                        ->label('عنوان السلايدر'),
+                                                        ->label('عنوان السلايدر للموقع الرئيسي'),
                                                 Forms\Components\TextInput::make('student_login_button_title')
                                                         ->label('عنوان زر تسجيل دخول كطالب'),
                                                 Forms\Components\TextInput::make('teacher_login_button_title')
                                                         ->label('عنوان زر تسجيل دخول كمعلم'),
-                                                Forms\Components\TextInput::make('slider_title')
-                                                        ->label('عنوان السلايدر'),
+                                                Forms\Components\TextInput::make('maqraa_slider_title')
+                                                        ->label('عنوان السلايدر للمقرأة'),
                                                 Forms\Components\Section::make('جزء الميزات')
                                                 ->collapsible(true)
                                                 ->collapsed(true)

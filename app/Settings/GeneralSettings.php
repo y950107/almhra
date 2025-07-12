@@ -82,6 +82,7 @@ class GeneralSettings extends Settings
     public string $slider_title = "";
     public string $student_login_button_title = "";
     public string $teacher_login_button_title = "";
+    public string $maqraa_slider_title = "";
 
 
 

@@ -137,7 +137,7 @@
 
             <div class="text-center">
                 <a href="/">
-                    <img class="w-40 h-40 mx-auto" src="{{ asset('assets/logo.png') }}" alt="شعار المنشأة">
+                    <img class="w-40 h-40 mx-auto" src="{{ asset('storage/'.app(\App\Settings\GeneralSettings::class)->favicon) }}" alt="شعار المنشأة">
                 </a>
             </div>
 
