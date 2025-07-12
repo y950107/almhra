@@ -302,8 +302,11 @@ class GeneralSettingsPage extends SettingsPage
                                                 Forms\Components\Section::make('الشعار والهوية البصرية')
                                                         ->description('تحميل شعار وأيقونة الموقع')
                                                         ->schema([
+                                                         Forms\Components\FileUpload::make('home_logo')
+                                                        ->label('شعار المنشأة')
+                                                        ->image(),
                                                          Forms\Components\FileUpload::make('logo')
-                                                        ->label('الشعار')
+                                                        ->label('شعار المقرأة')
                                                         ->image(),
                     
                                                 Forms\Components\FileUpload::make('favicon')

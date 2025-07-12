@@ -84,7 +84,7 @@ class GeneralSettings extends Settings
     public string $teacher_login_button_title = "";
     public string $maqraa_slider_title = "";
 
-
+    public string $home_logo = "logo.png";
 
     public static function group(): string
     {

@@ -38,7 +38,7 @@
 									<div class="slider-four_shape" style="background-image:url({{asset('assets/images/main-slider/vector-2.png')}})"></div>
 									<h1 class="slider-four_heading">{{$settings->slider_title}}</h1>  
 									<div class="slider-four_text"></div>
-									<div class="slider-four_button" id="login-as-wrap">
+									{{-- <div class="slider-four_button" id="login-as-wrap">
 										<a href="{{route('filament.student.auth.login')}}" class="" style="">
                     						<span class="btn-wrap login-as">
                     							<span class="text-one">تسجيل الدخول كطالب </span>
@@ -49,7 +49,7 @@
                     							<span class="text-one">تسجيل الدخول كمعلم</span>
                     						</span>
                 					    </a>
-									</div>
+									</div> --}}
 								</div>
 							</div>
 

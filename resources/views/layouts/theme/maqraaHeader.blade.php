@@ -30,7 +30,8 @@
 				<div class="d-flex justify-content-center justify-content-lg-between align-items-center flex-wrap" id="logos">
 					
 					<div class="logo-box">
-						<div class="logo"><a href=""><img src="{{asset('storage/'.app(\App\Settings\GeneralSettings::class)->home_logo)}}"  alt="" title=""></a></div>
+						<div class="logo"><a href=""><img src="{{asset('storage/'.app(\App\Settings\GeneralSettings::class)->logo)}}"  alt="" title=""></a></div>
+						<div class="logo"><a href=""><img src="{{asset('storage/'.app(\App\Settings\GeneralSettings::class)->favicon)}}"  alt="" title=""></a></div>
 					</div>
 					
 					<div class="nav-outer">
