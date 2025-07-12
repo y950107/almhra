@@ -92,7 +92,7 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
                 DispatchServingFilamentEvent::class,
                 \App\Http\Middleware\IsAdmin::class,
-
+                \App\Http\Middleware\RedirectAuthRoutes::class,
 
 
             ])

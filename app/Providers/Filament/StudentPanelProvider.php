@@ -61,6 +61,7 @@ class StudentPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
                 \App\Http\Middleware\IsStudent::class,
+                \App\Http\Middleware\RedirectAuthRoutes::class,
             ])
             ->authMiddleware([
                 Authenticate::class,
