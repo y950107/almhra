@@ -453,11 +453,16 @@ class GeneralSettingsPage extends SettingsPage
                                                 Forms\Components\TextInput::make('company_name')
                                                     ->label('اسم المنشأة')
                                                     ->required(),
+                                                Forms\Components\Textarea::make('company_description')
+                                                    ->label('وصف المنشأة')
+                                                    ->required(),
 
                                                 Forms\Components\TextInput::make('branch_name')
                                                     ->label('اسم الفرع')
                                                     ->required(),
-
+                                                Forms\Components\Textarea::make('branch_description')
+                                                    ->label('وصف الفرع')
+                                                    ->required(),
                                                 Forms\Components\TextInput::make('company_manager')
                                                     ->label('مدير المنشأة')
                                                     ->required(),

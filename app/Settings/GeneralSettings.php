@@ -85,6 +85,8 @@ class GeneralSettings extends Settings
     public string $maqraa_slider_title = "";
 
     public string $home_logo = "logo.png";
+    public string $company_description = "";
+    public string $branch_description = "";
 
     public static function group(): string
     {
