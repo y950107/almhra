@@ -104,12 +104,25 @@
         }
         @media(max-width:1200px)
         {
-            .slider-four .swiper-slide-active .slider-four_heading
+            .slider-four .swiper-slide-active .slider-four_heading,#login-as-wrap,.cta-two_heading.h2
             {
                 text-align: center;
             }
         }
         .slider-four_heading{line-height: 1.5}
+        @media only screen and (max-width: 599px) {
+            .welcome-one_pattern, .welcome-three_years span, .slider-three_images-column, .welcome-one_pattern-two, .header-top {
+                display: block !important;
+            }
+            .header-top_list-two{
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+            }
+            .header-top_list-two li{margin:5px 0;}
+            .copyright{text-align:center;}
+        }
     </style>
    <!--[if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script><![endif]-->
 <!--[if lt IE 9]><script src="js/respond.js"></script><![endif]-->

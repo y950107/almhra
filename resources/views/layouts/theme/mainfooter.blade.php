@@ -9,7 +9,7 @@
 	<div class="footer-bottom">
 		<div class="footer_bottom-bg" style="background-image: url({{asset('assets/images/background/footer-bg_2.jpg')}})"></div>
 		<div class="auto-container">
-			<div class="d-flex justify-content-between align-items-center flex-wrap">
+			<div class="d-flex flex-column flex-md-row justify-content-between align-items-center flex-wrap">
 				<div class="copyright">جميع الحقوق محفوظة 2025  &copy; {{app(\App\Settings\GeneralSettings::class)->company_name}}</div>
 				<ul class="footer-nav">
 					<li><a href="#">سياسة الخصوصية</a></li>

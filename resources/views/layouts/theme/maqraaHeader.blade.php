@@ -3,7 +3,7 @@
 	<!-- Header Top -->
 	<div class="header-top">
 		<div class="auto-container">
-			<div class="inner-container">
+			<div class="inner-container container">
 				<div class="d-flex flex-column flex-lg-row justify-content-between flex-cols align-items-center flex-wrap">
 					<div class="left-box d-flex align-items-center flex-wrap">
 						<!-- Info List -->
@@ -74,9 +74,9 @@
 
 						<!-- Button Box -->
 						<div class="header_button-box">
-							<a href="{{config('app.url')}}" class="theme-btn btn-style-one">
+							<a href="{{ route('filament.student.auth.login') }}" class="theme-btn btn-style-one">
 								<span class="btn-wrap">
-									<span class="text-one">مقرأة المهرة</span>
+									<span class="text-one"> تسجيل الدخول</span>
 								</span>
 							</a>
 						</div>

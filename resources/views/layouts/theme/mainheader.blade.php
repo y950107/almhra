@@ -26,7 +26,7 @@
 	<!-- Header Upper -->
 	<div class="header-upper">
 		<div class="auto-container">
-			<div class="inner-container">
+			<div class="inner-container container">
 				<div class="d-flex justify-content-center justify-content-lg-between align-items-center flex-wrap" id="logos">
 					
 					<div class="logo-box">
@@ -50,7 +50,7 @@
 									<li><a href="">الرئيسية</a></li>
 									<li><a href="#about">عن الموقع</a></li>
 
-									<li><a href="#sessions"> الخدمات</a></li>
+									<!--<li><a href="#sessions"> الخدمات</a></li>-->
 									
 									<li><a href="#contact">الاتصال بنا</a></li>
 									<li><a href=""></a></li>
@@ -72,13 +72,13 @@
 						</a> -->
 
 						<!-- Button Box -->
-						<div class="header_button-box">
-							<a href="{{ route('filament.student.auth.login') }}" class="theme-btn btn-style-one">
-								<span class="btn-wrap">
-									<span class="text-one">تسجيل الدخول</span>
-								</span>
-							</a>
-						</div>
+						<!--<div class="header_button-box">-->
+						<!--	<a href="{{ route('filament.student.auth.login') }}" class="theme-btn btn-style-one">-->
+						<!--		<span class="btn-wrap">-->
+						<!--			<span class="text-one">تسجيل الدخول</span>-->
+						<!--		</span>-->
+						<!--	</a>-->
+						<!--</div>-->
 
 						<!-- Mobile Navigation Toggler -->
 						<div class="mobile-nav-toggler d-none"><span class="icon flaticon-menu"></span></div>
