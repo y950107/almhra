@@ -40,6 +40,7 @@ class TeacherPanelProvider extends PanelProvider
                 FilamentFullCalendarPlugin::make()
 
             ])
+            ->brandName(' لوحة تحكم المقرء - '.app(\App\Settings\GeneralSettings::class)->branch_name)
             ->font('Noto Kufi Arabic' , provider: GoogleFontProvider::class)
             ->brandLogo(asset('storage/'.app(\App\Settings\GeneralSettings::class)->favicon))
             ->favicon(asset('storage/'.app(\App\Settings\GeneralSettings::class)->favicon))

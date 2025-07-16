@@ -117,19 +117,19 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                                         ->default(today())
                                         ->required(),
 
-                                        Select::make('student_id')
-                                        ->relationship(
-                                            name: 'student',
-                                            titleAttribute: 'id',
-                                            modifyQueryUsing: function (Builder $query, Get $get) {
-                                                return $query
-                                                    // ->whereHas('candidate', fn($q) => $q->where('program_type', 'maqraa'))
-                                                    ->when(
-                                                        $get('halaka_id'),
-                                                        fn($query) => $query->where('teacher_id', Halaka::find($get('halaka_id'))?->teacher_id)
-                                                    );
-                                            }
-                                        )
+                                     Select::make('student_id')
+                                            ->relationship(
+                                                name: 'student',
+                                                titleAttribute: 'id',
+                                                modifyQueryUsing: function (Builder $query, Get $get) {
+                                                    return $query
+                                                        // ->whereHas('candidate', fn($q) => $q->where('program_type', 'mahir'))
+                                                        ->when(
+                                                            $get('halaka_id'),
+                                                            fn($query) => $query->where('teacher_id', Halaka::find($get('halaka_id'))?->teacher_id)
+                                                        );
+                                                }
+                                            )
                                         ->getOptionLabelFromRecordUsing(fn($record) => "{$record->candidate->full_name}")
                                         ->label('الطالب')
                                         ->afterStateHydrated(function(Forms\Get $get, Forms\Set $set, ?RecitationSession $record) use ($quranService) {

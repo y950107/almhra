@@ -19,8 +19,8 @@ class RecitationSessionControler extends Controller
     {
         $sessions = RecitationSession::with(['student'])->get();
         $cumulativeData = RecitationSession::getTotalTargetPagesPerStudent();
-
-        return view('pdf.recitation', compact('sessions', 'cumulativeData'));
+        $is_mahir = false;
+        return view('pdf.recitation', compact('sessions', 'cumulativeData','is_mahir'));
     }
 
 
@@ -76,6 +76,7 @@ class RecitationSessionControler extends Controller
             'timeRange' => $timeRange,
             'overallStats' => $summary,
             'statsPerStudent' => $stats,
+            'is_mahir' => false
         ])->render();
 
 
@@ -145,6 +146,7 @@ class RecitationSessionControler extends Controller
             'timeRange' => $timeRange,
             'overallStats' => $summary,
             'statsPerStudent' => $stats,
+            'is_mahir' => true
         ])->render();
 
 

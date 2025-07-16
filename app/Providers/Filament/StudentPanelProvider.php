@@ -38,7 +38,7 @@ class StudentPanelProvider extends PanelProvider
             ->font('Noto Kufi Arabic' , provider: GoogleFontProvider::class)
             ->brandLogo(asset('storage/'.app(\App\Settings\GeneralSettings::class)->favicon))
             ->favicon(asset('storage/'.app(\App\Settings\GeneralSettings::class)->favicon))
-            ->brandName(' لوحة تحكم الطالب')
+            ->brandName(' لوحة تحكم الطالب - '.app(\App\Settings\GeneralSettings::class)->branch_name)
             ->discoverResources(in: app_path('Filament/Student/Resources'), for: 'App\\Filament\\Student\\Resources')
             ->discoverPages(in: app_path('Filament/Student/Pages'), for: 'App\\Filament\\Student\\Pages')
             ->pages([

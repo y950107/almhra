@@ -21,28 +21,28 @@
     
     <meta name="description" content="{{  app(\App\Settings\GeneralSettings::class)->branch_description }}">
     <meta name="keywords" content="مقرأة المهرة,قرءان كريم,تحفيظ القرءان,القرءان,جامع والدى الأمير بندر بن عبد العزيز,جلسات التسميع للقرءان,علوم التجويد">
-    <meta name="author" content="{{ app(\App\Settings\GeneralSettings::class)->company_name ."-" . app(\App\Settings\GeneralSettings::class)->branch_name }}">
+    <meta name="author" content="{{ app(\App\Settings\GeneralSettings::class)->branch_name }}">
     <meta name="website" content="https://quran.almhrah.com">
     <meta name="email" content="{{ app(\App\Settings\GeneralSettings::class)->contact_email}}">
     <meta name="version" content="2.0.0">
 
-    <meta itemprop="name" content="{{ app(\App\Settings\GeneralSettings::class)->company_name ."-" . app(\App\Settings\GeneralSettings::class)->branch_name }}">
+    <meta itemprop="name" content="{{ app(\App\Settings\GeneralSettings::class)->branch_name }}">
     <meta itemprop="description" content="{{ app(\App\Settings\GeneralSettings::class)->branch_description }}">
     <meta itemprop="image" content="{{asset('storage/'.app(\App\Settings\GeneralSettings::class)->logo)}}">
 
     <meta name="twitter:card" content="product">
     <meta name="twitter:site" content="@publisher_handle">
-    <meta name="twitter:title" content="{{ app(\App\Settings\GeneralSettings::class)->company_name ."-" . app(\App\Settings\GeneralSettings::class)->branch_name }}">
+    <meta name="twitter:title" content="{{ app(\App\Settings\GeneralSettings::class)->branch_name }}">
     <meta name="twitter:description" content="{{ app(\App\Settings\GeneralSettings::class)->branch_description }}">
     <meta name="twitter:creator" content="@author_handle">
     <meta name="twitter:image" content="{{asset('storage/'.app(\App\Settings\GeneralSettings::class)->logo)}}">
 
-    <meta property="og:title" content="{{ app(\App\Settings\GeneralSettings::class)->company_name ."-" . app(\App\Settings\GeneralSettings::class)->branch_name }}" />
+    <meta property="og:title" content="{{ app(\App\Settings\GeneralSettings::class)->branch_name }}" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://quran.almhrah.com" />
     <meta property="og:image" content="{{asset('storage/'.app(\App\Settings\GeneralSettings::class)->logo)}}" />
     <meta property="og:description" content="{{ app(\App\Settings\GeneralSettings::class)->branch_description }}" />
-    <meta property="og:site_name" content="{{ app(\App\Settings\GeneralSettings::class)->company_name ."-" . app(\App\Settings\GeneralSettings::class)->branch_name }}" />
+    <meta property="og:site_name" content="{{ app(\App\Settings\GeneralSettings::class)->branch_name }}" />
     <meta property="fb:app_id" content>
     <!-- favicon -->
     <link href="{{ app(\App\Settings\GeneralSettings::class)->favicon ? asset('storage/'.app(\App\Settings\GeneralSettings::class)->favicon) : asset('favicon.ico')}}" rel="shortcut icon" type="image/x-icon">

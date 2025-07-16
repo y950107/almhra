@@ -42,7 +42,7 @@ trait HandlesRecitations
                 ->map(fn($recitation) => $recitation->recitationSession->evaluation_score)
                 ->average();
             $pagesRead = $present->sum($settings['pages']);
-
+            
             $first = $present->sortBy('recitationSession.session_date')->first();
             $last = $present->sortByDesc('recitationSession.session_date')->first();
 
@@ -51,7 +51,7 @@ trait HandlesRecitations
 
             $cumulative = $student->calculateProgress($startDate,$progEnd,$settings['pages']);
 
-
+            $mem_lines_sum = $present->sum('mem_lines');
 
             $stats[] = [
                 'student_id' => $studentId,
@@ -72,7 +72,8 @@ trait HandlesRecitations
                 'monthly_percentage' => $monthlyTarget > 0 ? round($pagesRead / $monthlyTarget * 100,1) : 0,
                 ...$cumulative,
                 'translated_lesson_title' =>  $last?->translated_lesson_title,
-                'mem_lines' =>  $last?->mem_lines,
+                'mem_lines' =>  $mem_lines_sum,
+                // 'mem_lines' =>  $last?->mem_lines,
             ];
         }
 
