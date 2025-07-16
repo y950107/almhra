@@ -48,6 +48,11 @@ class Student extends Model
     {
         return $this->hasMany(halaka::class);
     }
+    public function halakas()
+    {
+        return $this->belongsToMany(Halaka::class, 'recitation_sessions', 'student_id', 'halaka_id')
+        ->distinct();
+    }
     public function getFullNameAttribute()
     {
         return $this->candidate ? $this->candidate->full_name : ' اسم';

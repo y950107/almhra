@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use App\Models\RecitationSession;
 use App\Settings\GeneralSettings;
 use App\Models\AlMaqraaRecitation;
+use Illuminate\Support\Facades\DB;
 use Filament\Forms\Components\Tabs;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Filters\Filter;
@@ -104,6 +105,7 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                                             if (!$state) return 'اختر حلقة';
 
                                             $halaka = Halaka::find($state);
+                                            // dd($halaka->students);
                                             if (!$halaka) return 'الحلقة غير موجودة';
                                             $current =$halaka->students_count;
                                             // $current = $halaka->students()->distinct('students.id')->count('students.id');
@@ -117,19 +119,33 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                                         ->default(today())
                                         ->required(),
 
-                                     Select::make('student_id')
-                                            ->relationship(
-                                                name: 'student',
-                                                titleAttribute: 'id',
-                                                modifyQueryUsing: function (Builder $query, Get $get) {
-                                                    return $query
-                                                        // ->whereHas('candidate', fn($q) => $q->where('program_type', 'mahir'))
-                                                        ->when(
-                                                            $get('halaka_id'),
-                                                            fn($query) => $query->where('teacher_id', Halaka::find($get('halaka_id'))?->teacher_id)
+                                        Select::make('student_id')
+                                        ->relationship(
+                                            name: 'student',
+                                            titleAttribute: 'full_name',
+                                            modifyQueryUsing: function (Builder $query, Get $get) {
+                                                $halakaId = $get('halaka_id');
+                                                
+                                                return $query->when($halakaId, function ($q) use ($halakaId) {
+                                                    // Check if halaka has any sessions
+                                                    $hasSessions = DB::table('recitation_sessions')
+                                                        ->where('halaka_id', $halakaId)
+                                                        ->exists();
+                                                    
+                                                    if ($hasSessions) {
+                                                        // Case 1: Halaka has sessions - get only students with sessions
+                                                        return $q->whereHas('recitationSessions', fn($q) => 
+                                                            $q->where('halaka_id', $halakaId)
                                                         );
-                                                }
-                                            )
+                                                    } else {
+                                                        // Case 2: Halaka has no sessions - get all teacher's students
+                                                        $teacherId = Halaka::find($halakaId)?->teacher_id;
+                                                        return $q->where('teacher_id', $teacherId)
+                                                            ->whereDoesntHave('recitationSessions');
+                                                    }
+                                                });
+                                            }
+                                        )
                                         ->getOptionLabelFromRecordUsing(fn($record) => "{$record->candidate->full_name}")
                                         ->label('الطالب')
                                         ->afterStateHydrated(function(Forms\Get $get, Forms\Set $set, ?RecitationSession $record) use ($quranService) {

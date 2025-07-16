@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Settings\GeneralSettings;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 
 class Halaka extends Model
@@ -33,13 +34,30 @@ class Halaka extends Model
 
     public function students()
     {
-        return $this->hasManyThrough(Student::class, RecitationSession::class, 'halaka_id', 'id', 'id', 'student_id');
+        // return $this->hasManyThrough(Student::class, RecitationSession::class, 'halaka_id', 'id', 'id', 'student_id');
+        return $this->belongsToMany(Student::class, 'recitation_sessions', 'halaka_id', 'student_id')
+        ->distinct();
     }
 
     public function getStudentsCountAttribute()
     {
             try {
-                $count = $this->teacher->students()->count() ;
+                $hasSessions = DB::table('recitation_sessions')
+                ->where('halaka_id', $this->id)
+                ->exists();
+    
+                if ($hasSessions) {
+                    // Case 1: Count students with sessions in this halaka
+                    $count = DB::table('recitation_sessions')
+                        ->where('halaka_id', $this->id)
+                        ->distinct('student_id')
+                        ->count('student_id');
+                } else {
+                    // Case 2: Count teacher's students without any sessions
+                    $count = $this->teacher->students()
+                        ->whereDoesntHave('recitationSessions')
+                        ->count();
+                }
                 // $halaka->students()->distinct('students.id')->count('students.id')
                 $max = app(GeneralSettings::class)->students_per_group;
                 return "$count/$max طالب";

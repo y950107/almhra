@@ -22,7 +22,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
-
+use Filament\Forms\Get;
 class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitationResource
 {
 
@@ -85,12 +85,11 @@ class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitat
 
                                                 $halaka = Halaka::find($state);
                                                 if (!$halaka) return 'الحلقة غير موجودة';
-
-                                                $current = $halaka->students()->distinct('students.id')->count('students.id');
-
-                                                $max = app(GeneralSettings::class)->students_per_group;
-
-                                                return "الطلاب المسجلون: {$current}/{$max}";
+                                                $current =$halaka->students_count;
+                                                // $current = $halaka->students()->distinct('students.id')->count('students.id');
+                                                // $max = app(GeneralSettings::class)->students_per_group;
+    
+                                                return $current;
                                             })
                                             ->reactive(),
                                         DatePicker::make('session_date')
@@ -98,15 +97,29 @@ class AlMutqinRecitationResource extends \App\Filament\Resources\AlMutqinRecitat
                                             ->default(today())
                                             ->required(),
 
-                                        Select::make('student_id')
+                                            Select::make('student_id')
                                             ->relationship(
                                                 name: 'student',
-                                                titleAttribute: 'id',
-                                                modifyQueryUsing: fn($query) => $query
-                                                    ->where('teacher_id',auth()->user()?->teacher?->id)
-                                                    ->whereHas('candidate', function ($q) {
-                                                    $q->where('program_type', 'mutqin');
-                                                }),
+                                                titleAttribute: 'full_name', // Show names instead of IDs
+                                                modifyQueryUsing: function (Builder $query, Get $get) {
+                                                    return $query
+                                                        ->where('teacher_id', auth()->user()?->teacher?->id)
+                                                        ->whereHas('candidate', fn($q) => $q->where('program_type', 'mutqin'))
+                                                        ->when($get('halaka_id'), function($q) use ($get) {
+                                                            // Check if halaka has sessions
+                                                            $hasSessions = RecitationSession::where('halaka_id', $get('halaka_id'))->exists();
+                                                            
+                                                            if ($hasSessions) {
+                                                                // Show only students with sessions in this halaka
+                                                                return $q->whereHas('recitationSessions', fn($q) => 
+                                                                    $q->where('halaka_id', $get('halaka_id'))
+                                                                );
+                                                            } else {
+                                                                // Show teacher's mahir students without sessions
+                                                                return $q->whereDoesntHave('recitationSessions');
+                                                            }
+                                                        });
+                                                }
                                             )
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->candidate->full_name}")
                                             ->label('الطالب')

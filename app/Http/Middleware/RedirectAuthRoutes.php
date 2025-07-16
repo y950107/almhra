@@ -19,17 +19,20 @@ class RedirectAuthRoutes
 
     public function handle(Request $request, Closure $next): Response
     {
-        // Skip if already on quran subdomain
-        if (str_contains($request->getHost(), 'quran.')) {
-            return $next($request);
-        }
+        if(!app()->isLocal())
+        {
+            // Skip if already on quran subdomain
+            if (str_contains($request->getHost(), 'quran.')) {
+                return $next($request);
+            }
 
-        // Check if current path matches any protected route pattern
-        foreach ($this->protectedRoutes as $route) {
-            if ($request->is($route)) {
-                return redirect()->away(
-                    'https://quran.almhrah.com/'.$request->path()
-                );
+            // Check if current path matches any protected route pattern
+            foreach ($this->protectedRoutes as $route) {
+                if ($request->is($route)) {
+                    return redirect()->away(
+                        'https://quran.almhrah.com/'.$request->path()
+                    );
+                }
             }
         }
 
