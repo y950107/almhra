@@ -34,7 +34,10 @@ trait HandlesRecitations
             $student = $recitations->first()->recitationSession->student;
             $settings = $student->getProgramSettings($mem);
             $monthlyTarget = $settings['monthly_target'];
-
+            // Group recitations by lesson_title first
+            $lastLessonInfo = null;
+            $latestDate = null;
+            $recitationsByLesson = $recitations->groupBy('lesson_title');
 
             $absences = $recitations->where(fn($r) => $r->recitationSession->present !== 'present')->count();
             $present = $recitations->where(fn($r) => $r->recitationSession->present === 'present');
@@ -51,8 +54,33 @@ trait HandlesRecitations
 
             $cumulative = $student->calculateProgress($startDate,$progEnd,$settings['pages']);
 
+            
+            // Calculate mem_lines sum by lesson type
+            
+            $memLinesByLesson = [];
+            $last_lesson_total_mem_lines =0;
+            foreach ($recitationsByLesson as $lessonTitle => $lessonRecitations) {
+                $presentLessonRecitations = $lessonRecitations->where(
+                    fn($r) => $r->recitationSession->present === 'present'
+                );
+                
+                $lessonLatestDate = $presentLessonRecitations->max(
+                    fn($r) => $r->recitationSession->session_date
+                );
+                
+                if ($lessonLatestDate && (!$latestDate || $lessonLatestDate > $latestDate)) {
+                    $latestDate = $lessonLatestDate;
+                    $lastLessonInfo = [
+                        'title' => $presentLessonRecitations->first()?->translated_lesson_title ?? '',
+                        'total_lines' => $presentLessonRecitations->sum('mem_lines'),
+                        'date' => $lessonLatestDate
+                    ];
+                    $last_lesson_total_mem_lines = $presentLessonRecitations->sum('mem_lines');
+                }
+            }
+       
             $mem_lines_sum = $present->sum('mem_lines');
-
+            // dd($memLinesByLesson);
             $stats[] = [
                 'student_id' => $studentId,
                 'student_name' => $student->full_name ?? '-',
@@ -73,6 +101,7 @@ trait HandlesRecitations
                 ...$cumulative,
                 'translated_lesson_title' =>  $last?->translated_lesson_title,
                 'mem_lines' =>  $mem_lines_sum,
+                'last_lesson_total_mem_lines' =>  $last_lesson_total_mem_lines,
                 // 'mem_lines' =>  $last?->mem_lines,
             ];
         }

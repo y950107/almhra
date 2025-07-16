@@ -76,7 +76,7 @@
                 <td>{{ $stat['avg_evaluation_score'] }}</td>
                 @if($is_mahir)
                 <td>{{ $stat['translated_lesson_title'] }}</td>
-                <td>{{ $stat['mem_lines'] }}</td>
+                <td>{{ $stat['last_lesson_total_mem_lines']}}</td>
                 @endif
             </tr>
         @endforeach
