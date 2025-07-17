@@ -395,14 +395,14 @@ class AlMaherRecitationResource extends \App\Filament\Resources\AlMaherRecitatio
                                             ->maxValue(100)
                                             ->suffix('من 100')
                                             ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present')
-                                            ->label('درجة التجويد'),
+                                            ->label('التجويد'),
 
                                         TextInput::make('fluency_score')
                                             ->numeric()
                                             ->minValue(0)
                                             ->maxValue(100)
                                             ->suffix('من 100')
-                                            ->label('درجة الطلاقة')
+                                            ->label('')
                                             ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
 
                                         TextInput::make('memory_score')
@@ -410,7 +410,7 @@ class AlMaherRecitationResource extends \App\Filament\Resources\AlMaherRecitatio
                                             ->minValue(0)
                                             ->maxValue(100)
                                             ->suffix('من 100')
-                                            ->label('درجة الحفظ')
+                                            ->label('الحفظ')
                                             ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
                                     ])
                                     // Remove these lines as they're incorrectly placed here:

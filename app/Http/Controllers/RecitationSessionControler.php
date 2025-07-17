@@ -130,7 +130,7 @@ class RecitationSessionControler extends Controller
         $grouped = $sessions->groupBy(fn($item) => $item->recitationSession->student_id);
 
         $stats = AlMaherRecitation::getStatsForGroupedSessions($grouped, $startDate, $endDate);
-        $summary = AlMaherRecitation::summarizeStats($stats);
+        $summary = AlMaherRecitation::summarizeStats($stats,$report_type="mahir");
 
 
         $title = ($timeRange === 'monthly')

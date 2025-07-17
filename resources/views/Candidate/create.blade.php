@@ -1,7 +1,33 @@
 @extends('layouts.guest')
 
 @section('title', 'تقديم الطلب للمترشحين')
+@section('meta_info')
+<title>{{  app(\App\Settings\GeneralSettings::class)->branch_name.'- تسجيل طالب جديد' }}</title>
+<meta name="description" content="{{  app(\App\Settings\GeneralSettings::class)->branch_description }}">
+<meta name="keywords" content="مقرأة المهرة,قرءان كريم,تحفيظ القرءان,القرءان,جامع والدى الأمير بندر بن عبد العزيز,جلسات التسميع للقرءان,علوم التجويد">
+<meta name="author" content="{{  app(\App\Settings\GeneralSettings::class)->branch_name.'- تسجيل طالب جديد' }}">
+<meta name="website" content="https://quran.almhrah.com">
+<meta name="email" content="{{ app(\App\Settings\GeneralSettings::class)->contact_email}}">
+<meta name="version" content="2.0.0">
 
+<meta itemprop="name" content="{{  app(\App\Settings\GeneralSettings::class)->branch_name.'- تسجيل طالب جديد' }}">
+<meta itemprop="description" content="{{ app(\App\Settings\GeneralSettings::class)->branch_description }}">
+<meta itemprop="image" content="{{asset('storage/'.app(\App\Settings\GeneralSettings::class)->logo)}}">
+
+<meta name="twitter:card" content="product">
+<meta name="twitter:site" content="@publisher_handle">
+<meta name="twitter:title" content="{{  app(\App\Settings\GeneralSettings::class)->branch_name.'- تسجيل طالب جديد' }}">
+<meta name="twitter:description" content="{{ app(\App\Settings\GeneralSettings::class)->branch_description }}">
+<meta name="twitter:creator" content="@author_handle">
+<meta name="twitter:image" content="{{asset('storage/'.app(\App\Settings\GeneralSettings::class)->logo)}}">
+
+<meta property="og:title" content="{{  app(\App\Settings\GeneralSettings::class)->branch_name.'- تسجيل طالب جديد' }}" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://quran.almhrah.com" />
+<meta property="og:image" content="{{asset('storage/'.app(\App\Settings\GeneralSettings::class)->logo)}}" />
+<meta property="og:description" content="{{ app(\App\Settings\GeneralSettings::class)->branch_description }}" />
+<meta property="og:site_name" content="{{  app(\App\Settings\GeneralSettings::class)->branch_name.'- تسجيل طالب جديد' }}" />
+@endsection
 @section('content')
 
     <div class="py-8">

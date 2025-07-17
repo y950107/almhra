@@ -172,6 +172,38 @@ class GeneralSettingsPage extends SettingsPage
                                                 Forms\Components\DatePicker::make('maqraa_end_date')
                                                     ->label('تاريخ النهاية')
                                                     ->required(),
+                                                Forms\Components\Section::make()
+                                                ->schema([
+                                                    Forms\Components\TextInput::make('maqraa_sessions_per_month')
+                                                    ->numeric()
+                                                    ->label('عدد الحصص الشهرية')
+                                                    ->required(),
+                                                    Forms\Components\Repeater::make('maqraa_except_months_sessions')
+                                                    ->label('الحصص المستثناة من الشهور')
+                                                    ->schema([
+                                                        
+                                                        Forms\Components\Select::make('month')
+                                                            ->label('الشهر')
+                                                            ->options([
+                                                                1 => 'يناير',
+                                                                2 => 'فبراير',
+                                                                3 => 'مارس',
+                                                                4 => 'أبريل',
+                                                                5 => 'مايو',
+                                                                6 => 'يونيو',
+                                                                7 => 'يوليو',
+                                                                8 => 'أغسطس',
+                                                                9 => 'سبتمبر',
+                                                                10 => 'أكتوبر',
+                                                                11 => 'نوفمبر',
+                                                                12 => 'ديسمبر'
+                                                            ])
+                                                            ->required(),
+                                                        Forms\Components\TextInput::make('count')->label('العدد')->required()->numeric(),
+                                                    ])
+                                                    ->columnSpanFull()
+                                                    ->columns(2),
+                                                ]),
 
                                                 Forms\Components\CheckboxList::make('maqraa_study_days')
                                                     ->label('أيام العمل')
@@ -210,7 +242,39 @@ class GeneralSettingsPage extends SettingsPage
                                                 Forms\Components\DatePicker::make('mahir_end_date')
                                                     ->label('تاريخ النهاية')
                                                     ->required(),
-
+                                                
+                                                Forms\Components\Section::make()
+                                                ->schema([
+                                                    Forms\Components\TextInput::make('mahir_sessions_per_month')
+                                                    ->numeric()
+                                                    ->label('عدد الحصص الشهرية')
+                                                    ->required(),
+                                                    Forms\Components\Repeater::make('mahir_except_months_sessions')
+                                                    ->label('الحصص المستثناة من الشهور')
+                                                    ->schema([
+                                                        
+                                                        Forms\Components\Select::make('month')
+                                                            ->label('الشهر')
+                                                            ->options([
+                                                                1 => 'يناير',
+                                                                2 => 'فبراير',
+                                                                3 => 'مارس',
+                                                                4 => 'أبريل',
+                                                                5 => 'مايو',
+                                                                6 => 'يونيو',
+                                                                7 => 'يوليو',
+                                                                8 => 'أغسطس',
+                                                                9 => 'سبتمبر',
+                                                                10 => 'أكتوبر',
+                                                                11 => 'نوفمبر',
+                                                                12 => 'ديسمبر'
+                                                            ])
+                                                            ->required(),
+                                                        Forms\Components\TextInput::make('count')->label('العدد')->required()->numeric(),
+                                                    ])
+                                                    ->columnSpanFull()
+                                                    ->columns(2),
+                                                ]),
                                                 Forms\Components\CheckboxList::make('mahir_study_days')
                                                     ->label('أيام العمل')
                                                     ->columnSpanFull()
@@ -253,7 +317,38 @@ class GeneralSettingsPage extends SettingsPage
                                                 Forms\Components\DatePicker::make('mutqin_end_date')
                                                     ->label('تاريخ النهاية')
                                                     ->required(),
-
+                                                Forms\Components\Section::make()
+                                                    ->schema([
+                                                        Forms\Components\TextInput::make('mutqin_sessions_per_month')
+                                                        ->numeric()
+                                                        ->label('عدد الحصص الشهرية')
+                                                        ->required(),
+                                                        Forms\Components\Repeater::make('mutqin_except_months_sessions')
+                                                        ->label('الحصص المستثناة من الشهور')
+                                                        ->schema([
+                                                            
+                                                            Forms\Components\Select::make('month')
+                                                                ->label('الشهر')
+                                                                ->options([
+                                                                    1 => 'يناير',
+                                                                    2 => 'فبراير',
+                                                                    3 => 'مارس',
+                                                                    4 => 'أبريل',
+                                                                    5 => 'مايو',
+                                                                    6 => 'يونيو',
+                                                                    7 => 'يوليو',
+                                                                    8 => 'أغسطس',
+                                                                    9 => 'سبتمبر',
+                                                                    10 => 'أكتوبر',
+                                                                    11 => 'نوفمبر',
+                                                                    12 => 'ديسمبر'
+                                                                ])
+                                                                ->required(),
+                                                            Forms\Components\TextInput::make('count')->label('العدد')->required()->numeric(),
+                                                        ])
+                                                        ->columnSpanFull()
+                                                        ->columns(2),
+                                                ]),
                                                 Forms\Components\CheckboxList::make('mutqin_study_days')
                                                     ->label('أيام العمل')
                                                     ->columnSpanFull()
@@ -268,10 +363,10 @@ class GeneralSettingsPage extends SettingsPage
                                                         'friday' => 'الجمعة'
                                                     ]),
                                             ])
-                                            ->columns(3),
+                                            ->columns(2),
 
                                     ]),
-        Tabs\Tab::make('اعدادات الموقع')
+                                Tabs\Tab::make('اعدادات الموقع')
                                     ->icon('icon-landing_page')
                                     ->schema([
                                         Forms\Components\Section::make('إعدادات البريد الإلكتروني')

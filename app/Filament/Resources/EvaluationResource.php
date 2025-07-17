@@ -90,7 +90,7 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                             ->maxValue(100), //   لازم تخدم على الاستاذ كانه مستخدم و ليس  idv الاستلذ
 
                         Forms\Components\TextInput::make('voice_score')
-                            ->label('جودة الصوت')
+                            ->label('الأداء')
                             ->numeric()
                             ->required()
                             ->minValue(0)
@@ -150,13 +150,13 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('tajweed_score')
-                    ->label('درجة التجويد'),
+                    ->label(' التجويد'),
 
                 Tables\Columns\TextColumn::make('voice_score')
-                    ->label('درجة الصوت'),
+                    ->label(' الأداء'),
 
                 Tables\Columns\TextColumn::make('memorization_score')
-                    ->label('درجة الحفظ'),
+                    ->label(' الحفظ'),
 
                 Tables\Columns\TextColumn::make('total_score')
                     ->label('المعدل')
