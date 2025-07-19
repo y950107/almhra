@@ -599,7 +599,7 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                             ->minValue(0)
                                             ->maxValue(100)
                                             ->suffix('من 100')
-                                            ->label('')
+                                            ->label('الأداء')
                                             ->required(fn (Get $get): bool => $get('recitationSession.present') === 'present'),
                             
                                         TextInput::make('memory_score')

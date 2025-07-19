@@ -87,11 +87,11 @@ class GeneralSettings extends Settings
     public string $home_logo = "logo.png";
     public string $company_description = "";
     public string $branch_description = "";
-    public string $maqraa_sessions_per_month = "";
+    public int $maqraa_sessions_per_month ;
     public array $maqraa_except_months_sessions =[]; //holiday or something else
-    public string $mutqin_sessions_per_month = "";
+    public int $mutqin_sessions_per_month ;
     public array $mutqin_except_months_sessions = []; //holiday or something else
-    public string $mahir_sessions_per_month = "";
+    public int $mahir_sessions_per_month ;
     public array $mahir_except_months_sessions =[]; //holiday or something else
 
     public static function group(): string

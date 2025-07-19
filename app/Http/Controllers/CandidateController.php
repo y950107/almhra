@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Candidate;
-use App\Models\User;
 use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Candidate;
 use Illuminate\Http\Request;
+use App\Mail\NewStudentNotification;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules\Password;
 
 class CandidateController extends Controller
@@ -95,6 +97,10 @@ class CandidateController extends Controller
         $validated['has_ijaza'] = $validated['has_ijaza'] ?? false;
         Candidate::create($validated);
 
+        // Send email to admin
+        Mail::to(env('MAIL_FROM_ADDRESS')) // Replace with your admin email
+        ->send(new NewStudentNotification($user));
+        
         return back()->with('success', 'تم تقديم الطلب بنجاح.');
     }
 }
