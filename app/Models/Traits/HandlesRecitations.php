@@ -60,27 +60,38 @@ trait HandlesRecitations
             
             $memLinesByLesson = [];
             $last_lesson_total_mem_lines =0;
+
             foreach ($recitationsByLesson as $lessonTitle => $lessonRecitations) {
                 $presentLessonRecitations = $lessonRecitations->where(
                     fn($r) => $r->recitationSession->present === 'present'
                 );
                 
-                $lessonLatestDate = $presentLessonRecitations->max(
-                    fn($r) => $r->recitationSession->session_date
-                );
-                
-                if ($lessonLatestDate && (!$latestDate || $lessonLatestDate > $latestDate)) {
-                    $latestDate = $lessonLatestDate;
-                    $lastLessonInfo = [
-                        'title' => $presentLessonRecitations->first()?->translated_lesson_title ?? '',
-                        'total_lines' => $presentLessonRecitations->sum('mem_lines'),
-                        'date' => $lessonLatestDate
-                    ];
-                    $last_lesson_total_mem_lines = $presentLessonRecitations->sum('mem_lines');
+                // Ensure we only proceed if there are present recitations
+                if ($presentLessonRecitations->isNotEmpty()) {
+                    $lessonLatestDate = $presentLessonRecitations->max(
+                        fn($r) => Carbon::parse($r->recitationSession->session_date)
+                    );
+                    
+                    // Convert mem_lines to integers before summing
+                    $lessonMemLines = $presentLessonRecitations->sum(function($r) {
+                        return (int) $r->mem_lines;
+                    });
+                    
+                    if ($lessonLatestDate && (!$latestDate || $lessonLatestDate > $latestDate)) {
+                        $latestDate = $lessonLatestDate;
+                        $last_lesson_total_mem_lines = $lessonMemLines;
+                        $lastLessonInfo = [
+                            'title' => $presentLessonRecitations->first()?->translated_lesson_title ?? '',
+                            'total_lines' => $lessonMemLines,
+                            'date' => $lessonLatestDate->format('Y-m-d')
+                        ];
+                    }
                 }
             }
        
-            $mem_lines_sum = $present->sum('mem_lines');
+           $mem_lines_sum = $present->sum(function($recitation) {
+                return is_numeric($recitation->mem_lines) ? (float)$recitation->mem_lines : 0;
+            });
             // dd($memLinesByLesson);
             $stats[] = [
                 'student_id' => $studentId,
@@ -121,16 +132,16 @@ trait HandlesRecitations
         $totalSessions = count($stats);
         //caclculate total_working_days by month
         
-        // dd($working_days);
+        // dd($stats);
 
         $working_days = self::getWorkingDays($report_type);
         // dd($working_days);
         // $working_days =$report_type== "maqraa" ? count(app(GeneralSettings::class)->maqraa_end_date) : count(app(GeneralSettings::class)->mahir_study_days);
      
-        
+        // dd(count($stats));
 
         return [
-            'total_absences_percentage' => $totalSessions > 0 ? round($totalAbsences / $working_days * 31) : 0,
+            'total_absences_percentage' => $totalSessions > 0 ? round( $working_days * count($stats)/$totalAbsences) : 0,
             'total_pages' => $totalPages,
             'total_monthly_target' => $totalTarget,
             'total_monthly_percentage' => $totalTarget > 0 ? round($totalPages / $totalTarget * 100,1) : 0,
@@ -270,7 +281,7 @@ trait HandlesRecitations
             $monthException = collect($exceptionMonths)->first(function ($item) use ($selectedMonth) {
                 return (int) $item['month'] === $selectedMonth;
             });
-            
+           
             // Adjust working days if exception exists
             if ($monthException) {
                 $working_days_total = max(0, $working_days_total - (int) $monthException['count']);
