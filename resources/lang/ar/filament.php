@@ -4,6 +4,7 @@
 return [
     'dashboard' => 'لوحة التحكم',
     'condidate_name'=> 'اسم المترشح',
+    'candidate_id'=> 'رقم المترشح',
     'Teacher_name'=> 'اسم المعلم',
     'status'=> 'الحالة',
     'students' => 'الطلاب المتمدرسين',
@@ -36,6 +37,11 @@ return [
         'navigation_label' => 'قسم الحلقات',
         'model_label' => 'حلقة',
         'plural_model_label' => 'حلقات',
+    ],
+    'student_halakas' => [
+        'navigation_label' => 'الطلاب والحلقات',
+        'model_label' => 'الطلاب والحلقات',
+        'plural_model_label' => 'الطلاب',
     ],
 
     'posts' => [

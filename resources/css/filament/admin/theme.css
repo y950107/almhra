@@ -21,3 +21,14 @@
     width: 180px !important;
     height: 110px !important;
 }
+
+@media (min-width: 1200px) {
+    .fi-sidebar {
+        max-width: 18% !important;
+    }
+}
+@media (min-width: 768px) {
+    .fi-main.max-w-7xl {
+        max-width: 80% !important;
+    }
+}

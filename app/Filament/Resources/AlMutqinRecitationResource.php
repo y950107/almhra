@@ -122,25 +122,27 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                                 titleAttribute: 'full_name',
                                                 modifyQueryUsing: function (Builder $query, Get $get) {
                                                     $halakaId = $get('halaka_id');
-                                                    
-                                                    return $query->when($halakaId, function ($q) use ($halakaId) {
-                                                        // Check if halaka has any sessions
-                                                        $hasSessions = DB::table('recitation_sessions')
-                                                            ->where('halaka_id', $halakaId)
-                                                            ->exists();
-                                                        
-                                                        if ($hasSessions) {
-                                                            // Case 1: Halaka has sessions - get only students with sessions
-                                                            return $q->whereHas('recitationSessions', fn($q) => 
-                                                                $q->where('halaka_id', $halakaId)
-                                                            );
-                                                        } else {
-                                                            // Case 2: Halaka has no sessions - get all teacher's students
-                                                            $teacherId = Halaka::find($halakaId)?->teacher_id;
-                                                            return $q->where('teacher_id', $teacherId)
-                                                                ->whereDoesntHave('recitationSessions');
-                                                        }
+                                                    return $query->whereHas('halakas.currentStudents', function ($q) use ($halakaId) {
+                                                        $q->where('halakas.id', $halakaId);
                                                     });
+                                                    // return $query->when($halakaId, function ($q) use ($halakaId) {
+                                                    //     // Check if halaka has any sessions
+                                                    //     $hasSessions = DB::table('recitation_sessions')
+                                                    //         ->where('halaka_id', $halakaId)
+                                                    //         ->exists();
+                                                        
+                                                    //     if ($hasSessions) {
+                                                    //         // Case 1: Halaka has sessions - get only students with sessions
+                                                    //         return $q->whereHas('recitationSessions', fn($q) => 
+                                                    //             $q->where('halaka_id', $halakaId)
+                                                    //         );
+                                                    //     } else {
+                                                    //         // Case 2: Halaka has no sessions - get all teacher's students
+                                                    //         $teacherId = Halaka::find($halakaId)?->teacher_id;
+                                                    //         return $q->where('teacher_id', $teacherId)
+                                                    //             ->whereDoesntHave('recitationSessions');
+                                                    //     }
+                                                    // });
                                                 }
                                             )
                                             ->getOptionLabelFromRecordUsing(fn($record) => "{$record->candidate->full_name}")

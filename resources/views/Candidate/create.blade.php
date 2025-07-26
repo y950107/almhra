@@ -117,7 +117,7 @@
                 placeholder: "اختر المؤهل العلمي",
                 allowClear: true,
                 width: '100%',
-                minimumResultsForSearch: Infinity // Hides the search box
+                minimumResultsForSearch: Infinity // Hides the search boxfile_upload_button
             });
 
             $('#program_type').select2({
@@ -132,10 +132,10 @@
                     $('#maqraa_fields').removeClass('hidden');
                     $('#has_ijaza').attr('required', true);
                     $('#desired_recitation').attr('required', true);
-                    $('#audio_recitation').attr('required', true);
+                    // $('#audio_recitation').attr('required', true);
                     $('#self_evaluation').attr('required', true);
                     $('#quran_level').attr('required', true);
-                    $('#maqraa_file').removeClass('hidden');
+                    // $('#maqraa_file').removeClass('hidden');
                 } else {
                     $('#maqraa_fields').addClass('hidden');
                     $('#has_ijaza').attr('required', false);
@@ -143,8 +143,8 @@
                     $('#maqraa_file').attr('required', false);
                     $('#self_evaluation').attr('required', false);
                     $('#quran_level').attr('required', false);
-                    $('#audio_recitation').attr('required', false);
-                    $('#maqraa_file').addClass('hidden');
+                    // $('#audio_recitation').attr('required', false);
+                    // $('#maqraa_file').addClass('hidden');
                 }
             }).trigger('change');
 
@@ -377,14 +377,25 @@
     </script>
     <script>
         function validateFileInput(input) {
-            console.log(input.getAttribute('id'));
-            const button = input.getAttribute('id') =="qualification_file" ? document.getElementById('file_upload_button') : document.getElementById('file_upload_button2');
+            
+            const button1 = document.getElementById('file_upload_button');
+            const button2 =  document.getElementById('file_upload_button2');
             const fileNameDisplay = document.getElementById('qualification_file_name');
+            const audioDisplay = document.getElementById('audio_recitation_name');
     
             if (input.hasAttribute('required') && !input.value) {
                 // Apply error styles to button
-                button.classList.add('border-red-500', 'bg-red-50');
-                button.classList.remove('border-gray-300', 'bg-purple-50');
+                if(input.getAttribute('id') == "qualification_file")
+                {
+                    button1.classList.add('border-red-500', 'bg-red-50');
+                    button1.classList.remove('border-gray-300', 'bg-purple-50');
+
+                }
+                if(input.getAttribute('id') == "audio_recitation")
+                {
+                    button2.classList.add('border-red-500', 'bg-red-50');
+                    button2.classList.remove('border-gray-300', 'bg-purple-50');
+                }
                 valid = false;
                  Swal.fire({
                     title: 'يرجى إكمال البيانات',
@@ -394,12 +405,27 @@
                 });
             } else {
                 // Remove error styles
-                button.classList.remove('border-red-500', 'bg-red-50');
-                button.classList.add('border-gray-300', 'bg-purple-50');
+                if(input.getAttribute('id') == "qualification_file")
+                {
+                    button1.classList.remove('border-red-500', 'bg-red-50');
+                    button1.classList.add('border-gray-300', 'bg-purple-50');
+                }
+                if(input.getAttribute('id') == "audio_recitation")
+                {
+                    button2.classList.remove('border-red-500', 'bg-red-50');
+                    button2.classList.add('border-gray-300', 'bg-purple-50');
+                }
                 
                 // Update file name display if file is selected
                 if (input.files.length > 0) {
-                    fileNameDisplay.textContent = input.files[0].name;
+                    if(input.getAttribute('id') == "qualification_file")
+                     {
+                        fileNameDisplay.textContent = input.files[0].name;
+                     }else
+                     {
+                         fileNameDisplay.textContent = input.files[1].name;
+                     }
+                    
                 }
             }
         }

@@ -215,6 +215,7 @@ class CandidateResource extends Resource implements HasShieldPermissions
         return $table
             ->defaultSort('created_at','desc')
             ->columns([
+                // Tables\Columns\TextColumn::make('id')->label(__('filament.candidate_id'))->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('full_name')->label(__('filament.candidate.fields.full_name'))->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('national_id')->label('رقم الهوية')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('email')->label(__('filament.candidate.fields.email'))->searchable()->sortable(),

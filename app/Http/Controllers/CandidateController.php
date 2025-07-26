@@ -67,8 +67,8 @@ class CandidateController extends Controller
 
             'self_evaluation'    => 'required|integer',
 
-            'qualification_file' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
-            'audio_recitation'   => 'nullable|file|mimes:mp3,wav,ogg|max:5120',
+            'qualification_file' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
+            'audio_recitation'   => 'required|file|mimes:mp3,wav,ogg|max:5120',
         ]);
 
         if ($request->hasFile('qualification_file')) {
@@ -98,8 +98,8 @@ class CandidateController extends Controller
         Candidate::create($validated);
 
         // Send email to admin
-        Mail::to(env('MAIL_FROM_ADDRESS')) // Replace with your admin email
-        ->send(new NewStudentNotification($user));
+        // Mail::to(env('MAIL_FROM_ADDRESS')) // Replace with your admin email
+        // ->send(new NewStudentNotification($user));
         
         return back()->with('success', 'تم تقديم الطلب بنجاح.');
     }

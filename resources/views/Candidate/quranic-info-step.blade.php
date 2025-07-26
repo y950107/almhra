@@ -119,7 +119,7 @@
                 من {حرمت عليكم الميتة} إلى نهاية الوجه.
             </label>
             <div class="relative">
-                <input type="file" name="audio_recitation" id="audio_recitation" class="hidden" accept=".mp3,.wav,.ogg" onchange="updateFileName('audio_recitation', 'audio_recitation_name')">
+                <input type="file" name="audio_recitation" id="audio_recitation" required="required" class="hidden" hidden  accept=".mp3,.wav,.ogg" onchange="updateFileName('audio_recitation', 'audio_recitation_name')">
                 <button  id="file_upload_button2" type="button" onclick="document.getElementById('audio_recitation').click()"
                         class="block w-full text-sm text-gray-700 py-2 px-4 rounded-md border-2 border-gray-300
                            bg-purple-100 hover:bg-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-300">

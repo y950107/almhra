@@ -1,18 +1,20 @@
 <?php
 
 
-use App\Http\Controllers\CandidateController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\PDFController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\RecitationSessionControler;
-use App\Http\Controllers\ReportsController;
-use App\Livewire\Recitations\ListRecitations;
+use App\Models\User;
 use App\Models\Surah;
 use App\Models\Verse;
-use App\Services\PrayerTimeService;
 use App\Services\QuranService;
+use App\Services\PrayerTimeService;
+use App\Mail\NewStudentNotification;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PDFController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\CandidateController;
+use App\Livewire\Recitations\ListRecitations;
+use App\Http\Controllers\RecitationSessionControler;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -68,6 +70,11 @@ Route::get('/reports/download-excel', [ReportsController::class, 'downloadExcel'
 Route::get('/test-prayer-times', function () {
     dd(PrayerTimeService::getPrayerTimes(24.7136, 46.6753)); // 🔥 اختبار جلب أوقات الصلاة
 });
+// Route::get('/test', function () {
+//     $user = User::find(68);
+//     Mail::to(env('MAIL_FROM_ADDRESS')) // Replace with your admin email
+//     ->send(new NewStudentNotification($user));
+// });
 
 Route::get('/quran/surahs', function () {
     return response()->json(Surah::all());

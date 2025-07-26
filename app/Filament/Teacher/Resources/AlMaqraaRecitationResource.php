@@ -114,23 +114,27 @@ class AlMaqraaRecitationResource extends \App\Filament\Resources\AlMaqraaRecitat
                                             name: 'student',
                                             titleAttribute: 'full_name', // Show names instead of IDs
                                             modifyQueryUsing: function (Builder $query, Get $get) {
-                                                return $query
-                                                    ->where('teacher_id', auth()->user()?->teacher?->id)
-                                                    ->whereHas('candidate', fn($q) => $q->where('program_type', 'maqraa'))
-                                                    ->when($get('halaka_id'), function($q) use ($get) {
-                                                        // Check if halaka has sessions
-                                                        $hasSessions = RecitationSession::where('halaka_id', $get('halaka_id'))->exists();
+                                                $halakaId = $get('halaka_id');
+                                                return $query->whereHas('halakas.currentStudents', function ($q) use ($halakaId) {
+                                                    $q->where('halakas.id', $halakaId);
+                                                });
+                                                // return $query
+                                                //     ->where('teacher_id', auth()->user()?->teacher?->id)
+                                                //     ->whereHas('candidate', fn($q) => $q->where('program_type', 'maqraa'))
+                                                //     ->when($get('halaka_id'), function($q) use ($get) {
+                                                //         // Check if halaka has sessions
+                                                //         $hasSessions = RecitationSession::where('halaka_id', $get('halaka_id'))->exists();
                                                         
-                                                        if ($hasSessions) {
-                                                            // Show only students with sessions in this halaka
-                                                            return $q->whereHas('recitationSessions', fn($q) => 
-                                                                $q->where('halaka_id', $get('halaka_id'))
-                                                            );
-                                                        } else {
-                                                            // Show teacher's mahir students without sessions
-                                                            return $q->whereDoesntHave('recitationSessions');
-                                                        }
-                                                    });
+                                                //         if ($hasSessions) {
+                                                //             // Show only students with sessions in this halaka
+                                                //             return $q->whereHas('recitationSessions', fn($q) => 
+                                                //                 $q->where('halaka_id', $get('halaka_id'))
+                                                //             );
+                                                //         } else {
+                                                //             // Show teacher's mahir students without sessions
+                                                //             return $q->whereDoesntHave('recitationSessions');
+                                                //         }
+                                                //     });
                                             }
                                         )
                                         ->preload()

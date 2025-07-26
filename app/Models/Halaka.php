@@ -31,34 +31,40 @@ class Halaka extends Model
         return $this->hasMany(RecitationSession::class);
     }
 
-
     public function students()
     {
-        // return $this->hasManyThrough(Student::class, RecitationSession::class, 'halaka_id', 'id', 'id', 'student_id');
-        return $this->belongsToMany(Student::class, 'recitation_sessions', 'halaka_id', 'student_id')
-        ->distinct();
+        return $this->belongsToMany(Student::class, 'halaka_student', 'halaka_id', 'student_id')
+            ->withPivot('attend_at','moved_at');
+    }
+
+    public function currentStudents()
+    {
+        return $this->belongsToMany(Student::class, 'halaka_student', 'halaka_id', 'student_id')
+            ->wherePivot('moved_at', null)
+            ->withPivot('moved_at','attend_at');
     }
 
     public function getStudentsCountAttribute()
     {
             try {
-                $hasSessions = DB::table('recitation_sessions')
-                ->where('halaka_id', $this->id)
-                ->exists();
+                // $hasSessions = DB::table('recitation_sessions')
+                // ->where('halaka_id', $this->id)
+                // ->exists();
     
-                if ($hasSessions) {
-                    // Case 1: Count students with sessions in this halaka
-                    $count = DB::table('recitation_sessions')
-                        ->where('halaka_id', $this->id)
-                        ->distinct('student_id')
-                        ->count('student_id');
-                } else {
-                    // Case 2: Count teacher's students without any sessions
-                    $count = $this->teacher->students()
-                        ->whereDoesntHave('recitationSessions')
-                        ->count();
-                }
+                // if ($hasSessions) {
+                //     // Case 1: Count students with sessions in this halaka
+                //     $count = DB::table('recitation_sessions')
+                //         ->where('halaka_id', $this->id)
+                //         ->distinct('student_id')
+                //         ->count('student_id');
+                // } else {
+                //     // Case 2: Count teacher's students without any sessions
+                //     $count = $this->teacher->students()
+                //         ->whereDoesntHave('recitationSessions')
+                //         ->count();
+                // }
                 // $halaka->students()->distinct('students.id')->count('students.id')
+                $count = $this->students()->count();
                 $max = app(GeneralSettings::class)->students_per_group;
                 return "$count/$max طالب";
             } catch (\Exception $e) {
@@ -78,6 +84,25 @@ class Halaka extends Model
     public function getProgressPercentageAttribute()
     {
         $students = $this->students;
+        $studentIds = DB::table('recitation_sessions')
+        ->where('halaka_id', $this->id)
+        // ->distinct('student_id')
+        ->pluck('student_id');
+       
+        $students =Student::whereIn('id', $studentIds)
+        ->get();
+       
+        //register student on halaka if not exist
+        $students->each(function ($student) {
+            if (!$this->students()->where('student_id', $student->id)->exists()) {
+                $this->students()->attach($student->id, [
+                    'attend_at' => $student->start_date,
+                    'moved_at' => null
+                ]);
+            }
+        }); 
+        
+            
         $percentages = $students->map(function ($student) {
             $settings = $student->getProgramSettings();
             $start = max(Carbon::parse($student->start_date), $settings['start']);

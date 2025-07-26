@@ -2,23 +2,24 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\SessionsResource\Pages;
-use App\Models\Halaka;
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\DeleteBulkAction;
+use App\Models\Halaka;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Section;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\DeleteBulkAction;
+use App\Filament\Resources\SessionsResource\Pages;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use IbrahimBougaoua\FilaProgress\Tables\Columns\CircleProgress;
+use App\Filament\Resources\SessionsResource\RelationManagers\StudentsRelationManager;
 
 class SessionsResource extends Resource implements HasShieldPermissions
 {
@@ -128,7 +129,7 @@ class SessionsResource extends Resource implements HasShieldPermissions
     public static function getRelations(): array
     {
         return [
-            // يمكن إضافة علاقة الطلاب لاحقًا
+            StudentsRelationManager::class,
         ];
     }
 

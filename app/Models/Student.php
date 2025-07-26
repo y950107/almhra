@@ -48,10 +48,24 @@ class Student extends Model
     {
         return $this->hasMany(halaka::class);
     }
+    // public function halakas()
+    // {
+    //     return $this->belongsToMany(Halaka::class, 'recitation_sessions', 'student_id', 'halaka_id')
+    //     ->distinct();
+    // }
     public function halakas()
     {
-        return $this->belongsToMany(Halaka::class, 'recitation_sessions', 'student_id', 'halaka_id')
-        ->distinct();
+        return $this->belongsToMany(Halaka::class, 'halaka_student', 'student_id', 'halaka_id')
+        ->withPivot('attend_at', 'moved_at');
+
+    }
+
+    public function currentHalakas()
+    {
+        return $this->belongsToMany(Halaka::class, 'halaka_student', 'student_id', 'halaka_id')
+        ->whereNull('moved_at')
+        ->withPivot('attend_at', 'moved_at');
+
     }
     public function getFullNameAttribute()
     {
