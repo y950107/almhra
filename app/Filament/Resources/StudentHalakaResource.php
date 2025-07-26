@@ -27,6 +27,10 @@ class StudentHalakaResource extends Resource implements HasShieldPermissions
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
     protected static ?string $navigationGroup = 'Halaka Management';
     protected static ?string $navigationLabel = 'Student Halaka Registration';
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 
     public static function getPermissionPrefixes(): array
     {

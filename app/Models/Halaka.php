@@ -84,24 +84,6 @@ class Halaka extends Model
     public function getProgressPercentageAttribute()
     {
         $students = $this->students;
-        $studentIds = DB::table('recitation_sessions')
-        ->where('halaka_id', $this->id)
-        // ->distinct('student_id')
-        ->pluck('student_id');
-       
-        $students =Student::whereIn('id', $studentIds)
-        ->get();
-       
-        //register student on halaka if not exist
-        $students->each(function ($student) {
-            if (!$this->students()->where('student_id', $student->id)->exists()) {
-                $this->students()->attach($student->id, [
-                    'attend_at' => $student->start_date,
-                    'moved_at' => null
-                ]);
-            }
-        }); 
-        
             
         $percentages = $students->map(function ($student) {
             $settings = $student->getProgramSettings();
