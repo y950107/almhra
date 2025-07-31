@@ -149,14 +149,13 @@ class StudentsRelationManager extends RelationManager implements HasShieldPermis
                     ->icon('heroicon-o-trash')
                     ->closeModalByClickingAway(false)
                     ->requiresConfirmation()
-                    ->action(function (callable $get) {
-                        $student = Student::findOrFail($get('student_id'));
+                    ->action(function (Student $record) {
                         $halaka = Halaka::findOrFail($this->ownerRecord->id);
                         
                         // Detach student from halaka
-                        $halaka->students()->detach($student->id);
+                        $halaka->students()->detach($record->id);
                     })
-                    ->visible(fn($record) => auth()->user()->can('delete', $record)),
+                    ->visible(fn($record) => auth()->user()->can('delete', $record))
             ])
             ->bulkActions([
                 // DeleteBulkAction::make()

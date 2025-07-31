@@ -820,7 +820,7 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                     ->relationship(
                         name: 'recitationSession.student.candidate',
                         titleAttribute: 'id',
-                        modifyQueryUsing: fn($query) => $query->where('program_type', 'mutqin'),
+                        modifyQueryUsing: fn($query) => $query->whereStatus('accepted')->where('program_type', 'mutqin'),
                     )
                     ->getOptionLabelFromRecordUsing(fn($record) => "{$record->full_name}") ,
 

@@ -154,7 +154,7 @@ if (!function_exists('sendToInterview')) {
 
 
 if (!function_exists('acceptedCandidate')) {
-    function acceptedCandidate($candidate)
+    function acceptedCandidate($candidate,$data)
     {
 
 
@@ -179,7 +179,7 @@ if (!function_exists('acceptedCandidate')) {
             $user->save();
 
             // إنشاء سجل طالب
-            Student::create([
+            $student = Student::create([
                 'user_id' => $user->id,
                 'teacher_id' => $candidate->teacher_id,
                 'candidate_id' => $candidate->id,
@@ -190,7 +190,7 @@ if (!function_exists('acceptedCandidate')) {
                 'status' => 'accepted',
                 'evaluated' => true
             ]);
-
+            $student->halakas()->attach($data['halaka_id']);
            Evaluation::where('candidate_id',$candidate->id)
                 ->update(['status' => 'passed']);
 
@@ -219,7 +219,7 @@ if (!function_exists('acceptedCandidate')) {
 
 
 if (!function_exists('evaluateCandidate')) {
-    function evaluateCandidate($evaluations)
+    function evaluateCandidate($evaluations,$data)
     {
 
         try {
@@ -264,7 +264,7 @@ if (!function_exists('evaluateCandidate')) {
                 $user->assignRole('Student');
                 $user->save();
 
-                Student::create([
+                $Student=Student::create([
                     'user_id' => $user->id,
                     'teacher_id' => $evaluation->candidate->teacher_id,
                     'candidate_id' => $evaluation->candidate->id,
@@ -275,7 +275,7 @@ if (!function_exists('evaluateCandidate')) {
 
                 $evaluation->update(['status' => 'passed']);
                 $evaluation->candidate->update(['status' => 'accepted', 'evaluated' => true]);
-
+                $Student->halakas()->attach($data['halaka_id']);
                 DB::commit();
 
                 try {

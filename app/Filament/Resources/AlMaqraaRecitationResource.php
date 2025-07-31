@@ -603,7 +603,7 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                     ->relationship(
                         name: 'recitationSession.student.candidate',
                         titleAttribute: 'id',
-                        modifyQueryUsing: fn($query) => $query->where('program_type', 'maqraa'),
+                        modifyQueryUsing: fn($query) => $query->whereStatus('accepted')->where('program_type', 'maqraa'),
                     )
                     ->getOptionLabelFromRecordUsing(fn($record) => "{$record->full_name}") ,
 

@@ -4,7 +4,9 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Halaka;
 use Filament\Forms\Form;
+use App\Models\Candidate;
 use App\Models\Evaluation;
 use Filament\Tables\Table;
 use App\Enums\EvaluationStatus;
@@ -15,7 +17,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\CheckboxList;
 use App\Filament\Resources\EvaluationResource\Pages;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
-use App\Models\Candidate;
 
 
 class EvaluationResource extends Resource implements HasShieldPermissions
@@ -59,7 +60,7 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                 Forms\Components\Select::make('candidate_id')
                     ->label('المترشح')
                     ->relationship('candidate', 'full_name',modifyQueryUsing: function (Builder $query) {
-                        $query->whereDoesntHave('student');
+                        $query->whereStatus('interview')->whereDoesntHave('student');
                     })
                     ->disabledOn('edit')
                     ->required(),
@@ -194,7 +195,14 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                     ->label('تحويل إلى طالب')
                     ->icon('heroicon-o-users')
                     ->color('success')
-                    ->action(fn(Evaluation $evaluation) => evaluateCandidate($evaluation))
+                    ->form([
+                        Forms\Components\Select::make('halaka_id')
+                        ->options(Halaka::all()->pluck('name', 'id'))
+                        ->label('اختر الحلقة')
+                        ->required()
+                        ->preload()
+                    ])
+                    ->action(fn(Evaluation $evaluation, array $data) => evaluateCandidate($evaluation, $data))  
                     ->requiresConfirmation()
                     ->visible(fn(Evaluation $evaluation) => auth()?->user()?->hasPermissionTo('accept_candidate') && $evaluation->candidate?->student === null),
 

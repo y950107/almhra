@@ -647,7 +647,7 @@ class AlMaherRecitationResource extends Resource implements HasShieldPermissions
                     ->relationship(
                         name: 'recitationSession.student.candidate',
                         titleAttribute: 'id',
-                        modifyQueryUsing: fn($query) => $query->where('program_type', 'mahir'),
+                        modifyQueryUsing: fn($query) => $query->whereStatus('accepted')->where('program_type', 'mahir'),
                     )
                     ->getOptionLabelFromRecordUsing(fn($record) => "{$record->full_name}") ,
 

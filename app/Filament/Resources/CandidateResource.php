@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Halaka;
 use Filament\Forms\Form;
 use App\Models\Candidate;
 use Filament\Tables\Table;
@@ -293,8 +294,15 @@ class CandidateResource extends Resource implements HasShieldPermissions
                     ->label(__('filament.candidate.actions.accept'))
                     ->color('success')
                     ->icon('heroicon-o-check-circle')
-                    ->action(fn(Candidate $record) => acceptedCandidate($record))
-                    ->requiresConfirmation()
+                    
+                     ->form([
+                        Forms\Components\Select::make('halaka_id')
+                        ->options(Halaka::all()->pluck('name', 'id'))
+                        ->label('اختر الحلقة')
+                        ->required()
+                        ->preload()
+                    ])
+                    ->action(fn(Candidate $record, array $data) => acceptedCandidate($record, $data))
                     ->visible(fn(Candidate $record) => auth()?->user()?->hasPermissionTo('accept_candidate') && $record?->status?->value === 'pending'),
 
                 Tables\Actions\Action::make('sendToInterview')

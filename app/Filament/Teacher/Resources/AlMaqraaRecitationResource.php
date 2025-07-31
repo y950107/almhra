@@ -450,7 +450,9 @@ class AlMaqraaRecitationResource extends \App\Filament\Resources\AlMaqraaRecitat
                     ->searchable()
                     ->preload()
                     ->relationship('recitationSession.student', 'id',modifyQueryUsing: function (Builder $query) {
-                        $query->where('teacher_id',auth()->user()?->teacher?->id);
+                        $query->where('teacher_id',auth()->user()?->teacher?->id)->whereHas('candidate', function ($q) {
+                            $q->whereStatus('accepted');
+                        });
                     })->getOptionLabelFromRecordUsing(fn($record) => "{$record?->candidate?->full_name}"),
 
                 // Filter by date from

@@ -18,4 +18,10 @@ class EditEvaluation extends EditRecord
 
         
     }
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $data['candidate_id'] = $this->record->candidate_id;
+        
+        return $data;
+    }
 }
