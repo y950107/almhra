@@ -9,6 +9,7 @@ use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use App\Models\Student;
 use Filament\Resources\Resource;
 use App\Models\RecitationSession;
 use App\Settings\GeneralSettings;
@@ -17,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Filament\Forms\Components\Tabs;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
 use App\Services\Moshaf_madina_Service;
@@ -122,8 +124,9 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                                                 titleAttribute: 'full_name',
                                                 modifyQueryUsing: function (Builder $query, Get $get) {
                                                     $halakaId = $get('halaka_id');
-                                                    return $query->whereHas('halakas.currentStudents', function ($q) use ($halakaId) {
-                                                        $q->where('halakas.id', $halakaId);
+                                                    return $query->whereHas('halakas', function ($q) use ($halakaId) {
+                                                        $q->where('halakas.id', $halakaId)
+                                                          ->whereNull('halaka_student.moved_at'); // Pivot table condition
                                                     });
                                                     // return $query->when($halakaId, function ($q) use ($halakaId) {
                                                     //     // Check if halaka has any sessions
@@ -787,42 +790,93 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                         ]);
                     })
             ])->filters([
-                SelectFilter::make('halaka_id')
-                ->label('الحلقة')
-                ->options(function () {
-                    return Halaka::query()
-                        ->latest()
-                        ->pluck('name', 'id')
-                        ->toArray();
-                })
-                ->searchable()  // Adds search functionality for long lists
-                ->preload()     // Loads options immediately (good for <100 items)
-                ->query(function (Builder $query, $state) {
-                    if (filled($state['value'])) {
-                        return $query->whereHas('recitationSession',function($query) use ($state){
-                            return $query->where('halaka_id', $state['value']);
-                        });
+                
+                SelectFilter::make('student_filter')
+                ->label('تصفية الطلاب')
+                ->form([
+                    Grid::make(2)
+                    ->schema([
+                        // Halaka dropdown
+                        Select::make('halaka_id')
+                            ->label('الحلقة')
+                            ->options(fn() => Halaka::query()
+                                ->latest()
+                                ->pluck('name', 'id')
+                                ->toArray()
+                            )
+                            ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                                $halaka = Halaka::find($state);
+                                if ($halaka) {
+                                    $studentId = (int) $get('student_id');
+                                    if ($studentId && $student = Student::find($studentId)) {
+                                        if (!$student->halakas()->where('halakas.id', $halaka->id)->exists()) {
+                                            $set('student_id', null);
+                                        }
+                                    }
+                                }
+                            })
+                            ->reactive()
+                            ->searchable(),
+                            
+                        // Student dropdown (dependent on halaka selection)
+                        Select::make('student_id')
+                            ->label('الطالب')
+                            ->options(function (callable $get) {
+                                $halakaId = $get('halaka_id');
+                                if ($halakaId) {
+                                    return Student::query()
+                                        ->whereHas('halakas', function($q) use ($halakaId) {
+                                            $q->where('halakas.id', $halakaId)
+                                              ->whereNull('halaka_student.moved_at'); // Pivot table condition
+                                        })
+                                        ->whereHas('candidate', fn($q) => $q->where('status', 'accepted')->where('program_type', 'mutqin'))
+                                        ->with('candidate')
+                                        ->get()
+                                        ->mapWithKeys(fn($student) => [$student->id => $student->candidate->full_name])
+                                        ->toArray();
+                                }
+                                return Student::query()
+                                    ->whereHas('candidate', fn($q) => $q->where('status', 'accepted')->where('program_type', 'mutqin'))
+                                    ->with('candidate')
+                                    ->get()
+                                    ->mapWithKeys(fn($student) => [$student->id => $student->candidate->full_name])
+                                    ->toArray();
+                            })
+                            ->searchable()
+                        ])
+                    
+                ])
+                ->query(function (Builder $query, array $data) {
+                    $studentId = (int) $data['student_id'] ?? null;
+                    $halakaId = (int) $data['halaka_id'] ?? null;
+                    
+                    if ($studentId) {
+                        $query->whereHas('recitationSession', fn($q) => $q->where('student_id', $studentId));
                     }
                     
-                    return $query;
+                    if ($halakaId) {
+                        $query->whereHas('recitationSession', fn($q) => $q->where('halaka_id', $halakaId));
+                    }
                 })
                 ->indicateUsing(function (array $state): ?string {
-                    if (empty($state['value'])) {
-                        return null;
+                    $indicators = [];
+                    
+                    if (!empty($state['halaka_id'])) {
+                        $halaka = Halaka::find($state['halaka_id']);
+                        if ($halaka) {
+                            $indicators[] = 'الحلقة: ' . $halaka->name;
+                        }
                     }
                     
-                    $halaka = Halaka::find($state['value']);
-                    return $halaka ? 'الحلقة: '.$halaka->name : null;
-                }) ,
-                // Filter by student
-                SelectFilter::make('student_id')
-                    ->label('الطالب')
-                    ->relationship(
-                        name: 'recitationSession.student.candidate',
-                        titleAttribute: 'id',
-                        modifyQueryUsing: fn($query) => $query->whereStatus('accepted')->where('program_type', 'mutqin'),
-                    )
-                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->full_name}") ,
+                    if (!empty($state['student_id'])) {
+                        $student = Student::with('candidate')->find($state['student_id']);
+                        if ($student) {
+                            $indicators[] = 'الطالب: ' . $student->candidate->full_name;
+                        }
+                    }
+                    
+                    return $indicators ? implode(' - ', $indicators) : null;
+                }),
 
                 // Filter by date from
                 Filter::make('from_date')
@@ -855,7 +909,7 @@ class AlMutqinRecitationResource extends Resource implements HasShieldPermission
                     })   ->indicateUsing(function (array $data): ?string {
                         return $data['to'] ? 'إلى: ' . \Carbon\Carbon::parse($data['to'])->format('Y-m-d') : null;
                     }),
-            ])->filtersLayout(FiltersLayout::AboveContent);
+            ])->filtersFormColumns(3)->filtersLayout(FiltersLayout::AboveContent);
     }
 
     public static function getRelations(): array

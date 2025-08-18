@@ -8,15 +8,18 @@ use App\Models\Halaka;
 use App\Models\Student;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\DB;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\BadgeColumn;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Notifications\Notification; // For notifications
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
 class StudentsRelationManager extends RelationManager implements HasShieldPermissions
@@ -44,6 +47,7 @@ class StudentsRelationManager extends RelationManager implements HasShieldPermis
             ->label('الطالب')
             ->preload()
             ->disabled(fn() => $this->isReadOnly())
+            ->disabledOn('edit') 
             ->required()
             ->options(function () {
                 return Student::query()
@@ -82,10 +86,14 @@ class StudentsRelationManager extends RelationManager implements HasShieldPermis
                     ->label('تاريخ الالتحاق')
                     ->date('Y-m-d')
                     ->sortable(),
-
                 TextColumn::make('moved_at')
-                    ->label('تاريخ الانتقال')
+                    ->label('تاريخ التجميد')
                     ->date('Y-m-d')
+                    ->sortable(),
+                BadgeColumn::make('finish_quran')
+                    ->label('ختم القرآن')
+                    ->state(fn($record) => $record->finish_quran ? 'ختم القرآن' : 'لا')
+                    ->color(fn($record) => $record->finish_quran ? 'success' : 'danger')
                     ->sortable(),
             ])
             ->filters([
@@ -140,12 +148,110 @@ class StudentsRelationManager extends RelationManager implements HasShieldPermis
                 ])
             ])
             ->actions([
+                Tables\Actions\Action::make('finish_quran')
+                ->label(fn($record) => $record->finish_quran ? 'إلغاء ختم القرآن' : 'ختم القرآن')
+                ->color(fn($record) => $record->finish_quran ? 'danger' : 'success')
+                ->icon(fn($record) => $record->finish_quran ? 'heroicon-o-lock-closed' : 'heroicon-o-lock-closed') 
+                // Appropriate icon forfreeze action
+                ->modalHeading(fn($record) => $record->finish_quran ? 'إلغاء ختم القرآن للطالب في الحلقة' : 'تأكيد ختم القرآن للطالب في الحلقة')
+                ->modalSubmitActionLabel(fn($record) => $record->finish_quran ? 'تأكيد الغاء الختم' : 'تأكيد الختم')
+                ->modalCancelActionLabel('إلغاء ')
+                ->closeModalByClickingAway(false)
+                ->requiresConfirmation()
+                ->successNotificationTitle(fn($record) => $record->finish_quran ? 'تم الغاء الختم للطالب بنجاح' : 'تم تأكيد الختم للطالب بنجاح')
+                ->visible(fn($record) => auth()->user()->can('update', $record))
+                ->action(function (Student $record) {
+                    $this->getOwnerRecord()->students()->updateExistingPivot($record->id, [
+                        'finish_quran' => $record->finish_quran ? false : true
+                    ]);
+                }),
                 EditAction::make()
                     ->closeModalByClickingAway(false)
-                    ->label('تعديل'),
+                    ->label('نقل لحلقة اخرى')
+                    ->action(function (Student $record, array $data) {
+                       try {
+                        DB::beginTransaction();
+                        
+                        // 1. First attach to new halaka
+                        $newHalaka = Halaka::findOrFail($data['halaka_id']);
+                        $newHalaka->students()->attach($record->id, [
+                            'attend_at' => $data['attend_at'] ?? now(),
+                            'moved_at' => null
+                        ]);
+                        
+                        // 2. Then detach from current halaka
+                        $this->ownerRecord->students()->detach($record->id);
+                        DB::commit();
+                        
+                        Notification::make()
+                            ->title('تم النقل بنجاح')
+                            ->success()
+                            ->send();
+                            
+                    } catch (\Exception $e) {
+                        DB::rollBack();
+                        
+                        Notification::make()
+                            ->title('حدث خطأ أثناء النقل')
+                            ->body($e->getMessage())
+                            ->danger()
+                            ->send();
+                            
+                        throw $e; // Re-throw to show error in form
+                    }
+                })
+                 ->form([
+                    Select::make('halaka_id')
+                        ->label('الحلقة')
+                        ->options(function () {
+                            return Halaka::query()
+                                ->where('halaka_status', true)
+                                ->where('id', '!=', $this->ownerRecord->id)
+                                ->pluck('name', 'id');
+                        })
+                        ->required(),
+                    DatePicker::make('attend_at')
+                        ->label('تاريخ الالتحاق'),
+                        
+                ]),
+             Tables\Actions\Action::make('freeze')
+                    ->label('تجميد')
+                    ->color('danger')
+                    ->icon('heroicon-o-lock-closed') 
+                    // Appropriate icon forfreeze action
+                    ->modalHeading('تجميد الطالب في الحلقة')
+                    ->modalSubmitActionLabel('تأكيد التجميد')
+                    ->modalCancelActionLabel('إلغاء')
+                    ->closeModalByClickingAway(false)
+                    ->requiresConfirmation()
+                    ->successNotificationTitle('تم تجميد الطالب بنجاح')
+                    ->visible(fn($record) => auth()->user()->can('update', $record))
+                    ->action(function (Student $record) {
+                        $this->getOwnerRecord()->students()->updateExistingPivot($record->id, [
+                            'moved_at' => now()
+                        ]);
+                    })
+                    ->visible(fn($record) => auth()->user()->can('delete', $record) && $record->moved_at==null),
+             Tables\Actions\Action::make('unfreeze')
+                    ->label('رفع التجميد')
+                    ->color('success')
+                    ->icon('heroicon-o-lock-closed') 
+                    // Appropriate icon forfreeze action
+                    ->modalHeading('رفع التجميد عن الطالب في الحلقة')
+                    ->modalSubmitActionLabel('تأكيد رفع التجميد')
+                    ->modalCancelActionLabel('إلغاء')
+                    ->closeModalByClickingAway(false)
+                    ->requiresConfirmation()
+                    ->successNotificationTitle('تم  رفع تجميد عن الطالب بنجاح')
+                    ->visible(fn($record) => auth()->user()->can('delete', $record) && $record->moved_at != null)
+                    ->action(function (Student $record) {
+                        $this->getOwnerRecord()->students()->updateExistingPivot($record->id, [
+                            'moved_at' => null
+                        ]);
+                    }),
                 Tables\Actions\Action::make('detach')
                     ->label('فصل')
-                    ->color('danger')
+                    ->color('primary')
                     ->icon('heroicon-o-trash')
                     ->closeModalByClickingAway(false)
                     ->requiresConfirmation()

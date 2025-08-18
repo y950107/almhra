@@ -6,6 +6,7 @@ use App\Filament\Teacher\Resources\AlMaherRecitationResource\Pages;
 use App\Filament\Teacher\Resources\AlMaherRecitationResource\RelationManagers;
 use App\Models\AlMaherRecitation;
 use App\Models\Halaka;
+use App\Models\Student;
 use App\Models\RecitationSession;
 use App\Services\Moshaf_madina_Service;
 use App\Settings\GeneralSettings;
@@ -23,6 +24,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Filament\Forms\Get;
+use Filament\Forms\Components\Grid;
 class AlMaherRecitationResource extends \App\Filament\Resources\AlMaherRecitationResource
 {
 
@@ -102,8 +104,9 @@ class AlMaherRecitationResource extends \App\Filament\Resources\AlMaherRecitatio
                                                 titleAttribute: 'full_name', // Show names instead of IDs
                                                 modifyQueryUsing: function (Builder $query, Get $get) {
                                                     $halakaId = $get('halaka_id');
-                                                    return $query->whereHas('halakas.currentStudents', function ($q) use ($halakaId) {
-                                                        $q->where('halakas.id', $halakaId);
+                                                    return $query->whereHas('halakas', function ($q) use ($halakaId) {
+                                                        $q->where('halakas.id', $halakaId)
+                                                          ->whereNull('halaka_student.moved_at'); // Pivot table condition
                                                     });
                                                     // return $query
                                                     //     ->where('teacher_id', auth()->user()?->teacher?->id)
@@ -444,33 +447,93 @@ class AlMaherRecitationResource extends \App\Filament\Resources\AlMaherRecitatio
                     return $query->where('user_id', auth()->id());
                 })
             )->filters([
-                // Filter by student
-                SelectFilter::make('student_id')
-                    ->label('الطلاب')
-                    ->multiple()
-                    ->searchable()
-                    ->preload()
-                    ->relationship('recitationSession.student', 'id',modifyQueryUsing: function (Builder $query) {
-                        $query->where('teacher_id',auth()->user()?->teacher?->id)->whereHas('candidate', function ($q) {
-                            $q->whereStatus('accepted');
-                        });
-                    })->getOptionLabelFromRecordUsing(fn($record) => "{$record?->candidate?->full_name}"),
-
-                // Filter by date from
-                Filter::make('from_date')
-                    ->label('من تاريخ')
-                    ->form([
-                        DatePicker::make('from')->label('من تاريخ'),
-                    ])
-                    ->query(function ($query, array $data) {
-                        if ($data['from']) {
-                            $query->whereHas('recitationSession', fn ($q) =>
-                            $q->whereDate('session_date', '>=', $data['from'])
-                            );
+                SelectFilter::make('student_filter')
+                ->label('تصفية الطلاب')
+                ->form([
+                    Grid::make(2)
+                    ->schema([
+                        // Halaka dropdown
+                        Select::make('halaka_id')
+                            ->label('الحلقة')
+                            ->options(fn() => Halaka::query()
+                                ->latest()
+                                ->whereTeacherId(auth()->user()->teacher?->id)
+                                ->pluck('name', 'id')
+                                ->toArray()
+                            )
+                            ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                                $halaka = Halaka::find($state);
+                                if ($halaka) {
+                                    $studentId = (int) $get('student_id');
+                                    if ($studentId && $student = Student::find($studentId)) {
+                                        if (!$student->halakas()->where('halakas.id', $halaka->id)->exists()) {
+                                            $set('student_id', null);
+                                        }
+                                    }
+                                }
+                            })
+                            ->reactive()
+                            ->searchable(),
+                            
+                        // Student dropdown (dependent on halaka selection)
+                        Select::make('student_id')
+                            ->label('الطالب')
+                            ->options(function (callable $get) {
+                                $halakaId = $get('halaka_id');
+                                if ($halakaId) {
+                                    return Student::query()
+                                        ->whereHas('halakas', function($q) use ($halakaId) {
+                                            $q->where('halakas.id', $halakaId)
+                                              ->whereNull('halaka_student.moved_at'); // Pivot table condition
+                                        })
+                                        ->whereHas('candidate', fn($q) => $q->where('status', 'accepted')->where('program_type', 'mahir'))
+                                        ->with('candidate')
+                                        ->get()
+                                        ->mapWithKeys(fn($student) => [$student->id => $student->candidate->full_name])
+                                        ->toArray();
+                                }
+                                return Student::query()
+                                    ->whereHas('candidate', fn($q) => $q->where('status', 'accepted')->where('program_type', 'mahir'))
+                                    ->with('candidate')
+                                    ->get()
+                                    ->mapWithKeys(fn($student) => [$student->id => $student->candidate->full_name])
+                                    ->toArray();
+                            })
+                            ->searchable()
+                        ])
+                    
+                ])
+                ->query(function (Builder $query, array $data) {
+                    $studentId = (int) $data['student_id'] ?? null;
+                    $halakaId = (int) $data['halaka_id'] ?? null;
+                    
+                    if ($studentId) {
+                        $query->whereHas('recitationSession', fn($q) => $q->where('student_id', $studentId));
+                    }
+                    
+                    if ($halakaId) {
+                        $query->whereHas('recitationSession', fn($q) => $q->where('halaka_id', $halakaId));
+                    }
+                })
+                ->indicateUsing(function (array $state): ?string {
+                    $indicators = [];
+                    
+                    if (!empty($state['halaka_id'])) {
+                        $halaka = Halaka::find($state['halaka_id']);
+                        if ($halaka) {
+                            $indicators[] = 'الحلقة: ' . $halaka->name;
                         }
-                    })    ->indicateUsing(function (array $data): ?string {
-                        return $data['from'] ? 'من: ' . \Carbon\Carbon::parse($data['from'])->format('Y-m-d') : null;
-                    }),
+                    }
+                    
+                    if (!empty($state['student_id'])) {
+                        $student = Student::with('candidate')->find($state['student_id']);
+                        if ($student) {
+                            $indicators[] = 'الطالب: ' . $student->candidate->full_name;
+                        }
+                    }
+                    
+                    return $indicators ? implode(' - ', $indicators) : null;
+                }),
 
                 // Filter by date to
                 Filter::make('to_date')

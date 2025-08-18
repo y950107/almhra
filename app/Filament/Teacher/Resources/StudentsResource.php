@@ -44,7 +44,9 @@ class StudentsResource extends Resource
     {
         return $table
         ->query(
-            Student::query()->where('teacher_id',auth()->user()->teacher->id)
+            Student::query()->where('teacher_id',auth()->user()->teacher->id)->whereHas('halakas', function($q) {
+                $q->whereNull('halaka_student.moved_at'); // Pivot table condition
+            })
         )
         ->columns([
 

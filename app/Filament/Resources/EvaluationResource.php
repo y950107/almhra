@@ -12,7 +12,10 @@ use Filament\Tables\Table;
 use App\Enums\EvaluationStatus;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\CheckboxList;
 use App\Filament\Resources\EvaluationResource\Pages;
@@ -182,6 +185,33 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                     }),
             ])
             ->filters([
+                // Filter by date from
+                Filter::make('from_date')
+                    ->label('من تاريخ')
+                    ->form([
+                        DatePicker::make('from')->label('من تاريخ'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        if ($data['from']) {
+                            $query->where('created_at', '>=', $data['from']);
+                        }
+                    })    ->indicateUsing(function (array $data): ?string {
+                        return $data['from'] ? 'من: ' . \Carbon\Carbon::parse($data['from'])->format('Y-m-d') : null;
+                    }),
+
+                // Filter by date to
+                Filter::make('to_date')
+                    ->label('إلى تاريخ')
+                    ->form([
+                        DatePicker::make('to')->label('إلى تاريخ'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        if ($data['to']) {
+                            $query->where('created_at', '<=', $data['to']);
+                        }
+                    })   ->indicateUsing(function (array $data): ?string {
+                        return $data['to'] ? 'إلى: ' . \Carbon\Carbon::parse($data['to'])->format('Y-m-d') : null;
+                    }),
                 Tables\Filters\SelectFilter::make('status')
                     ->label('فلترة حسب الحالة')
                     ->options(
@@ -189,7 +219,7 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                             $status->value => $status->label(),
                         ])->toArray()
                     ),
-            ])
+            ])->filtersFormColumns(3)->filtersLayout(FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\Action::make('convert_to_student')
                     ->label('تحويل إلى طالب')
@@ -233,6 +263,12 @@ class EvaluationResource extends Resource implements HasShieldPermissions
                 // ])
                 ->action(function (array $data) {
                     return redirect()->route('evaluations.pdf-download');
+                }), 
+                Action::make('generate_report')
+                ->label('تقرير مختصر')
+                ->color('primary')
+                ->action(function (array $data) {
+                    return redirect()->route('evaluations.pdf-download-short');
                 }), 
             ])
             ;

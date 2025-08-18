@@ -90,6 +90,7 @@ Route::get('/quran/verses/{surah_id}', function ($surah_id) {
 Route::get('/teachers/pdf-download', [PDFController::class, 'download'])->name('teachers.pdf-download');
 Route::get('/students/presence/pdf-download', [PDFController::class, 'downloadStudentsPresence'])->name('students-presence.pdf-download');
 Route::get('/students/pdf-download', [PDFController::class, 'downloadStudentsReport'])->name('students.pdf-download');
+Route::get('/graduated_students/pdf-download', [PDFController::class, 'downloadGraduatedStudentsReport'])->name('graduated_students.pdf-download');
 //***** هذي خاصة ب تقرير الطلاب */
 
 Route::get('/recitations/pdf-preview', [RecitationSessionControler::class, 'preview'])->name('recitations.pdf-preview');
@@ -102,6 +103,7 @@ Route::get('/recitations/pdf-download-almutqin-report', [RecitationSessionContro
 Route::get('/recitations/pdf-download-almutqin-report/detailed', [RecitationSessionControler::class, 'downloadMutqinDetailedReport'])->name('recitations.pdf-download-almutqin-detailed-report');
 
 Route::get('/evaluations/pdf-download', action: [PDFController::class, 'downloadEvaluationsReport'])->name('evaluations.pdf-download');
+Route::get('/evaluations/pdf-download-short', action: [PDFController::class, 'downloadEvaluationsShortReport'])->name('evaluations.pdf-download-short');
 
 
 // Route::get('language/{locale}', function (string $locale) {

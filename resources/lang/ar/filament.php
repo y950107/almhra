@@ -85,6 +85,11 @@ return [
         'model_label' => 'طالب',
         'plural_model_label' => ' طلاب',
     ],
+    'graduated_student' => [
+        'navigation_label' => 'قسم الطلاب المتخرجين',
+        'model_label' => 'طالب',
+        'plural_model_label' => ' طلاب',
+    ],
 
 
     'general' => [

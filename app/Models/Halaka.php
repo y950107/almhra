@@ -64,7 +64,7 @@ class Halaka extends Model
                 //         ->count();
                 // }
                 // $halaka->students()->distinct('students.id')->count('students.id')
-                $count = $this->students()->count();
+                $count = $this->currentStudents()->count();
                 $max = app(GeneralSettings::class)->students_per_group;
                 return "$count/$max طالب";
             } catch (\Exception $e) {

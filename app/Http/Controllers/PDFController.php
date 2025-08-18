@@ -118,6 +118,51 @@ class PDFController extends Controller
             'قائمة التقييم.pdf'
         );
     }
+    public function downloadEvaluationsShortReport(Request $request)
+    {
+        // get from and to date from previous url
+        $parsed_url = parse_url(url()->previous(), PHP_URL_QUERY);
+        parse_str($parsed_url, $query_params);
+        $from_date = $query_params['tableFilters']['from_date']['from'] ?? null;
+        $to_date = $query_params['tableFilters']['to_date']['to'] ?? null;
+
+        $evaluations_id = $request->input('teacher_ids', []);
+
+        $evaluations = Evaluation::when(!empty($evaluations_id), function ($query) use ($evaluations_id) {
+            $query->whereIn('id', $evaluations_id);
+        })
+        ->when($from_date, function ($query) use ($from_date) {
+            $query->where('created_at', '>=', $from_date);
+        })
+        ->when($to_date, function ($query) use ($to_date) {
+            $query->where('created_at', '<=', $to_date);
+        })
+        ->get();
+
+        $html = View::make('pdf.evaluations-short', compact('evaluations', 'from_date', 'to_date'))->render();
+
+        $mpdf = new Mpdf([
+            'tempDir' => storage_path('tempdir'),
+            'mode' => 'utf-8',
+            'format' => 'A4-L',
+            'default_font' => 'Cairo',
+            'dpi' => 300,
+            'autoScriptToLang' => true,
+            'autoLangToFont' => true,
+            'margin_top' => 10,
+            'margin_bottom' => 10,
+            'margin_left' => 5,
+            'margin_right' => 5,
+            'shrink_tables_to_fit' => 1,
+        ]);
+
+        $mpdf->WriteHTML($html);
+
+        return response()->streamDownload(
+            fn() => print($mpdf->Output('', 'I')),
+            'قائمة التقييم المختصر.pdf'
+        );
+    }
 
 
     public function downloadStudentsPresence(Request $request)
@@ -238,6 +283,54 @@ class PDFController extends Controller
         return response()->streamDownload(
             fn() => print($mpdf->Output('', 'I')),
             'قائمة-الطلاب.pdf'
+        );
+    }
+    public function downloadGraduatedStudentsReport(Request $request)
+    {
+
+        // get from and to date from previous url
+        $parsed_url = parse_url(url()->previous(), PHP_URL_QUERY);
+        parse_str($parsed_url, $query_params);
+        $from_date = $query_params['tableFilters']['from_date']['from'] ?? null;
+        $to_date = $query_params['tableFilters']['to_date']['to'] ?? null;
+
+        $teachersIds = $request->input('teachers') ?? [];
+        $students = Student::query()
+        ->whereHas('halakas', function (Builder $query)  {
+            $query->where('finish_quran',true);
+        })
+        ->when($teachersIds, function (Builder $query) use($teachersIds) {
+            $query->whereIn('teacher_id',$teachersIds);
+        })->when($from_date, function (Builder $query) use($from_date) {
+            $query->whereDate('start_date','>=',$from_date);
+        })->when($to_date, function (Builder $query) use($to_date) {
+            $query->whereDate('start_date','<=',$to_date);
+        })->get();
+
+
+
+        $html = View::make('pdf.graduated_students', compact('students'))->render();
+
+        $mpdf = new Mpdf([
+            'tempDir' => storage_path('tempdir'),
+            'mode' => 'utf-8',
+            'format' => 'A4-L',
+            'default_font' => 'Cairo',
+            'dpi' => 300,
+            'autoScriptToLang' => true,
+            'autoLangToFont' => true,
+            'margin_top' => 10,
+            'margin_bottom' => 10,
+            'margin_left' => 5,
+            'margin_right' => 5,
+            'shrink_tables_to_fit' => 1,
+        ]);
+
+        $mpdf->WriteHTML($html);
+
+        return response()->streamDownload(
+            fn() => print($mpdf->Output('', 'I')),
+            'قائمة-الطلاب المتخرجين.pdf'
         );
     }
 

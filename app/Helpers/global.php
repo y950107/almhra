@@ -1,17 +1,18 @@
 <?php
 
-use App\Models\Evaluation;
-use App\Models\Student;
 use App\Models\User;
-use App\Notifications\CandidateAccepted;
-use App\Notifications\CandidateEvaluationNotification;
-use App\Notifications\EvaluationNotif;
-use App\Notifications\TeacherAccountCreated;
-use App\Services\Moshaf_madina_Service;
+use App\Models\Halaka;
+use App\Models\Student;
+use App\Models\Evaluation;
 use App\Settings\GeneralSettings;
-use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Notifications\EvaluationNotif;
+use App\Services\Moshaf_madina_Service;
+use App\Notifications\CandidateAccepted;
+use Filament\Notifications\Notification;
+use App\Notifications\TeacherAccountCreated;
+use App\Notifications\CandidateEvaluationNotification;
 
 
 /**  define settings  */
@@ -223,6 +224,7 @@ if (!function_exists('evaluateCandidate')) {
     {
 
         try {
+         
 
             $evaluation = Evaluation::find($evaluations->id);
 
@@ -266,7 +268,7 @@ if (!function_exists('evaluateCandidate')) {
 
                 $Student=Student::create([
                     'user_id' => $user->id,
-                    'teacher_id' => $evaluation->candidate->teacher_id,
+                    'teacher_id' => $evaluation->candidate->teacher_id ?? Halaka::find($data['halaka_id'])->teacher_id,
                     'candidate_id' => $evaluation->candidate->id,
                     'start_date' => now(),
                 ]);

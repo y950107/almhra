@@ -18,12 +18,15 @@ class Student extends Model
         'candidate_id',
         'start_date',
         'current_level',
-        'monthly_target_pages'
+        'monthly_target_pages',
+        'monthly_excepted_months_pages',
     ];
     protected $appends = ['full_name'];
 
 
-
+    protected $casts = [
+        'monthly_excepted_months_pages' => 'array',
+    ];
     // العلاقات
     public function user()
     {
@@ -80,7 +83,17 @@ class Student extends Model
             $program = $mem ? "mutqin_mem" : "mutqin_rev";
         }
 
-        return (int) ($student->monthly_target_pages ?? settings("{$program}_monthly_target", 40));
+        $exceptedMonthsPages = $this->monthly_excepted_months_pages;
+        $sum_exceptedMonthsPages = 0;
+        if ($exceptedMonthsPages) {
+            $exceptedMonthsPages = is_array($exceptedMonthsPages) ? $exceptedMonthsPages : json_decode($exceptedMonthsPages,true);
+            
+            foreach ($exceptedMonthsPages as $exceptedMonthPage) {
+                $sum_exceptedMonthsPages += $exceptedMonthPage['count'];
+            }
+        }
+
+        return (int) (($this->monthly_target_pages - $sum_exceptedMonthsPages) ?? settings("{$program}_monthly_target", 40));
 
     }
 
@@ -96,11 +109,19 @@ class Student extends Model
             $monthly_target = "{$program}_monthly_target";
             $pages = "pages";
         }
-
+        $exceptedMonthsPages = $this->monthly_excepted_months_pages;
+        $sum_exceptedMonthsPages = 0;
+        if ($exceptedMonthsPages) {
+            $exceptedMonthsPages = is_array($exceptedMonthsPages) ? $exceptedMonthsPages : json_decode($exceptedMonthsPages,true);
+            
+            foreach ($exceptedMonthsPages as $exceptedMonthPage) {
+                $sum_exceptedMonthsPages += $exceptedMonthPage['count'];
+            }
+        }
         return [
             'start' => Carbon::parse(settings("{$program}_start_date", '2024-09-01')),
             'end' => Carbon::parse(settings("{$program}_end_date", '2025-06-01')),
-            'monthly_target' => (int) ($student->monthly_target_pages ?? settings($monthly_target, 40)),
+            'monthly_target' => (int) ($this->monthly_target_pages - $sum_exceptedMonthsPages ?? settings($monthly_target, 40)),
             'pages' => $pages
         ];
     }

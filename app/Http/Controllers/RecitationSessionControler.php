@@ -39,7 +39,6 @@ class RecitationSessionControler extends Controller
         $program_name = Candidate::getProgramTypes()[$program];
 
         $dateRange = $this->getDateRange($request, $program);
-
         $timeRange = $request->input('time_range');
         $startDate = $dateRange[0];
         $endDate = $dateRange[1];
@@ -55,7 +54,7 @@ class RecitationSessionControler extends Controller
                 });
             });
         }
-
+       
         $sessions = $sessionsQuery->get();
 
         $grouped = $sessions->groupBy(fn($item) => $item->recitationSession->student_id);
@@ -427,6 +426,17 @@ class RecitationSessionControler extends Controller
 
     private function getDateRange(Request $request, string $program): array
     {
+        $timeRange = $request->input('time_range');
+        
+    
+        if ($timeRange === 'monthly' && $month=$request->input('month')) {
+            
+            $year = $request->input('year', date('Y'));
+            $startDate = Carbon::create($year, $month, 1)->startOfMonth();
+            $endDate = $startDate->copy()->endOfMonth();
+            
+            return [Carbon::parse($startDate->toDateString()), Carbon::parse($endDate->toDateString())];
+        }
         return match ($request->input('time_range')) {
             'monthly' => [
                 now()->startOfMonth(),

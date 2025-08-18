@@ -72,11 +72,39 @@ class StudentResource extends Resource implements HasShieldPermissions
                             ->required(),
                     ]),
 
-                Forms\Components\TextInput::make('monthly_target_pages')
-                    ->label('عدد الاوجه الشهري')
-                    ->numeric()
-                    ->nullable(),
-
+              
+                Forms\Components\Section::make()
+                    ->schema([
+                        Forms\Components\TextInput::make('monthly_target_pages')
+                        ->label('عدد الاوجه الشهري')
+                        ->numeric()
+                        ->nullable(),
+                        Forms\Components\Repeater::make('monthly_excepted_months_pages')
+                        ->label('عدد الأوجه المستثناة من الشهور')
+                        ->schema([
+                            
+                            Forms\Components\Select::make('month')
+                                ->label('الشهر')
+                                ->options([
+                                    1 => 'يناير',
+                                    2 => 'فبراير',
+                                    3 => 'مارس',
+                                    4 => 'أبريل',
+                                    5 => 'مايو',
+                                    6 => 'يونيو',
+                                    7 => 'يوليو',
+                                    8 => 'أغسطس',
+                                    9 => 'سبتمبر',
+                                    10 => 'أكتوبر',
+                                    11 => 'نوفمبر',
+                                    12 => 'ديسمبر'
+                                ])
+                                ->required(),
+                            Forms\Components\TextInput::make('count')->label('العدد')->required()->numeric(),
+                        ])
+                        ->columnSpanFull()
+                        ->columns(2),
+                    ]),
 
                 Forms\Components\Section::make('التقدم الدراسي')
                     ->schema([
