@@ -8,13 +8,13 @@
         <tr>
             <th>#</th>
             <th>اسم الطالب</th>
-            <th>البريد الإلكتروني</th>
             <th>رقم الهاتف</th>
+            <th>الشيح</th>
             <th>البرنامج</th>
             <th>تاريخ التسجيل</th>
-            <th>نسبة التسميع الحضوري</th>
-            <th>نسبة التسميع عن بعد</th>
-            <th>نسبة الانجاز</th>
+            <th>القراءة / الرواية</th>
+            {{-- <th>طريقة التسميع </th> --}}
+            <th>التقييم العام</th>
         </tr>
         </thead>
         <tbody>
@@ -23,12 +23,16 @@
             <tr>
                 <td>{{ $index + 1 }}</td>
                 <td>{{ $student->full_name }}</td>
-                <td>{{ $student->user->email }}</td>
                 <td>{{ $student->user->phone }}</td>
+                <td>{{ $student->teacher->name }}</td>
                 <td>{{ $student->program_type }}</td>
-                <td>{{ \Carbon\Carbon::parse($student->start_date)->format('d-m-Y') }}</td>
-                <td>{{ $student?->present_sessions_percentage }}%</td>
-                <td>{{ $student?->online_sessions_percentage }}%</td>
+                <td>{{ $student->currentHalakas()->latest()->first()->attend_at ?? \Carbon\Carbon::parse($student->start_date)->format('d-m-Y') }}</td>
+                <td>{{ $student?->recitationSessions()->where('present','present')
+                ->when($student->currentHalakas()->latest()->first(), function ($query) use ($student) {
+                    $query->whereHalakaId($student->currentHalakas()->latest()->first()?->halaka_id);
+                })
+                ->first()?->recitation_narration }}</td>
+                {{-- <td>{{ $student?->recitationSessions()->where('present','present')->whereHalakaId($student->currentHalakas()->latest()->first()->id)?->recitation_type }}%</td> --}}
                 <td>{{ $student->progress_percentage }}%</td>
             </tr>
              @endforeach

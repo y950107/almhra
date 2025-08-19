@@ -161,6 +161,14 @@ class StudentsRelationManager extends RelationManager implements HasShieldPermis
                 ->successNotificationTitle(fn($record) => $record->finish_quran ? 'تم الغاء الختم للطالب بنجاح' : 'تم تأكيد الختم للطالب بنجاح')
                 ->visible(fn($record) => auth()->user()->can('update', $record))
                 ->action(function (Student $record) {
+                    // if($record->moved_at == null){
+                    //     Notification::make()
+                    //     ->title('لا يمكن اضافة ختم القرءان للطالب ')
+                    //     ->body('لا يمكن  اضافة ختم القرءان للطالب لأنه لا يزال في الحلقة')
+                    //     ->danger()
+                    //     ->send();
+                    //     return;
+                    // }
                     $this->getOwnerRecord()->students()->updateExistingPivot($record->id, [
                         'finish_quran' => $record->finish_quran ? false : true
                     ]);

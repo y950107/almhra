@@ -142,6 +142,7 @@ class GraduatedStudentResource extends Resource implements HasShieldPermissions
 
                 Tables\Columns\TextColumn::make('start_date')
                     ->label('تاريخ الالتحاق')
+                    ->formatStateUsing(fn(Student $student) => $student->currentHalakas()->latest()->first()->attend_at ?? Carbon::parse($student->start_date)->format('Y-m-d'))
                     ->badge()
                     ->color('success')
                     ->date('Y-m-d'),
