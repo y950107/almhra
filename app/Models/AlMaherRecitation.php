@@ -34,6 +34,7 @@ class AlMaherRecitation extends Model
             'tohfa' => 'متن تحفة الأطفال',
             'jarzeya' => 'متن الجزرية',
             'none' => 'لا يوجد مقرر',
+            'finish_tohfa_and_jarzeya' => ' أتم متني تحفة الأطفال و الجزرية',
         ];
     }
 

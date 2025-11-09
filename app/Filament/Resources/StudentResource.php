@@ -198,7 +198,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                             ->reactive()
                             ->live(),
                         Forms\Components\CheckboxList::make('teachers')
-                            ->label('اختر المترشحين')
+                           ->label('اختر المعلم')
                             ->options(function (Get $get) {
                                 return Teacher::when($get('program_type'), function ($query) use ($get) {
                                     $query->where('program_type', $get('program_type'));
@@ -236,7 +236,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                             ->reactive()
                             ->live(),
                         Forms\Components\CheckboxList::make('teachers')
-                            ->label('اختر المترشحين')
+                            ->label('اختر المعلم')
                             ->options(function (Get $get) {
                                 return Teacher::when($get('program_type'), function ($query) use ($get) {
                                     $query->where('program_type', $get('program_type'));

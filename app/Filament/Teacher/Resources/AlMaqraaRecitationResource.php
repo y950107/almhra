@@ -407,7 +407,7 @@ class AlMaqraaRecitationResource extends \App\Filament\Resources\AlMaqraaRecitat
                                         ->minValue(0)
                                         ->maxValue(100)
                                         ->suffix('من 100')
-                                        ->label('')
+                                        ->label('الأداء')
                                         ->required(fn (Forms\Get $get): bool => $get('recitationSession.present') === 'present'),
 
                                     TextInput::make('memory_score')

@@ -33,6 +33,11 @@ return [
         'model_label' => 'إعلان',
         'plural_model_label' => 'إعلانات',
     ],
+      'attendance' => [
+        'navigation_label' => 'قسم الحضور والغياب',
+        'model_label' => 'الحضور والغياب',
+        'plural_model_label' => 'الحضور والغياب',
+    ],
     'sessions' => [
         'navigation_label' => 'قسم الحلقات',
         'model_label' => 'حلقة',
@@ -164,6 +169,7 @@ return [
 
         'actions' => [
             'accept' => 'قبول',
+            'send_message' => 'ارسال رسالة',
             'send_to_interview' => 'إرسال للمقابلة',
             'view_details' => 'عرض التفاصيل',
             'details' => 'تفاصيل',

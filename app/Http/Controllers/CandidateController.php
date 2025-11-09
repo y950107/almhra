@@ -47,9 +47,11 @@ class CandidateController extends Controller
         $validated = $request->validate([
             'full_name'          => 'required|string|max:255',
             'national_id'        => 'required|string|max:255',
-            'phone'              => 'required|unique:candidates|unique:users|string|max:20',
-            'email'              => 'required|email|unique:candidates,email|unique:users,email',
-            'password'           => ['required', 'confirmed',  Password::defaults()],
+            'nationality'        => 'required|string|max:255',
+            'national_id'        => 'required|string|max:255',
+            'phone'              => 'required|string|max:20|unique:candidates,phone',
+            'email'              => 'required|email|unique:candidates,national_id',
+            'password'           => ['required', 'confirmed'],
             'birthdate'          => ['required', 'date','before_or_equal:'.Carbon::now()->subYears(settings('min_age',10))->toDateString(),
                                     'after_or_equal:'.Carbon::now()->subYears(settings('max_age',70))->toDateString()],
             'qualification'      => 'required|string|max:255',
@@ -104,3 +106,4 @@ class CandidateController extends Controller
         return back()->with('success', 'تم تقديم الطلب بنجاح.');
     }
 }
+

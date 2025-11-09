@@ -56,7 +56,7 @@ class PDFController extends Controller
     }
     public function downloadCandidatesReport(Request $request)
     {
-        $candidates_id = $request->input('teacher_ids', []);
+        $candidates_id = $request->input('candidates_id', []);
 
         $candidates = Candidate::when(!empty($candidates_id), function ($query) use ($candidates_id) {
             $query->whereIn('id', $candidates_id);
@@ -333,7 +333,77 @@ class PDFController extends Controller
             'قائمة-الطلاب المتخرجين.pdf'
         );
     }
+    public function downloadAttendanceReport(Request $request)
+    {
 
+       
+        $parsed_url = parse_url(url()->previous(), PHP_URL_QUERY);
+        parse_str($parsed_url, $query_params);
+        $attendance_date = $query_params['tableFilters']['absence_date']['date'] ?? date('y-m-d');
+        $status = $query_params['tableFilters']['attendance_status']['status'] ?? 'all';
+        
+        $filters['attendance_date'] =$attendance_date;
+        $filters['status'] =$this->getAttendanceStatusText($status);
+     
+        $students = Student::query()
+                   ->with(['attendances' => function($query) use ($attendance_date,$status) {
+                       $query->whereDate('date', $attendance_date)->when($status!='all',function($query)use ($status){
+                           return $query->whereStatus($status);
+                       });
+                   }, 'halakas'])
+                   ->get()
+                   ->map(function($student) use ($attendance_date) {
+                       $attendance = $student->attendances->first();
+                       $status = $attendance ? $attendance->status : 'not_recorded';
+                       
+                       return [
+                           'student' => $student,
+                           'attendance' => $attendance,
+                           'status' => $status,
+                           'status_text' => $this->getAttendanceStatusText($status),
+                           'notes' => $attendance ? $attendance->notes : null,
+                           'date' => $attendance_date,
+                       ];
+                   });
+
+
+
+        $html = View::make('pdf.students_attendance', compact('students','filters'))->render();
+
+        $mpdf = new Mpdf([
+            'tempDir' => storage_path('tempdir'),
+            'mode' => 'utf-8',
+            'format' => 'A4-L',
+            'default_font' => 'Cairo',
+            'dpi' => 300,
+            'autoScriptToLang' => true,
+            'autoLangToFont' => true,
+            'margin_top' => 10,
+            'margin_bottom' => 10,
+            'margin_left' => 5,
+            'margin_right' => 5,
+            'shrink_tables_to_fit' => 1,
+        ]);
+
+        $mpdf->WriteHTML($html);
+
+        return response()->streamDownload(
+            fn() => print($mpdf->Output('', 'I')),
+            'قائمة-الحضور للطلاب.pdf'
+        );
+    }
+    private function getAttendanceStatusText($status)
+    {
+        $statuses = [
+            'present' => 'حاضر',
+            'absent_with_excuse' => 'غائب بعذر',
+            'absent_without_excuse' => 'غائب بغير عذر',
+            'not_recorded' => 'لم يسجل',
+            'all' => 'الكل',
+        ];
+        
+        return $statuses[$status] ?? $status;
+    }
 
     // pdf Download
     // public function download()

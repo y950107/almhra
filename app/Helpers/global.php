@@ -105,18 +105,18 @@ if (!function_exists('sendToInterview')) {
                 return;
             }
 
-            if (is_null($candidate->teacher_id))  {
+            // if (is_null($candidate->teacher_id))  {
 
-                Notification::make()
-                    ->title('المترشح ليس لديه معلم!')
-                    ->danger()
-                    ->send();
-                return;
-            }
+            //     Notification::make()
+            //         ->title('المترشح ليس لديه معلم!')
+            //         ->danger()
+            //         ->send();
+            //     return;
+            // }
             DB::beginTransaction();
             Evaluation::create([
                 'candidate_id' => $candidate->id,
-                'evaluator_id' => $candidate?->teacher?->user->id,
+                'evaluator_id' => $candidate?->teacher?->user->id ?? auth()?->user()?->id,
                 'tajweed_score' => 0,
                 'voice_score' => 0,
                 'memorization_score' => 0,

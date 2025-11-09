@@ -69,7 +69,6 @@ class CandidateResource extends Resource implements HasShieldPermissions
                                                     ->required()
                                                     ->maxLength(255)
                                                     ->label('رقم الهوية'),
-
                                                 Forms\Components\DatePicker::make('birthdate')
                                                     ->required()
                                                     ->maxDate(Carbon::now()->subYears(settings("min_age", 10)))
@@ -82,7 +81,12 @@ class CandidateResource extends Resource implements HasShieldPermissions
                                                     ->required()
                                                     ->unique(ignoreRecord: true)
                                                     ->label(__('filament.candidate.fields.phone'))
-                                                    ->prefix('+966'),
+                                                    ->suffixAction(
+                                                        Forms\Components\Actions\Action::make('contactwhats')
+                                                            ->icon('icon-whatsapp')
+                                                            ->url(fn(Candidate $candidate)=>'https://wa.me/'.$candidate?->phone)
+                                                             ->openUrlInNewTab()
+                                                    ),
 
                                                 Forms\Components\TextInput::make('email')
                                                     ->columnStart(1)
@@ -290,6 +294,11 @@ class CandidateResource extends Resource implements HasShieldPermissions
                     ->falseLabel(__('filament.general.no')),
             ])
             ->actions([
+                Tables\Actions\Action::make('contactwhatsapp')
+                    ->color('success')
+                    ->icon('icon-whatsapp')
+                    ->label(__('filament.candidate.actions.send_message'))
+                    ->url(fn(Candidate $candidate)=>'https://wa.me/'.$candidate->phone)->openUrlInNewTab(),
                 Tables\Actions\Action::make('accept')
                     ->label(__('filament.candidate.actions.accept'))
                     ->color('success')

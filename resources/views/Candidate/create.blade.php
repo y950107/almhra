@@ -4,7 +4,7 @@
 @section('meta_info')
 <title>{{  app(\App\Settings\GeneralSettings::class)->branch_name.'- تسجيل طالب جديد' }}</title>
 <meta name="description" content="{{  app(\App\Settings\GeneralSettings::class)->branch_description }}">
-<meta name="keywords" content="مقرأة المهرة,قرءان كريم,تحفيظ القرءان,القرءان,جامع والدى الأمير بندر بن عبد العزيز,جلسات التسميع للقرءان,علوم التجويد">
+<meta name="keywords" content="حلقات التبيان لتحفيظ القرءان الكريم إسطنبول,قرءان كريم,تحفيظ القرءان,القرءان,جامع والدى الأمير بندر بن عبد العزيز,جلسات التسميع للقرءان,علوم التجويد">
 <meta name="author" content="{{  app(\App\Settings\GeneralSettings::class)->branch_name.'- تسجيل طالب جديد' }}">
 <meta name="website" content="https://quran.almhrah.com">
 <meta name="email" content="{{ app(\App\Settings\GeneralSettings::class)->contact_email}}">
@@ -115,6 +115,12 @@
 
             $('#qualification').select2({
                 placeholder: "اختر المؤهل العلمي",
+                allowClear: true,
+                width: '100%',
+                minimumResultsForSearch: Infinity // Hides the search boxfile_upload_button
+            });
+            $('#nationality').select2({
+                placeholder: "اختر الجنسية",
                 allowClear: true,
                 width: '100%',
                 minimumResultsForSearch: Infinity // Hides the search boxfile_upload_button

@@ -560,6 +560,18 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                             ->columns(2)
                             ->bulkToggleable() 
                             ->searchable(),
+                        Forms\Components\Select::make('freeze_students')
+                            ->label('تجميد الطلبة')
+                            ->options(
+                                Student::whereHas('candidate', fn($q) => $q->where('status', 'accepted')->where('program_type', 'maqraa'))
+                                    ->with('candidate') // Eager load the candidate relation
+                                    ->get()
+                                    ->mapWithKeys(fn($student) => [
+                                        $student->id => $student->candidate->full_name ?? 'N/A'
+                                    ])
+                            )
+                            ->multiple()
+                            ->searchable(),
                     ])
                     ->action(function (array $data) {
                         return redirect()->route('recitations.pdf-download-almaqraa-report', [
@@ -568,7 +580,7 @@ class AlMaqraaRecitationResource extends Resource implements HasShieldPermission
                             'start_date' => $data['start_date'] ?? null,
                             'end_date' => $data['end_date'] ?? null,
                             'teachers' => $data['teachers'] ?? [],
-
+                            'freeze_students' => $data['freeze_students'] ?? [],
                         ]);
                     })
             ])->filters([

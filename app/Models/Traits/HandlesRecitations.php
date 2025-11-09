@@ -138,10 +138,10 @@ trait HandlesRecitations
         // dd($working_days);
         // $working_days =$report_type== "maqraa" ? count(app(GeneralSettings::class)->maqraa_end_date) : count(app(GeneralSettings::class)->mahir_study_days);
      
-        // dd(count($stats));
+        //dd(round( ($totalAbsences * 100 ) / ($working_days * count($stats))));
 
         return [
-            'total_absences_percentage' => $totalSessions > 0 ? round( $working_days * count($stats)/$totalAbsences) : 0,
+            'total_absences_percentage' => $totalSessions > 0 ? round( ($totalAbsences * 100 ) / ($working_days * count($stats))) : 0,
             'total_pages' => $totalPages,
             'total_monthly_target' => $totalTarget,
             'total_monthly_percentage' => $totalTarget > 0 ? round($totalPages / $totalTarget * 100,1) : 0,

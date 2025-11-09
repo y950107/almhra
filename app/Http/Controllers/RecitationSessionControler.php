@@ -44,6 +44,7 @@ class RecitationSessionControler extends Controller
         $endDate = $dateRange[1];
 
         $teachersIds = $request->input('teachers') ?? [];
+        $freeze_students = $request->input('freeze_students') ?? [];
 
         $sessionsQuery = AlMaqraaRecitation::filterByDateRange($dateRange);
 
@@ -52,6 +53,11 @@ class RecitationSessionControler extends Controller
                 $query->whereHas('halaka', function (Builder $query) use ($teachersIds) {
                     $query->whereIn('teacher_id', $teachersIds);
                 });
+            });
+        }
+        if (!empty($freeze_students)) {
+            $sessionsQuery->whereHas('recitationSession', function (Builder $query) use ($freeze_students) {
+                $query->whereNotIn('student_id', $freeze_students);
             });
         }
        
@@ -113,6 +119,7 @@ class RecitationSessionControler extends Controller
         $startDate = $dateRange[0];
         $endDate = $dateRange[1];
 
+        $freeze_students = $request->input('freeze_students') ?? [];
         $teachersIds = $request->input('teachers');
 
         $sessionsQuery = AlMaherRecitation::filterByDateRange($dateRange);
@@ -122,6 +129,11 @@ class RecitationSessionControler extends Controller
                 $query->whereHas('halaka', function (Builder $query) use ($teachersIds) {
                     $query->whereIn('teacher_id', $teachersIds);
                 });
+            });
+        }
+        if (!empty($freeze_students)) {
+            $sessionsQuery->whereHas('recitationSession', function (Builder $query) use ($freeze_students) {
+                $query->whereNotIn('student_id', $freeze_students);
             });
         }
 
@@ -177,7 +189,8 @@ class RecitationSessionControler extends Controller
 
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
-        $teachersIds = $request->input('teachers');
+        $teachersIds = $request->input('teachers') ?? [];
+        $freeze_students = $request->input('freeze_students') ?? [];
 
 
         $sessions = RecitationSession::query()->when($startDate, function (Builder $query) use($startDate) {
@@ -190,6 +203,9 @@ class RecitationSessionControler extends Controller
             $sessions = $sessions->whereHas('halaka',function (Builder $query) use($teachersIds) {
                 $query->whereIn('teacher_id',$teachersIds);
             })->get();
+        }
+        if (!empty($freeze_students)) {
+            $sessions = $sessions->whereNotIn('student_id', $freeze_students)->get();
         }
 
 
@@ -233,7 +249,8 @@ class RecitationSessionControler extends Controller
         $dateRange = $this->getDateRange($request, $program);
 
 
-        $teachersIds = $request->input('teachers');
+        $teachersIds = $request->input('teachers') ?? [];
+        $freeze_students = $request->input('freeze_students') ?? [];
 
         $sessionsQuery = AlMutqinRecitation::filterByDateRange($dateRange);
 
@@ -242,6 +259,11 @@ class RecitationSessionControler extends Controller
                 $query->whereHas('halaka', function (Builder $query) use ($teachersIds) {
                     $query->whereIn('teacher_id', $teachersIds);
                 });
+            });
+        }
+        if (!empty($freeze_students)) {
+            $sessionsQuery->whereHas('recitationSession', function (Builder $query) use ($freeze_students) {
+                $query->whereNotIn('student_id', $freeze_students);
             });
         }
 
@@ -299,7 +321,8 @@ class RecitationSessionControler extends Controller
 
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
-        $teachersIds = $request->input('teachers');
+        $teachersIds = $request->input('teachers') ?? [];
+        $freeze_students = $request->input('freeze_students') ?? [];
 
         $sessions = RecitationSession::query()
             ->when($startDate, function (Builder $query) use($startDate) {
@@ -312,6 +335,9 @@ class RecitationSessionControler extends Controller
             $sessions = $sessions->whereHas('halaka',function (Builder $query) use($teachersIds) {
                 $query->whereIn('teacher_id',$teachersIds);
             })->get();
+        }
+        if (!empty($freeze_students)) {
+            $sessions = $sessions->whereNotIn('student_id', $freeze_students)->get();
         }
 
         $html = View::make('pdf.mutqin-detailed-recitation', [

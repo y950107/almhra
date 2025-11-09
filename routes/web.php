@@ -104,7 +104,7 @@ Route::get('/recitations/pdf-download-almutqin-report/detailed', [RecitationSess
 
 Route::get('/evaluations/pdf-download', action: [PDFController::class, 'downloadEvaluationsReport'])->name('evaluations.pdf-download');
 Route::get('/evaluations/pdf-download-short', action: [PDFController::class, 'downloadEvaluationsShortReport'])->name('evaluations.pdf-download-short');
-
+Route::get('/attendance/pdf-download', [PDFController::class, 'downloadAttendanceReport'])->name('attendance.pdf-download');
 
 // Route::get('language/{locale}', function (string $locale) {
 //     if (! in_array($locale, ['en', 'ar'])) {
