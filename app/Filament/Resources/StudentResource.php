@@ -72,7 +72,18 @@ class StudentResource extends Resource implements HasShieldPermissions
                             ->required(),
                     ]),
 
-              
+                Forms\Components\TextInput::make('maqraa_memorization_duration')
+                    ->label('مدة الحفظ - برنامج المقراة')
+                ->hidden(fn(Student $student) => $student->candidate->program_type !== 'maqraa'),
+
+                Forms\Components\TextInput::make('mutqin_memorization_duration')
+                    ->label('مدة الحفظ - برنامج المتقن')
+                ->hidden(fn(Student $student) => $student->candidate->program_type !== 'mutqin'),
+
+                Forms\Components\TextInput::make('mahir_memorization_duration')
+                    ->label('مدة الحفظ - برنامج الماهر')
+                ->hidden(fn(Student $student) => $student->candidate->program_type !== 'mahir'),
+
                 Forms\Components\Section::make()
                     ->schema([
                         Forms\Components\TextInput::make('monthly_target_pages')
@@ -82,7 +93,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                         Forms\Components\Repeater::make('monthly_excepted_months_pages')
                         ->label('عدد الأوجه المستثناة من الشهور')
                         ->schema([
-                            
+
                             Forms\Components\Select::make('month')
                                 ->label('الشهر')
                                 ->options([

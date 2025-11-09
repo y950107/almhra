@@ -18,8 +18,12 @@ class StatStudent extends BaseWidget
         $student = Student::where('user_id', auth()->id())->firstOrFail();
 
         $settings = $student->getProgramSettings();
-        $start = max(Carbon::parse($student->start_date), $settings['start']);
-        $stats = $student->calculateProgress($start,$settings['end'],$settings['pages']);
+        $dates = $student->calculateStartAndEndDates($settings);
+
+        $start = $dates['start'];
+        $end = $dates['end'];
+
+        $stats = $student->calculateProgress($start,$end,$settings['pages']);
 
         return [
             Stat::make('إجمالي الأوجه المحققة', $stats['cumulative_pages'])

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -20,7 +21,7 @@ class Student extends Model
         'current_level',
         'monthly_target_pages',
         'monthly_excepted_months_pages',
-        
+
         'maqraa_memorization_duration', //مدة الحفظ قسم المقراة
         'mutqin_memorization_duration', //مدة الحفظ قسم المتقن
         'mahir_memorization_duration', //مدة الحفظ قسم التأسيس
@@ -31,6 +32,7 @@ class Student extends Model
     protected $casts = [
         'monthly_excepted_months_pages' => 'array',
     ];
+
     // العلاقات
     public function user()
     {
@@ -44,11 +46,12 @@ class Student extends Model
 
     public function teacher()
     {
-        return $this->belongsTo(Teacher::class,'teacher_id',"id");
+        return $this->belongsTo(Teacher::class, 'teacher_id', "id");
     }
+
     public function candidate()
     {
-        return $this->belongsTo(Candidate::class,'candidate_id',"id");
+        return $this->belongsTo(Candidate::class, 'candidate_id', "id");
     }
 
     public function sessions()
@@ -63,17 +66,18 @@ class Student extends Model
     public function halakas()
     {
         return $this->belongsToMany(Halaka::class, 'halaka_student', 'student_id', 'halaka_id')
-        ->withPivot('attend_at', 'moved_at');
+            ->withPivot('attend_at', 'moved_at');
 
     }
 
     public function currentHalakas()
     {
         return $this->belongsToMany(Halaka::class, 'halaka_student', 'student_id', 'halaka_id')
-        ->whereNull('moved_at')
-        ->withPivot('attend_at', 'moved_at');
+            ->whereNull('moved_at')
+            ->withPivot('attend_at', 'moved_at');
 
     }
+
     public function getFullNameAttribute()
     {
         return $this->candidate ? $this->candidate->full_name : ' اسم';
@@ -82,115 +86,118 @@ class Student extends Model
 
     public function getActualMonthlyTargetAttribute(bool $mem = true)
     {
-       $program = $this->candidate->program_type; // e.g., 'maqraa', 'mutqin', 'mahir'
+        $program = $this->candidate->program_type; // e.g., 'maqraa', 'mutqin', 'mahir'
         if ($program === 'mutqin') {
             $program = $mem ? "mutqin_mem" : "mutqin_rev";
         }
-        
+
         $exceptedMonthsPages = $this->monthly_excepted_months_pages;
         $sum_exceptedMonthsPages = 0;
         if ($exceptedMonthsPages) {
-            $exceptedMonthsPages = is_array($exceptedMonthsPages) ? $exceptedMonthsPages : json_decode($exceptedMonthsPages,true);
-            
+            $exceptedMonthsPages = is_array($exceptedMonthsPages) ? $exceptedMonthsPages : json_decode($exceptedMonthsPages, true);
+
             foreach ($exceptedMonthsPages as $exceptedMonthPage) {
                 $sum_exceptedMonthsPages += $exceptedMonthPage['count'];
             }
         }
         $monthly_target = $this->monthly_target_pages ? $this->monthly_target_pages : settings("{$program}_monthly_target", 40);
         $monthly_target -= $sum_exceptedMonthsPages;
-        return (int) $monthly_target;
+        return (int)$monthly_target;
 
     }
 
     public function getProgramSettings(bool $mem = true): array
     {
-          $program = $this->candidate->program_type; // e.g., 'maqraa', 'mutqin', 'mahir'
+        $program = $this->candidate->program_type; // e.g., 'maqraa', 'mutqin', 'mahir'
 
         if ($program === 'mutqin') {
             $monthly_target = $mem ? "mutqin_mem" : "mutqin_rev";
             $pages = $mem ? "mem_pages" : "rev_pages";
-        }
-        else {
+        } else {
             $monthly_target = "{$program}_monthly_target";
             $pages = "pages";
         }
         $exceptedMonthsPages = $this->monthly_excepted_months_pages;
         $sum_exceptedMonthsPages = 0;
         if ($exceptedMonthsPages) {
-            $exceptedMonthsPages = is_array($exceptedMonthsPages) ? $exceptedMonthsPages : json_decode($exceptedMonthsPages,true);
-            
+            $exceptedMonthsPages = is_array($exceptedMonthsPages) ? $exceptedMonthsPages : json_decode($exceptedMonthsPages, true);
+
             foreach ($exceptedMonthsPages as $exceptedMonthPage) {
                 $sum_exceptedMonthsPages += $exceptedMonthPage['count'];
             }
         }
         $monthly_target = $this->monthly_target_pages ? $this->monthly_target_pages : settings("{$program}_monthly_target", 40);
         $monthly_target -= $sum_exceptedMonthsPages;
+
+
         return [
             'start' => Carbon::parse(settings("{$program}_start_date", '2024-09-01')),
             'end' => Carbon::parse(settings("{$program}_end_date", '2025-06-01')),
-            'monthly_target' => (int) $monthly_target,
+            'monthly_target' => (int)$monthly_target,
             'pages' => $pages
         ];
     }
+
     private function getRecitationModelClass(string $program): string
     {
         return match ($program) {
             'maqraa' => \App\Models\AlMaqraaRecitation::class,
             'mutqin' => \App\Models\AlMutqinRecitation::class,
-            'mahir'  => \App\Models\AlMaherRecitation::class,
+            'mahir' => \App\Models\AlMaherRecitation::class,
             default => throw new \InvalidArgumentException("Unknown program type: $program"),
         };
     }
+
     private function getMemorizationDurationValue(string $program): string
     {
         return match ($program) {
             'maqraa' => $this->maqraa_memorization_duration,
             'mutqin' => $this->mutqin_memorization_duration,
-            'mahir'  => $this->mahir_memorization_duration,
+            'mahir' => $this->mahir_memorization_duration,
             default => throw new \InvalidArgumentException("Unknown program type: $program"),
         };
     }
-    public function calculateProgress( $start , $end , $pages_att , bool $mem = true )
+
+    public function calculateProgress($start, $end, $pages_att, bool $mem = true)
     {
         //if student start after the program
-        if(Carbon::parse($this->start_date)->greaterThan($start))
-        {
+        if (Carbon::parse($this->start_date)->greaterThan($start)) {
             $start = Carbon::parse($this->start_date);
         }
         $program = $this->candidate->program_type;// e.g., 'maqraa', 'mutqin', 'mahir'
 
-        $monthlyTarget =  $this->getActualMonthlyTargetAttribute($mem);
+        $monthlyTarget = $this->getActualMonthlyTargetAttribute($mem);
 
-    
-        $monthsBetween =  round( $start->diffInMonths($end),2) ;
+
+        $monthsBetween = round($start->diffInMonths($end), 2);
         $monthsBetween = $monthsBetween < 1 ? 1 : $monthsBetween;
 
         // Dynamically resolve model class
         $modelClass = $this->getRecitationModelClass($program);
 
-        $cumulativeRecitations = $modelClass::forStudentWithin([$start->toDateString(), $end->toDateString()] , $this->id);
+        $cumulativeRecitations = $modelClass::forStudentWithin([$start->toDateString(), $end->toDateString()], $this->id);
 
         $cumulativePages = $cumulativeRecitations->sum($pages_att);
 
         $cumulativeTarget = $monthsBetween * $monthlyTarget;
 
         //الحصول على المستهدف من مدة تسجيل الطالب فقط  الى تاريخ نهاية التقرير
-        $memorization_duration =intval($this->getMemorizationDurationValue($program)) ? intval($this->getMemorizationDurationValue($program)) : 12;
-        $requested_memorization_duration=$memorization_duration + ($this->start_date ? Carbon::parse($this->start_date)->month : 0);//المدة الالزامية
-     
-        $real_within_memorization_duration=  round(Carbon::parse($this->start_date)->diffInMonths($end),2); //المدة الحقيقية التي شملت حفظ الطالب مثلا قد حفظ لمدة شهرين من تاريخ بدأه فقط
-        $real_within_memorization_cumulative_target =  ( $monthlyTarget * $real_within_memorization_duration)  ; 
-        
-        $cumulativeTarget =  $real_within_memorization_cumulative_target;
+        $memorization_duration = intval($this->getMemorizationDurationValue($program)) ? intval($this->getMemorizationDurationValue($program)) : 12;
+        $requested_memorization_duration = $memorization_duration + ($this->start_date ? Carbon::parse($this->start_date)->month : 0);//المدة الالزامية
+
+        $real_within_memorization_duration = round(Carbon::parse($this->start_date)->diffInMonths($end), 2); //المدة الحقيقية التي شملت حفظ الطالب مثلا قد حفظ لمدة شهرين من تاريخ بدأه فقط
+        $real_within_memorization_cumulative_target = ($monthlyTarget * $real_within_memorization_duration);
+
+        $cumulativeTarget = $real_within_memorization_cumulative_target;
         //نهاية الحصول على المستهدف من مدة تسجيل الطالب فقط الى تاريخ نهاية التقرير
-        
+
         $percentage = $cumulativeTarget > 0
-            ?  round(($cumulativePages / $cumulativeTarget) * 100,1)
+            ? round(($cumulativePages / $cumulativeTarget) * 100, 1)
             : 0;
 
         return [
-            'cumulative_pages' => round($cumulativePages,1),
-            'cumulative_target' => round($cumulativeTarget,1),
+            'cumulative_pages' => round($cumulativePages, 1),
+            'cumulative_target' => round($cumulativeTarget, 1),
             'cumulative_percentage' => $percentage,
             'recitations_count' => $cumulativeRecitations->count()
         ];
@@ -199,16 +206,32 @@ class Student extends Model
     public function getProgressPercentageAttribute()
     {
         $settings = $this->getProgramSettings();
+        $dates = $this->calculateStartAndEndDates($settings);
 
-        $start = max(Carbon::parse($this->start_date), $settings['start']);
-        $end = $settings['end'];
-        return $this->calculateProgress($start,$end,$settings['pages'])['cumulative_percentage'];
+        $start = $dates['start'];
+        $end = $dates['end'];
+
+        return $this->calculateProgress($start, $end, $settings['pages'])['cumulative_percentage'];
     }
 
     public function getProgramTypeAttribute()
     {
 
         return Candidate::getProgramTypes()[$this->candidate->program_type];
+    }
+
+    protected function getProgramEndDateAttribute()
+    {
+        try {
+            $durationMonths = $this->getMemorizationDurationValue($this->candidate->program_type);
+
+            if ($durationMonths) {
+                return Carbon::parse($this->start_date)->addMonths((int)$durationMonths);
+            }
+        } catch (\Exception $e) {
+            return null;
+        }
+        return  null;
     }
 
     public function getOnlineSessionsPercentageAttribute()
@@ -238,13 +261,15 @@ class Student extends Model
         $total = $data->count();
         $present = $data->filter(fn($typeVal) => $typeVal === $type)->count();
 
-        return $total > 0 ? (int) round(($present / $total) * 100) : 0;
+        return $total > 0 ? (int)round(($present / $total) * 100) : 0;
     }
+
     public function attendances()
     {
         return $this->hasMany(Attendance::class);
     }
-        public function presentAttendances(): HasMany
+
+    public function presentAttendances(): HasMany
     {
         return $this->attendances()->where('status', 'present');
     }
@@ -253,17 +278,32 @@ class Student extends Model
     {
         return $this->attendances()->whereNot('status', 'present');
     }
+
     public function isPresent($date = null)
     {
         // Use today's date if no date provided
         $date = $date ?: now()->format('Y-m-d');
-        
+
         // Check if there's an attendance record for the date with status 'present'
         return $this->attendances()
             ->whereDate('date', $date)
             ->where('status', 'present')
             ->exists();
     }
+
+    public function calculateStartAndEndDates($settings): array
+    {
+
+        $start = max(Carbon::parse($this->start_date), $settings['start']);
+
+        $end = $this->program_end_date ?: $settings['end'];
+
+        return [
+            'start' => $start,
+            'end' => $end,
+        ];
+    }
+
 
 
 

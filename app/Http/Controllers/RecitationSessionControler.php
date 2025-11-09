@@ -60,12 +60,12 @@ class RecitationSessionControler extends Controller
                 $query->whereNotIn('student_id', $freeze_students);
             });
         }
-       
+
         $sessions = $sessionsQuery->get();
 
         $grouped = $sessions->groupBy(fn($item) => $item->recitationSession->student_id);
 
-        $stats = AlMaqraaRecitation::getStatsForGroupedSessions($grouped, $startDate, $endDate);
+        $stats = AlMaqraaRecitation::getStatsForGroupedSessions($grouped, $startDate, $endDate , $timeRange);
         $summary = AlMaqraaRecitation::summarizeStats($stats);
 
         $title = ($timeRange === 'monthly')
@@ -140,8 +140,8 @@ class RecitationSessionControler extends Controller
         $sessions = $sessionsQuery->get();
         $grouped = $sessions->groupBy(fn($item) => $item->recitationSession->student_id);
 
-        $stats = AlMaherRecitation::getStatsForGroupedSessions($grouped, $startDate, $endDate);
-        $summary = AlMaherRecitation::summarizeStats($stats,$report_type="mahir");
+        $stats = AlMaherRecitation::getStatsForGroupedSessions($grouped, $startDate, $endDate,$timeRange);
+        $summary = AlMaherRecitation::summarizeStats($stats,"mahir");
 
 
         $title = ($timeRange === 'monthly')
@@ -269,7 +269,6 @@ class RecitationSessionControler extends Controller
 
         $sessions = $sessionsQuery->get();
         $grouped = $sessions->groupBy(fn($item) => $item->recitationSession->student_id);
-
         $summary = $this->calculateMutqinStats($grouped, $dateRange[0], $dateRange[1]);
 
         $timeRange = $request->input('time_range');
@@ -393,10 +392,10 @@ class RecitationSessionControler extends Controller
             $lastRev = $sorted->reverse()->first(fn($r) => $r->rev_pages !== null);
 
 
-            $progStart = max(Carbon::parse($student->start_date), $progStart);
-
-            $mem_progress = $student->calculateProgress($progStart, $progEnd, 'mem_pages', true);
-            $rev_progress = $student->calculateProgress($progStart, $progEnd, 'rev_pages', false);
+            $startDate = max(Carbon::parse($student->start_date), $progStart);
+            $endDate = $student->program_end_date ?: $progEnd;
+            $mem_progress = $student->calculateProgress($startDate, $endDate, 'mem_pages', true);
+            $rev_progress = $student->calculateProgress($startDate, $endDate, 'rev_pages', false);
 
 
             $stats[] = [
@@ -412,7 +411,7 @@ class RecitationSessionControler extends Controller
                 'mem_pages_read' => $mem_progress['cumulative_pages'],
                 'mem_monthly_target' => $mem_progress['cumulative_target'],
                 'mem_monthly_percentage' => $mem_progress['cumulative_percentage'],
-                'avg_evaluation_score' => $avgScore,
+                'avg_evaluation_score' => round($avgScore,1),
                 'rev_start_surah_name' => $firstRev ? getSurahName($firstRev->rev_start_surah_id) : '-',
                 'rev_start_ayah_id' => $firstRev?->rev_start_ayah_id ?? '-',
                 'rev_end_surah_name' => $lastRev ? getSurahName($lastRev->rev_end_surah_id) : '-',
@@ -453,14 +452,14 @@ class RecitationSessionControler extends Controller
     private function getDateRange(Request $request, string $program): array
     {
         $timeRange = $request->input('time_range');
-        
-    
+
+
         if ($timeRange === 'monthly' && $month=$request->input('month')) {
-            
+
             $year = $request->input('year', date('Y'));
             $startDate = Carbon::create($year, $month, 1)->startOfMonth();
             $endDate = $startDate->copy()->endOfMonth();
-            
+
             return [Carbon::parse($startDate->toDateString()), Carbon::parse($endDate->toDateString())];
         }
         return match ($request->input('time_range')) {

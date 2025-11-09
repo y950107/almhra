@@ -50,7 +50,7 @@ class Halaka extends Model
                 // $hasSessions = DB::table('recitation_sessions')
                 // ->where('halaka_id', $this->id)
                 // ->exists();
-    
+
                 // if ($hasSessions) {
                 //     // Case 1: Count students with sessions in this halaka
                 //     $count = DB::table('recitation_sessions')
@@ -84,14 +84,9 @@ class Halaka extends Model
     public function getProgressPercentageAttribute()
     {
         $students = $this->students;
-            
-        $percentages = $students->map(function ($student) {
-            $settings = $student->getProgramSettings();
-            $start = max(Carbon::parse($student->start_date), $settings['start']);
-            $end = $settings['end'];
-            $pages_att = $settings['pages'];
 
-            return $student->calculateProgress($start, $end, $pages_att)['cumulative_percentage'];
+        $percentages = $students->map(function ($student) {
+            return $student->getProgressPercentageAttribute();
         })->filter(fn ($v) => $v !== null)->values();
 
 

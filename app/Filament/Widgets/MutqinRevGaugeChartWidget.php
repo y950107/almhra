@@ -22,12 +22,7 @@ class MutqinRevGaugeChartWidget extends Widget
             ->get();
 
         $percentages = $students->map(function ($student) {
-            $settings = $student->getProgramSettings(false);  // rev
-            $start = max(Carbon::parse($student->start_date), $settings['start']);
-            $end = $settings['end'];
-            $pages_att = $settings['pages'];
-
-            return $student->calculateProgress($start, $end, $pages_att)['cumulative_percentage'];
+            return $student->getProgressPercentageAttribute();
         })->filter(fn ($v) => $v !== null)->values();
 
         $average = $percentages->count() > 0

@@ -27,7 +27,7 @@ trait HandlesRecitations
     }
 
 
-    public static function getStatsForGroupedSessions($grouped, Carbon $progStart, Carbon $progEnd, bool $mem = true)
+    public static function getStatsForGroupedSessions($grouped, Carbon $progStart, Carbon $progEnd, $timeRange, bool $mem = true)
     {
         $stats = [];
 
@@ -46,18 +46,19 @@ trait HandlesRecitations
                 ->map(fn($recitation) => $recitation->recitationSession->evaluation_score)
                 ->average();
             $pagesRead = $present->sum($settings['pages']);
-            
+
             $first = $present->sortBy('recitationSession.session_date')->first();
             $last = $present->sortByDesc('recitationSession.session_date')->first();
 
             // $progStart = max(Carbon::parse($student->start_date), $progStart);
             $startDate = \Carbon\Carbon::parse($student->start_date);
+            $endDate = $student->program_end_date ?: $progEnd;
 
-            $cumulative = $student->calculateProgress($startDate,$progEnd,$settings['pages']);
+            $cumulative = $student->calculateProgress($startDate,$endDate,$settings['pages']);
 
-            
+
             // Calculate mem_lines sum by lesson type
-            
+
             $memLinesByLesson = [];
             $last_lesson_total_mem_lines =0;
 
@@ -65,18 +66,18 @@ trait HandlesRecitations
                 $presentLessonRecitations = $lessonRecitations->where(
                     fn($r) => $r->recitationSession->present === 'present'
                 );
-                
+
                 // Ensure we only proceed if there are present recitations
                 if ($presentLessonRecitations->isNotEmpty()) {
                     $lessonLatestDate = $presentLessonRecitations->max(
                         fn($r) => Carbon::parse($r->recitationSession->session_date)
                     );
-                    
+
                     // Convert mem_lines to integers before summing
                     $lessonMemLines = $presentLessonRecitations->sum(function($r) {
                         return (int) $r->mem_lines;
                     });
-                    
+
                     if ($lessonLatestDate && (!$latestDate || $lessonLatestDate > $latestDate)) {
                         $latestDate = $lessonLatestDate;
                         $last_lesson_total_mem_lines = $lessonMemLines;
@@ -88,7 +89,7 @@ trait HandlesRecitations
                     }
                 }
             }
-       
+
            $mem_lines_sum = $present->sum(function($recitation) {
                 return is_numeric($recitation->mem_lines) ? (float)$recitation->mem_lines : 0;
             });
@@ -131,13 +132,13 @@ trait HandlesRecitations
         $totalScores = array_sum(array_column($stats, 'avg_evaluation_score'));
         $totalSessions = count($stats);
         //caclculate total_working_days by month
-        
+
         // dd($stats);
 
         $working_days = self::getWorkingDays($report_type);
         // dd($working_days);
         // $working_days =$report_type== "maqraa" ? count(app(GeneralSettings::class)->maqraa_end_date) : count(app(GeneralSettings::class)->mahir_study_days);
-     
+
         //dd(round( ($totalAbsences * 100 ) / ($working_days * count($stats))));
 
         return [
@@ -167,10 +168,10 @@ trait HandlesRecitations
     }
     public static function getWorkingDays($report_type="maqraa")
     {
-        // $settings = $report_type == "maqraa" 
-        // ? app(GeneralSettings::class)->maqraa_end_date 
+        // $settings = $report_type == "maqraa"
+        // ? app(GeneralSettings::class)->maqraa_end_date
         // : app(GeneralSettings::class)->mahir_study_days;
- 
+
         $working_days_total =0;
 
         $currentMonth = now()->month; // Get current month (1-12)
@@ -184,7 +185,7 @@ trait HandlesRecitations
                 );
                 $working_days_total = $sessionsPerMonth - array_sum(array_column($exceptions, 'count'));
                 break;
-        
+
             case 'mahir':
                 $sessionsPerMonth = intval(app(GeneralSettings::class)->mahir_sessions_per_month);
                 $exceptions = array_filter(
@@ -193,7 +194,7 @@ trait HandlesRecitations
                 );
                 $working_days_total = $sessionsPerMonth - array_sum(array_column($exceptions, 'count'));
                 break;
-        
+
             default: // maqraa
                 $sessionsPerMonth = intval(app(GeneralSettings::class)->maqraa_sessions_per_month);
                 $exceptions = array_filter(
@@ -203,53 +204,53 @@ trait HandlesRecitations
                 $working_days_total = $sessionsPerMonth - array_sum(array_column($exceptions, 'count'));
                 break;
         }
-       
+
         if (request('time_range') == "yearly") {
             // For yearly reports: calculate months from current year start
             $working_months = now()->diffInMonths(now()->startOfYear(), true);
-            
+
             // Convert to decimal (e.g. 6.5 months)
             $currentDay = now()->day;
             $daysInMonth = now()->daysInMonth;
             $fraction = $currentDay / $daysInMonth;
             $working_months = floor($working_months) + $fraction;
-            
+
             // Calculate yearly target
             $working_days_total = round($working_months * $working_days_total, 1);
-        } 
-        //// if time is cusom 
+        }
+        //// if time is cusom
         if (request('time_range') == "custom" && request('start_date') && request('end_date')) {
             $startDate = Carbon::parse(request('start_date'));
             $endDate = Carbon::parse(request('end_date'));
-            
+
             // Calculate total working days in the custom range
             $working_days_total = 0;
             $currentDate = $startDate->copy();
-            
+
             while ($currentDate <= $endDate) {
                 if (!$currentDate->isFriday() && !$currentDate->isSaturday()) {
                     $working_days_total++;
                 }
                 $currentDate->addDay();
             }
-            
+
             // Apply monthly exceptions for the period
             $exceptionMonths = match($report_type) {
                 'mutqin' => app(GeneralSettings::class)->mutqin_except_months_sessions ?? [],
                 'mahir' => app(GeneralSettings::class)->mahir_except_months_sessions ?? [],
                 default => app(GeneralSettings::class)->maqraa_except_months_sessions ?? []
             };
-            
+
             // Subtract exceptions for months in the custom range
             foreach ($exceptionMonths as $exception) {
                 $exceptionMonth = $exception['month'];
                 $exceptionYear = $startDate->year; // Assuming current year
-                
+
                 if ($exceptionMonth >= $startDate->month && $exceptionMonth <= $endDate->month) {
                     $working_days_total -= $exception['count'];
                 }
             }
-            
+
             // Ensure we don't go below zero
             $working_days_total = max(0, $working_days_total);
         }
@@ -258,7 +259,7 @@ trait HandlesRecitations
             $selectedMonth = (int) request('month'); // Ensure numeric month
             $currentDate = now();
             $currentMonth = $currentDate->month;
-            
+
             // Get exception months (ensure it's an array)
             switch ($report_type) {
                 case 'mutqin':
@@ -269,30 +270,30 @@ trait HandlesRecitations
                         $exceptionMonths = app(GeneralSettings::class)->mahir_except_months_sessions ?? [];
                         $working_days_total =intval(app(GeneralSettings::class)->mahir_sessions_per_month);
                     break;
-                
+
                 default:
                         $exceptionMonths = app(GeneralSettings::class)->maqraa_except_months_sessions ?? [];
                         $working_days_total =intval(app(GeneralSettings::class)->maqraa_sessions_per_month);
                     break;
             }
-            
-            
+
+
             // Find exception for selected month (using numeric comparison)
             $monthException = collect($exceptionMonths)->first(function ($item) use ($selectedMonth) {
                 return (int) $item['month'] === $selectedMonth;
             });
-           
+
             // Adjust working days if exception exists
             if ($monthException) {
                 $working_days_total = max(0, $working_days_total - (int) $monthException['count']);
             }
-            
+
             // For current month (before month end)
             if ($selectedMonth == $currentMonth && !$currentDate->isLastOfMonth()) {
                 $actual_working_days_total = 0;
                 $startDate = Carbon::create($currentDate->year, $currentMonth, 1);
                 $endDate = $currentDate;
-                
+
                 // Calculate actual working days so far
                 while ($startDate <= $endDate) {
                     if (!$startDate->isFriday() && !$startDate->isSaturday()) {
@@ -300,7 +301,7 @@ trait HandlesRecitations
                     }
                     $startDate->addDay();
                 }
-                
+
                 // Take the minimum between scheduled and actual days
                 $working_days_total = min($actual_working_days_total, $working_days_total);
             }
