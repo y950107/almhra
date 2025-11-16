@@ -39,7 +39,10 @@
             @endphp
         @foreach ($statsPerStudent as $index => $stat)
         @php
+       
             $end_date  =request('end_date') ?? now();
+            if($stat['program_end_date'] && \Carbon\Carbon::createFromDate($stat['student_start_date'])->lessThan(now())) $end_date = $stat['program_end_date'];
+            
             
             $end_date = \Carbon\Carbon::parse($end_date);
             $monthsBetween =  round( \Carbon\Carbon::createFromDate($stat['student_start_date'])->diffInMonths($end_date),2) ;

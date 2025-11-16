@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\AlMaqraaRecitation;
 use Illuminate\Notifications\Notifiable;
 
 class Student extends Model
@@ -185,7 +186,7 @@ class Student extends Model
         $memorization_duration = intval($this->getMemorizationDurationValue($program)) ? intval($this->getMemorizationDurationValue($program)) : 12;
         $requested_memorization_duration = $memorization_duration + ($this->start_date ? Carbon::parse($this->start_date)->month : 0);//المدة الالزامية
 
-        $real_within_memorization_duration = round(Carbon::parse($this->start_date)->diffInMonths($end), 2); //المدة الحقيقية التي شملت حفظ الطالب مثلا قد حفظ لمدة شهرين من تاريخ بدأه فقط
+        $real_within_memorization_duration = round($start->diffInMonths($end), 2); //المدة الحقيقية التي شملت حفظ الطالب مثلا قد حفظ لمدة شهرين من تاريخ بدأه فقط
         $real_within_memorization_cumulative_target = ($monthlyTarget * $real_within_memorization_duration);
 
         $cumulativeTarget = $real_within_memorization_cumulative_target;
@@ -194,7 +195,14 @@ class Student extends Model
         $percentage = $cumulativeTarget > 0
             ? round(($cumulativePages / $cumulativeTarget) * 100, 1)
             : 0;
-
+        ////////////////////22-11-2025
+        // $sessionsQuery = AlMaqraaRecitation::filterByDateRange([0=>$start,1=>$end]);
+        // $sessions = $sessionsQuery->get();
+        // $grouped = $sessions->groupBy(fn($item) => $item->recitationSession->student_id);
+       
+        // $stats = AlMaqraaRecitation::getStatsForGroupedSessions($grouped, $start, $end , 'yearly');
+        // dd($stats);
+        //  $mem_lines_count = intval($stat['mem_lines']);
         return [
             'cumulative_pages' => round($cumulativePages, 1),
             'cumulative_target' => round($cumulativeTarget, 1),
@@ -297,7 +305,7 @@ class Student extends Model
         $start = max(Carbon::parse($this->start_date), $settings['start']);
 
         $end = $this->program_end_date ?: $settings['end'];
-
+        if($end->greaterThan(now())) $end = now();
         return [
             'start' => $start,
             'end' => $end,

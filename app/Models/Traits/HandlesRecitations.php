@@ -53,7 +53,7 @@ trait HandlesRecitations
             // $progStart = max(Carbon::parse($student->start_date), $progStart);
             $startDate = \Carbon\Carbon::parse($student->start_date);
             $endDate = $student->program_end_date ?: $progEnd;
-
+            if($endDate->greaterThan(now())) $endDate = now();
             $cumulative = $student->calculateProgress($startDate,$endDate,$settings['pages']);
 
 
@@ -68,7 +68,7 @@ trait HandlesRecitations
                 );
 
                 // Ensure we only proceed if there are present recitations
-                if ($presentLessonRecitations->isNotEmpty()) {
+                if ($presentLessonRecitations->isNotEmpty()) { 
                     $lessonLatestDate = $presentLessonRecitations->max(
                         fn($r) => Carbon::parse($r->recitationSession->session_date)
                     );
@@ -94,9 +94,10 @@ trait HandlesRecitations
                 return is_numeric($recitation->mem_lines) ? (float)$recitation->mem_lines : 0;
             });
             // dd($memLinesByLesson);
-            $stats[] = [
+            $stats[] = [ 
                 'student_id' => $studentId,
                 'student_name' => $student->full_name ?? '-',
+                'program_end_date' => $endDate,
                 'teacher_name' => $recitations->first()->recitationSession->halaka->teacher->name ?? '-',
                 'absences' => $absences,
                 'registration_month' => Carbon::parse($student->start_date)->getTranslatedMonthName(),
